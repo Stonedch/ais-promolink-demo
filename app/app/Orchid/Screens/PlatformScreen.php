@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens;
 
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 
@@ -26,12 +27,15 @@ class PlatformScreen extends Screen
 
     public function commandBar(): iterable
     {
-        return [];
+        return [
+            Link::make('Перейти на сайт')
+                ->route('web.index.index')
+                ->icon('bs.globe'),
+        ];
     }
 
     public function layout(): iterable
     {
-        return [
-        ];
+        return [];
     }
 }
