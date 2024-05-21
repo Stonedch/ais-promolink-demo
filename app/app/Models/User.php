@@ -61,10 +61,12 @@ class User extends Authenticatable
         throw_if(empty($normalized), 'Phone not normalized');
         throw_if(static::where('phone', $normalized)->exists(), 'User exist');
 
-        static::create([
-            'phone' => $normalized,
-            'password' => Hash::make($password),
-            'permissions' => Dashboard::getAllowAllPermission(),
-        ]);
+        $user = new User();
+
+        $user->phone = $normalized;
+        $user->password = Hash::make($password);
+        $user->permissions = Dashboard::getAllowAllPermission();
+
+        $user->save();
     }
 }
