@@ -2,68 +2,69 @@
 
 namespace App\Models;
 
+use App\Helpers\PhoneNormalizer;
+use Illuminate\Support\Facades\Hash;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Platform\Models\User as Authenticatable;
+use Orchid\Support\Facades\Dashboard;
 
 class User extends Authenticatable
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'name',
+        'phone',
         'email',
+        'last_name',
+        'first_name',
+        'middle_name',
         'password',
     ];
 
-    /**
-     * The attributes excluded from the model's JSON form.
-     *
-     * @var array
-     */
     protected $hidden = [
         'password',
         'remember_token',
         'permissions',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
-        'permissions'          => 'array',
-        'email_verified_at'    => 'datetime',
+        'permissions' => 'array',
+        'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * The attributes for which you can use filters in url.
-     *
-     * @var array
-     */
     protected $allowedFilters = [
-           'id'         => Where::class,
-           'name'       => Like::class,
-           'email'      => Like::class,
-           'updated_at' => WhereDateStartEnd::class,
-           'created_at' => WhereDateStartEnd::class,
+        'id' => Where::class,
+        'phone' => Like::class,
+        'email' => Like::class,
+        'last_name' => Like::class,
+        'first_name' => Like::class,
+        'middle_name' => Like::class,
+        'updated_at' => WhereDateStartEnd::class,
+        'created_at' => WhereDateStartEnd::class,
     ];
 
-    /**
-     * The attributes for which can use sort in url.
-     *
-     * @var array
-     */
     protected $allowedSorts = [
         'id',
-        'name',
+        'phone',
         'email',
+        'last_name',
+        'first_name',
+        'middle_name',
         'updated_at',
         'created_at',
     ];
+
+    public static function createAdminByPhone(string $phone, string $password)
+    {
+        $normalized = PhoneNormalizer::normalizePhone($phone);
+
+        throw_if(empty($normalized), 'Phone not normalized');
+        throw_if(static::where('phone', $normalized)->exists(), 'User exist');
+
+        static::create([
+            'phone' => $normalized,
+            'password' => Hash::make($password),
+            'permissions' => Dashboard::getAllowAllPermission(),
+        ]);
+    }
 }
