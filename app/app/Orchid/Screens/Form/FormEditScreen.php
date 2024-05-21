@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Form;
 
+use App\Models\Departament;
+use App\Models\DepartamentType;
 use App\Models\Form;
+use App\Models\FormDepartamentType;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\CheckBox;
@@ -23,6 +26,9 @@ class FormEditScreen extends Screen
     {
         return [
             'form' => $form,
+            'departament_types' => $form->exists
+                ? FormDepartamentType::where('form_id', $form->id)->pluck('departament_type_id')->toArray()
+                : null,
         ];
     }
 
@@ -88,6 +94,12 @@ class FormEditScreen extends Screen
                         ->title('Возможность редактировать'),
                 ]),
             ])->title('Базовые настройки'),
+
+            Layout::rows([
+                Select::make('departament_types')
+                    ->options(fn () => DepartamentType::pluck('name', 'id'))
+                    ->multiple(),
+            ])->title('Ведомства')
         ];
     }
 
@@ -95,6 +107,36 @@ class FormEditScreen extends Screen
     {
         $form->fill($request->input('form', []));
         $form->save();
+
+        $formDepartamentTypes = FormDepartamentType::query()->where('form_id', $form->id)->get();
+        $requestedDepartamentTypeIdentifiers = collect($request->input('departament_types', []));
+        $isDepartmentTypesReinit = false;
+
+        if ($formDepartamentTypes->count() != $requestedDepartamentTypeIdentifiers->count()) {
+            $isDepartmentTypesReinit = true;
+        } else {
+            $isDepartmentTypesReinit = $requestedDepartamentTypeIdentifiers->every(function ($departamentTypeId) use ($formDepartamentTypes) {
+                return $formDepartamentTypes->where('departament_type_id', $departamentTypeId)->isEmpty();
+            });
+        }
+
+        if ($isDepartmentTypesReinit) {
+            $formDepartamentTypes->map(function (FormDepartamentType $item) {
+                $item->delete();
+            });
+
+            foreach ($requestedDepartamentTypeIdentifiers as $id) {
+                $item = new FormDepartamentType();
+
+                $item->fill([
+                    'form_id' => $form->id,
+                    'departament_type_id' => $id,
+                ]);
+
+                $item->save();
+            }
+        }
+
         Toast::info('Успешно сохранено!');
         return redirect()->route('platform.forms.edit', $form);
     }
