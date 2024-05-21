@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Presenters;
 
+use App\Helpers\PhoneNormalizer;
 use Illuminate\Support\Str;
 use Laravel\Scout\Builder;
 use Orchid\Screen\Contracts\Personable;
@@ -25,7 +26,7 @@ class UserPresenter extends Presenter implements Personable, Searchable
      */
     public function title(): string
     {
-        return $this->entity->name;
+        return PhoneNormalizer::humanizePhone($this->entity->phone);
     }
 
     /**
@@ -53,7 +54,7 @@ class UserPresenter extends Presenter implements Personable, Searchable
      */
     public function image(): ?string
     {
-        $hash = md5(strtolower(trim($this->entity->email)));
+        $hash = md5(strtolower(trim($this->entity->phone)));
 
         $default = urlencode('https://raw.githubusercontent.com/orchidsoftware/.github/main/web/avatars/gravatar.png');
 
