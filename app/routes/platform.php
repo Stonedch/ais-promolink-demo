@@ -9,6 +9,8 @@ use App\Orchid\Screens\Departament\DepartamentListScreen;
 use App\Orchid\Screens\Departament\DepartamentEditScreen;
 use App\Orchid\Screens\DepartamentType\DepartamentTypeEditScreen;
 use App\Orchid\Screens\DepartamentType\DepartamentTypeListScreen;
+use App\Orchid\Screens\Form\FormEditScreen;
+use App\Orchid\Screens\Form\FormListScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
@@ -144,3 +146,24 @@ Route::screen('departaments/{departament}/edit', DepartamentEditScreen::class)
     ->breadcrumbs(fn (Trail $trail, $departament) => $trail
         ->parent('platform.departaments')
         ->push('Редактирование', route('platform.departaments.edit', $departament)));
+
+// Platform > Forms
+Route::screen('forms', FormListScreen::class)
+    ->name('platform.forms')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push('Формы', route('platform.forms')));
+
+// Platform > Forms > Create
+Route::screen('forms/create', FormEditScreen::class)
+    ->name('platform.forms.create')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.forms')
+        ->push('Создание', route('platform.forms.create')));
+
+// Platform > Forms > Edit
+Route::screen('forms/{form}/edit', FormEditScreen::class)
+    ->name('platform.forms.edit')
+    ->breadcrumbs(fn (Trail $trail, $form) => $trail
+        ->parent('platform.forms')
+        ->push('Редактирование', route('platform.forms.edit', $form)));

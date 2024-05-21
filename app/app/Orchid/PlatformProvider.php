@@ -24,6 +24,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ->route(config('platform.index'))
                 ->divider(),
 
+            Menu::make('Формы')
+                ->icon('bs.pencil-square')
+                ->route('platform.forms')
+                ->permission('platform.forms.list'),
+
             Menu::make('Коллекции')
                 ->icon('bs.book')
                 ->route('platform.collections')
@@ -74,6 +79,10 @@ class PlatformProvider extends OrchidServiceProvider
             ItemPermission::group('Ведомства')
                 ->addPermission('platform.departaments.list', 'Список')
                 ->addPermission('platform.departaments.edit', 'Редактирование'),
+
+            ItemPermission::group('Формы')
+                ->addPermission('platform.forms.list', 'Список')
+                ->addPermission('platform.forms.edit', 'Редактирование'),
         ];
     }
 }
