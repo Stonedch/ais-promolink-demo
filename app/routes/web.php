@@ -2,6 +2,23 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::name('web.')->group(function () {
+    Route::name('index.')->prefix('/')->controller(\App\Http\Controllers\Web\IndexController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
+
+    Route::name('home.')->prefix('/home')->controller(\App\Http\Controllers\Web\HomeController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
+
+    Route::name('auth.')->prefix('/auth')->group(function () {
+        Route::name('login.')->prefix('/login')->controller(\App\Http\Controllers\Web\LoginController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/login', 'login')->name('login');
+        });
+
+        Route::name('logout.')->prefix('/logout')->controller(\App\Http\Controllers\Web\LogoutController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+        });
+    });
 });
