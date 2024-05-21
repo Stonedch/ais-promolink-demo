@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Helpers\PhoneNormalizer;
+use App\Orchid\Screens\Collection\CollectionEditScreen;
+use App\Orchid\Screens\Collection\CollectionListScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
@@ -75,3 +77,24 @@ Route::screen('roles', RoleListScreen::class)
     ->breadcrumbs(fn (Trail $trail) => $trail
         ->parent('platform.index')
         ->push(__('Roles'), route('platform.systems.roles')));
+
+// Platform > Collections 
+Route::screen('collections', CollectionListScreen::class)
+    ->name('platform.collections')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push('Коллекции', route('platform.collections')));
+
+// Platform > Collections > Create
+Route::screen('collections/create', CollectionEditScreen::class)
+    ->name('platform.collections.create')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.collections')
+        ->push('Создание', route('platform.collections.create')));
+
+// Platform > Collections > Edit
+Route::screen('collections/{collection}/edit', CollectionEditScreen::class)
+    ->name('platform.collections.edit')
+    ->breadcrumbs(fn (Trail $trail, $collection) => $trail
+        ->parent('platform.collections')
+        ->push('Редактирование', route('platform.collections.edit', $collection)));

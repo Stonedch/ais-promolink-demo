@@ -24,6 +24,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ->route(config('platform.index'))
                 ->divider(),
 
+            Menu::make('Коллекции')
+                ->icon('bs.book')
+                ->route('platform.collections')
+                ->divider(),
+
             Menu::make('Пользователи')
                 ->icon('bs.people')
                 ->route('platform.systems.users')
@@ -44,6 +49,10 @@ class PlatformProvider extends OrchidServiceProvider
             ItemPermission::group('Система')
                 ->addPermission('platform.systems.roles', 'Роли')
                 ->addPermission('platform.systems.users', 'Пользователи'),
+
+            ItemPermission::group('Коллекции')
+                ->addPermission('platform.collections.list', 'Список')
+                ->addPermission('platform.collections.edit', 'Редактирование'),
         ];
     }
 }
