@@ -22,12 +22,6 @@ class RoleEditScreen extends Screen
      */
     public $role;
 
-    /**
-     * Fetch data to be displayed on the screen.
-     *
-     *
-     * @return array
-     */
     public function query(Role $role): iterable
     {
         return [
@@ -41,7 +35,7 @@ class RoleEditScreen extends Screen
      */
     public function name(): ?string
     {
-        return 'Edit Role';
+        return 'Редактирование роли';
     }
 
     /**
@@ -49,7 +43,7 @@ class RoleEditScreen extends Screen
      */
     public function description(): ?string
     {
-        return 'Modify the privileges and permissions associated with a specific role.';
+        return 'Измените привилегии и разрешения, связанные с определенной ролью.';
     }
 
     public function permission(): ?iterable

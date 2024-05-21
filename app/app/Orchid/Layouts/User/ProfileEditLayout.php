@@ -7,14 +7,15 @@ namespace App\Orchid\Layouts\User;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Layouts\Rows;
 
-class UserEditLayout extends Rows
+class ProfileEditLayout extends Rows
 {
     public function fields(): array
     {
         return [
             Input::make('user.phone')
                 ->type('text')
-                ->title('Номер телефона'),
+                ->title('Номер телефона')
+                ->disabled(),
 
             Input::make('user.email')
                 ->type('text')

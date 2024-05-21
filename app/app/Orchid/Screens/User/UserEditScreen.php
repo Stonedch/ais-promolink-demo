@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\User;
 
+use App\Helpers\PhoneNormalizer;
 use App\Orchid\Layouts\Role\RolePermissionLayout;
 use App\Orchid\Layouts\User\UserEditLayout;
 use App\Orchid\Layouts\User\UserPasswordLayout;
@@ -152,9 +153,9 @@ class UserEditScreen extends Screen
     public function save(User $user, Request $request)
     {
         $request->validate([
-            'user.email' => [
+            'user.phone' => [
                 'required',
-                Rule::unique(User::class, 'email')->ignore($user),
+                Rule::unique(User::class, 'phone')->ignore($user),
             ],
         ]);
 
@@ -169,7 +170,7 @@ class UserEditScreen extends Screen
 
         $user
             ->fill($request->collect('user')->except(['password', 'permissions', 'roles'])->toArray())
-            ->forceFill(['permissions' => $permissions])
+            ->forceFill(['permissions' => $permissions, 'phone' => PhoneNormalizer::normalizePhone($request->input('user.phone'))])
             ->save();
 
         $user->replaceRoles($request->input('user.roles'));

@@ -12,11 +12,6 @@ use Orchid\Screen\Screen;
 
 class RoleListScreen extends Screen
 {
-    /**
-     * Fetch data to be displayed on the screen.
-     *
-     * @return array
-     */
     public function query(): iterable
     {
         return [
@@ -24,20 +19,14 @@ class RoleListScreen extends Screen
         ];
     }
 
-    /**
-     * The name of the screen displayed in the header.
-     */
     public function name(): ?string
     {
-        return 'Role Management';
+        return 'Управление ролями';
     }
 
-    /**
-     * Display header description.
-     */
     public function description(): ?string
     {
-        return 'A comprehensive list of all roles, including their permissions and associated users.';
+        return 'Права доступа';
     }
 
     public function permission(): ?iterable
@@ -47,25 +36,15 @@ class RoleListScreen extends Screen
         ];
     }
 
-    /**
-     * The screen's action buttons.
-     *
-     * @return Action[]
-     */
     public function commandBar(): iterable
     {
         return [
-            Link::make(__('Add'))
+            Link::make('Добавить')
                 ->icon('bs.plus-circle')
                 ->href(route('platform.systems.roles.create')),
         ];
     }
 
-    /**
-     * The screen's layout elements.
-     *
-     * @return string[]|\Orchid\Screen\Layout[]
-     */
     public function layout(): iterable
     {
         return [

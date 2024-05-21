@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\User;
 
+use App\Orchid\Layouts\User\ProfileEditLayout;
 use App\Orchid\Layouts\User\ProfilePasswordLayout;
 use App\Orchid\Layouts\User\UserEditLayout;
 use Illuminate\Http\Request;
@@ -20,12 +21,6 @@ use Orchid\Support\Facades\Toast;
 
 class UserProfileScreen extends Screen
 {
-    /**
-     * Fetch data to be displayed on the screen.
-     *
-     *
-     * @return array
-     */
     public function query(Request $request): iterable
     {
         return [
@@ -33,27 +28,16 @@ class UserProfileScreen extends Screen
         ];
     }
 
-    /**
-     * The name of the screen displayed in the header.
-     */
     public function name(): ?string
     {
         return 'My Account';
     }
 
-    /**
-     * Display header description.
-     */
     public function description(): ?string
     {
         return 'Update your account details such as name, email address and password';
     }
 
-    /**
-     * The screen's action buttons.
-     *
-     * @return Action[]
-     */
     public function commandBar(): iterable
     {
         return [
@@ -70,13 +54,10 @@ class UserProfileScreen extends Screen
         ];
     }
 
-    /**
-     * @return \Orchid\Screen\Layout[]
-     */
     public function layout(): iterable
     {
         return [
-            Layout::block(UserEditLayout::class)
+            Layout::block(ProfileEditLayout::class)
                 ->title(__('Profile Information'))
                 ->description(__("Update your account's profile information and email address."))
                 ->commands(
@@ -100,14 +81,6 @@ class UserProfileScreen extends Screen
 
     public function save(Request $request): void
     {
-        $request->validate([
-            'user.name'  => 'required|string',
-            'user.email' => [
-                'required',
-                Rule::unique(User::class, 'email')->ignore($request->user()),
-            ],
-        ]);
-
         $request->user()
             ->fill($request->get('user'))
             ->save();
