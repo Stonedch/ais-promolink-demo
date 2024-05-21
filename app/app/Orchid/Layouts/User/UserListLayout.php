@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\User;
 
+use App\Models\Departament;
 use App\Orchid\Components\DateTimeRender;
 use App\Orchid\Components\HumanizePhone;
 use Orchid\Platform\Models\User;
@@ -13,6 +14,7 @@ use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
+use Throwable;
 
 class UserListLayout extends Table
 {
@@ -53,6 +55,16 @@ class UserListLayout extends Table
                 ->usingComponent(HumanizePhone::class)
                 ->sort()
                 ->filter(Input::make()),
+
+            TD::make('departament_id', 'Ведомство')
+                ->sort()
+                ->render(function (User $user) {
+                    try {
+                        return Departament::find($user->departament_id)->name;
+                    } catch (Throwable $e) {
+                        return '-';
+                    }
+                }),
 
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeRender::class)

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\User;
 
 use App\Helpers\PhoneNormalizer;
+use App\Models\Departament;
+use App\Models\User;
 use App\Orchid\Layouts\Role\RolePermissionLayout;
 use App\Orchid\Layouts\User\UserEditLayout;
 use App\Orchid\Layouts\User\UserPasswordLayout;
@@ -14,9 +16,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Orchid\Access\Impersonation;
-use Orchid\Platform\Models\User;
 use Orchid\Screen\Action;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
 use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
@@ -103,6 +105,21 @@ class UserEditScreen extends Screen
             Layout::block(UserEditLayout::class)
                 ->title(__('Profile Information'))
                 ->description(__('Update your account\'s profile information and email address.'))
+                ->commands(
+                    Button::make(__('Save'))
+                        ->type(Color::BASIC)
+                        ->icon('bs.check-circle')
+                        ->canSee($this->user->exists)
+                        ->method('save')
+                ),
+
+            Layout::block(Layout::rows([
+                Select::make('user.departament_id')
+                    ->empty('-')
+                    ->options(function () {
+                        return Departament::pluck('name', 'id');
+                    }),
+            ]))->title('Ведомство')
                 ->commands(
                     Button::make(__('Save'))
                         ->type(Color::BASIC)

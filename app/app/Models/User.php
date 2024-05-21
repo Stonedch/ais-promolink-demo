@@ -14,6 +14,7 @@ class User extends Authenticatable
 {
     protected $fillable = [
         'phone',
+        'departament_id',
         'email',
         'last_name',
         'first_name',
@@ -34,6 +35,7 @@ class User extends Authenticatable
 
     protected $allowedFilters = [
         'id' => Where::class,
+        'departament_id' => Where::class,
         'phone' => Like::class,
         'email' => Like::class,
         'last_name' => Like::class,
@@ -46,6 +48,7 @@ class User extends Authenticatable
     protected $allowedSorts = [
         'id',
         'phone',
+        'departament_id',
         'email',
         'last_name',
         'first_name',

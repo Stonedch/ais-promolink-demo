@@ -5,6 +5,10 @@ declare(strict_types=1);
 use App\Helpers\PhoneNormalizer;
 use App\Orchid\Screens\Collection\CollectionEditScreen;
 use App\Orchid\Screens\Collection\CollectionListScreen;
+use App\Orchid\Screens\Departament\DepartamentListScreen;
+use App\Orchid\Screens\Departament\DepartamentEditScreen;
+use App\Orchid\Screens\DepartamentType\DepartamentTypeEditScreen;
+use App\Orchid\Screens\DepartamentType\DepartamentTypeListScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
@@ -98,3 +102,45 @@ Route::screen('collections/{collection}/edit', CollectionEditScreen::class)
     ->breadcrumbs(fn (Trail $trail, $collection) => $trail
         ->parent('platform.collections')
         ->push('Редактирование', route('platform.collections.edit', $collection)));
+
+// Platform > DepartamentTypes
+Route::screen('departament-types', DepartamentTypeListScreen::class)
+    ->name('platform.departament-types')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push('Типы ведомств', route('platform.departament-types')));
+
+// Platform > DepartamentTypes > Create
+Route::screen('departament-types/create', DepartamentTypeEditScreen::class)
+    ->name('platform.departament-types.create')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.departament-types')
+        ->push('Создание', route('platform.departament-types.create')));
+
+// Platform > DepartamentTypes > Edit
+Route::screen('departament-types/{departamentType}/edit', DepartamentTypeEditScreen::class)
+    ->name('platform.departament-types.edit')
+    ->breadcrumbs(fn (Trail $trail, $departamentType) => $trail
+        ->parent('platform.departament-types')
+        ->push('Редактирование', route('platform.departament-types.edit', $departamentType)));
+
+// Platform > Departaments
+Route::screen('departaments', DepartamentListScreen::class)
+    ->name('platform.departaments')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push('Ведомства', route('platform.departaments')));
+
+// Platform > Departaments > Create
+Route::screen('departaments/create', DepartamentEditScreen::class)
+    ->name('platform.departaments.create')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.departaments')
+        ->push('Создание', route('platform.departaments.create')));
+
+// Platform > Departaments > Edit
+Route::screen('departaments/{departament}/edit', DepartamentEditScreen::class)
+    ->name('platform.departaments.edit')
+    ->breadcrumbs(fn (Trail $trail, $departament) => $trail
+        ->parent('platform.departaments')
+        ->push('Редактирование', route('platform.departaments.edit', $departament)));

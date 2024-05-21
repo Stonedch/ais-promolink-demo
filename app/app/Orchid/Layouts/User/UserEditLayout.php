@@ -14,30 +14,27 @@ class UserEditLayout extends Rows
         return [
             Input::make('user.phone')
                 ->type('text')
+                ->required()
                 ->title('Номер телефона'),
 
             Input::make('user.email')
                 ->type('text')
                 ->max(255)
-                ->required()
                 ->title('E-mail'),
 
             Input::make('user.last_name')
                 ->type('text')
                 ->max(255)
-                ->required()
                 ->title('Фамилия'),
 
             Input::make('user.first_name')
                 ->type('text')
                 ->max(255)
-                ->required()
                 ->title('Имя'),
 
             Input::make('user.middle_name')
                 ->type('text')
                 ->max(255)
-                ->required()
                 ->title('Отчество'),
         ];
     }

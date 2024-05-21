@@ -27,6 +27,19 @@ class PlatformProvider extends OrchidServiceProvider
             Menu::make('Коллекции')
                 ->icon('bs.book')
                 ->route('platform.collections')
+                ->permission('platform.collections.list')
+                ->divider(),
+
+            Menu::make('Типы ведомств')
+                ->icon('bs.card-text')
+                ->route('platform.departament-types')
+                ->permission('platform.departament-types.list')
+                ->title('Ведомства'),
+
+            Menu::make('Ведомства')
+                ->icon('bs.bank')
+                ->route('platform.departaments')
+                ->permission('platform.departaments.list')
                 ->divider(),
 
             Menu::make('Пользователи')
@@ -53,6 +66,14 @@ class PlatformProvider extends OrchidServiceProvider
             ItemPermission::group('Коллекции')
                 ->addPermission('platform.collections.list', 'Список')
                 ->addPermission('platform.collections.edit', 'Редактирование'),
+
+            ItemPermission::group('Типы ведомств')
+                ->addPermission('platform.departament-types.list', 'Список')
+                ->addPermission('platform.departament-types.edit', 'Редактирование'),
+
+            ItemPermission::group('Ведомства')
+                ->addPermission('platform.departaments.list', 'Список')
+                ->addPermission('platform.departaments.edit', 'Редактирование'),
         ];
     }
 }
