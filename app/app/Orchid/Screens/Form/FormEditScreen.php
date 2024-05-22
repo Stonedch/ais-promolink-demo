@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Form;
 
+use App\Models\Collection;
 use App\Models\Departament;
 use App\Models\DepartamentType;
+use App\Models\Field;
 use App\Models\Form;
 use App\Models\FormDepartamentType;
 use Illuminate\Http\Request;
@@ -13,10 +15,12 @@ use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Matrix;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
+use Throwable;
 
 class FormEditScreen extends Screen
 {
@@ -29,6 +33,9 @@ class FormEditScreen extends Screen
             'departament_types' => $form->exists
                 ? FormDepartamentType::where('form_id', $form->id)->pluck('departament_type_id')->toArray()
                 : null,
+            'fields' => $form->exists
+                ? Field::where('form_id', $form->id)->get()
+                : null
         ];
     }
 
@@ -99,9 +106,36 @@ class FormEditScreen extends Screen
                 Select::make('departament_types')
                     ->options(fn () => DepartamentType::pluck('name', 'id'))
                     ->multiple(),
-            ])->title('Ведомства')
+            ])->title('Ведомства'),
+
+            Layout::rows([
+                Matrix::make('fields')
+                    ->columns([
+                        '#' => 'id',
+                        'Заголовок' => 'name',
+                        'Группа' => 'group',
+                        'Тип' => 'type',
+                        'Сортировка' => 'sort',
+                        'Коллекция' => 'collection_id',
+                    ])
+                    ->fields([
+                        'id' => Input::make()->disabled()->hidden(),
+                        'name' => Input::make(),
+                        'group' => Input::make(),
+                        'type' => Select::make()->options(Field::$TYPES),
+                        'sort' => Input::make()->type('number'),
+                        'collection_id' => Select::make()->options(fn () => Collection::pluck('name', 'id'))->empty('-'),
+                    ])
+                    ->title('Значения'),
+            ])->title('Поля')->canSee($this->form->exists),
         ];
     }
+    // 'form_id',
+    // 'name',
+    // 'group',
+    // 'type',
+    // 'sort',
+    // 'collection_id',
 
     public function save(Request $request, Form $form)
     {
@@ -134,6 +168,26 @@ class FormEditScreen extends Screen
                 ]);
 
                 $item->save();
+            }
+        }
+
+        $fields = Field::where('form_id', $form->id)->get();
+        $requestedFields = collect($request->input('fields', []));
+        $isFieldsReinit = true;
+
+        if ($isFieldsReinit) {
+            $fields->map(fn (Field $field) => $field->delete());
+
+            foreach ($requestedFields as $item) {
+                try {
+                    $field = new Field();
+                    $field->fill($item);
+                    $field->form_id = $form->id;
+                    $field->sort = $field->sort ?: 100;
+                    $field->save();
+                } catch (Throwable $e) {
+                    continue;
+                }
             }
         }
 
