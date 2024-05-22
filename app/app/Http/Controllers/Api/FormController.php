@@ -124,6 +124,43 @@ class FormController extends Controller
     {
         try {
             $response = [];
+
+            $user = $request->user();
+            throw_if(empty($user));
+            throw_if(empty($user->departament_id), new HumanException('Ошибка проверки пользователя!'));
+
+            $event = Event::find($request->input('event_id', null));
+            throw_if(empty($event), new HumanException('Ошибка проверки формы!'));
+            throw_if($event->departament_id != $user->departament_id, new HumanException('Ошибка проверки пользователя!'));
+
+            $form = Form::find($event->form_id);
+            throw_if(empty($form), new HumanException('Ошибка проверки формы!'));
+            throw_if($form->is_editable != true, new HumanException('Ошибка проверки формы!'));
+
+            FormResult::query()
+                ->where('event_id', $event->id)
+                ->delete();
+
+            $structure = json_decode($event->form_structure);
+
+            foreach ($structure->fields as $field) {
+                $formResult = new FormResult();
+
+                $formResult->fill([
+                    'user_id' => $user->id,
+                    'event_id' => $event->id,
+                    'field_id' => $field->id,
+                    'value' => $request->input("fields.$field->id", null),
+                ]);
+
+                $formResult->save();
+            }
+
+            $event->filled_at = $event->filled_at ?: now();
+            $event->refilled_at = now();
+            $event->save();
+
+            $response = [];
             return Responser::returnSuccess($response);
         } catch (HumanException $e) {
             return Responser::returnError([$e->getMessage()]);

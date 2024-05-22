@@ -33,6 +33,6 @@ Route::name('api.')->prefix('/api')->withoutMiddleware([\Illuminate\Foundation\H
     Route::name('forms.')->prefix('/forms')->controller(\App\Http\Controllers\Api\FormController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/create', 'create')->name('create');
-        Route::get('/edit', 'edit')->name('edit');
+        Route::post('/edit', 'edit')->name('edit');
     });
 });
