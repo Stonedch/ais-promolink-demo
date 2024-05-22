@@ -16,7 +16,7 @@ class HomeController extends Controller
             return view('web.home.index');
         } catch (HumanException $e) {
             return redirect()
-                ->route('web.auth.login.index')
+                ->route('web.index.index')
                 ->withErrors([$e->getMessage()]);
         }
     }

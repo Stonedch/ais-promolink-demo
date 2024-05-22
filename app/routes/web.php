@@ -11,6 +11,10 @@ Route::name('web.')->group(function () {
         Route::get('/', 'index')->name('index');
     });
 
+    Route::name('forms.')->prefix('/forms')->controller(\App\Http\Controllers\Web\FormController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
+
     Route::name('auth.')->prefix('/auth')->group(function () {
         Route::name('login.')->prefix('/login')->controller(\App\Http\Controllers\Web\LoginController::class)->group(function () {
             Route::get('/', 'index')->name('index');
