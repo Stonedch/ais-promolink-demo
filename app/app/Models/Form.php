@@ -58,7 +58,6 @@ class Form extends Model
     public static $PERIODICITIES = [
         50 => 'Разовая',
         100 => 'Ежедневно',
-        200 => 'Еженедельно',
     ];
 
     public static $TYPES = [
