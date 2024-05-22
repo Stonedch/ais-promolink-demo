@@ -21,7 +21,16 @@ class FormListScreen extends Screen
     public function query(): iterable
     {
         return [
-            'forms' => Form::filters()->defaultSort('id', 'desc')->paginate(),
+            'periodicityForms' => Form::query()
+                ->where('periodicity', '<>', 50)
+                ->filters()
+                ->defaultSort('id', 'desc')
+                ->paginate(),
+            'notPeriodicityForms' => Form::query()
+                ->where('periodicity', '=', 50)
+                ->filters()
+                ->defaultSort('id', 'desc')
+                ->paginate(),
         ];
     }
 
@@ -50,7 +59,7 @@ class FormListScreen extends Screen
     public function layout(): iterable
     {
         return [
-            Layout::table('forms', [
+            Layout::table('periodicityForms', [
                 TD::make(__('Actions'))
                     ->align(TD::ALIGN_CENTER)
                     ->width(100)
@@ -112,7 +121,71 @@ class FormListScreen extends Screen
                     ->filter(TD::FILTER_DATE_RANGE)
                     ->sort()
                     ->width(200),
-            ]),
+            ])->title('Периодичные формы'),
+
+            Layout::table('periodicityForms', [
+                TD::make(__('Actions'))
+                    ->align(TD::ALIGN_CENTER)
+                    ->width(100)
+                    ->canSee(Auth::user()->hasAccess('platform.forms.edit'))
+                    ->render(fn (Form $form) => DropDown::make()
+                        ->icon('bs.three-dots-vertical')
+                        ->list([
+                            Link::make(__('Edit'))
+                                ->route('platform.forms.edit', $form->id)
+                                ->icon('bs.pencil'),
+
+                            Button::make(__('Delete'))
+                                ->icon('bs.trash3')
+                                ->confirm('Элемент будет удален')
+                                ->method('remove', [
+                                    'id' => $form->id,
+                                ]),
+                        ])),
+
+                TD::make('id', '#')
+                    ->filter(TD::FILTER_NUMERIC)
+                    ->sort()
+                    ->defaultHidden()
+                    ->width(100),
+
+                TD::make('name', 'Название')
+                    ->filter(TD::FILTER_TEXT)
+                    ->sort()
+                    ->width(200),
+
+                TD::make('periodicity', 'Периодичность')
+                    ->sort()
+                    ->width(200)
+                    ->render(fn (Form $form) => $form::$PERIODICITIES[$form->periodicity]),
+
+                TD::make('type', 'Тип')
+                    ->sort()
+                    ->width(200)
+                    ->render(fn (Form $form) => $form::$TYPES[$form->type]),
+
+                TD::make('is_active', 'Активность')
+                    ->sort()
+                    ->width(150)
+                    ->render(fn (Form $form) => $form->is_active ? 'Да' : 'Нет'),
+
+                TD::make('is_editable', 'Возможность редактирования')
+                    ->sort()
+                    ->width(250)
+                    ->render(fn (Form $form) => $form->is_editable ? 'Да' : 'Нет'),
+
+                TD::make('created_at', 'Создано')
+                    ->usingComponent(DateTimeRender::class)
+                    ->filter(TD::FILTER_DATE_RANGE)
+                    ->sort()
+                    ->width(200),
+
+                TD::make('updated_at', 'Обновлено')
+                    ->usingComponent(DateTimeRender::class)
+                    ->filter(TD::FILTER_DATE_RANGE)
+                    ->sort()
+                    ->width(200),
+            ])->title('Разовые формы'),
         ];
     }
 
