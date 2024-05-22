@@ -22,3 +22,9 @@ Route::name('web.')->group(function () {
         });
     });
 });
+
+Route::name('api.')->prefix('/api')->group(function () {
+    Route::name('forms.')->prefix('/forms')->controller(\App\Http\Controllers\Api\FormController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
+});
