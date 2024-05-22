@@ -20,6 +20,7 @@ class FormResult extends Model
         'event_id',
         'field_id',
         'value',
+        'index',
     ];
 
     protected $allowedFilters = [
@@ -29,6 +30,7 @@ class FormResult extends Model
         'event_id' => Where::class,
         'field_id' => Where::class,
         'value' => Like::class,
+        'index' => Where::class,
 
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
@@ -41,6 +43,7 @@ class FormResult extends Model
         'event_id',
         'field_id',
         'value',
+        'index',
 
         'updated_at',
         'created_at',

@@ -97,16 +97,19 @@ class FormController extends Controller
             $structure = json_decode($event->form_structure);
 
             foreach ($structure->fields as $field) {
-                $formResult = new FormResult();
+                $values = $request->input("fields.$field->id", null);
 
-                $formResult->fill([
-                    'user_id' => $user->id,
-                    'event_id' => $event->id,
-                    'field_id' => $field->id,
-                    'value' => $request->input("fields.$field->id", null),
-                ]);
+                if (is_array($values) == false) $values = [$values];
 
-                $formResult->save();
+                foreach ($values as $index => $value) {
+                    (new FormResult())->fill([
+                        'user_id' => $user->id,
+                        'event_id' => $event->id,
+                        'field_id' => $field->id,
+                        'index' => $index,
+                        'value' => $value,
+                    ])->save();
+                }
             }
 
             $event->filled_at = now();
@@ -129,13 +132,13 @@ class FormController extends Controller
             throw_if(empty($user));
             throw_if(empty($user->departament_id), new HumanException('Ошибка проверки пользователя!'));
 
-            $event = Event::find($request->input('event_id', null));
-            throw_if(empty($event), new HumanException('Ошибка проверки формы!'));
-            throw_if($event->departament_id != $user->departament_id, new HumanException('Ошибка проверки пользователя!'));
-
-            $form = Form::find($event->form_id);
+            $form = Form::find($request->input('form_id', null));
             throw_if(empty($form), new HumanException('Ошибка проверки формы!'));
             throw_if($form->is_editable != true, new HumanException('Ошибка проверки формы!'));
+
+            $event = Event::orderBy('id', 'desc')->where('form_id', $form->id)->first();
+            throw_if(empty($event), new HumanException('Ошибка проверки формы!'));
+            throw_if($event->departament_id != $user->departament_id, new HumanException('Ошибка проверки пользователя!'));
 
             FormResult::query()
                 ->where('event_id', $event->id)
@@ -144,16 +147,19 @@ class FormController extends Controller
             $structure = json_decode($event->form_structure);
 
             foreach ($structure->fields as $field) {
-                $formResult = new FormResult();
+                $values = $request->input("fields.$field->id", null);
 
-                $formResult->fill([
-                    'user_id' => $user->id,
-                    'event_id' => $event->id,
-                    'field_id' => $field->id,
-                    'value' => $request->input("fields.$field->id", null),
-                ]);
+                if (is_array($values) == false) $values = [$values];
 
-                $formResult->save();
+                foreach ($values as $index => $value) {
+                    (new FormResult())->fill([
+                        'user_id' => $user->id,
+                        'event_id' => $event->id,
+                        'field_id' => $field->id,
+                        'index' => $index,
+                        'value' => $value,
+                    ])->save();
+                }
             }
 
             $event->filled_at = $event->filled_at ?: now();
