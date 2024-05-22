@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Collection;
 use App\Models\CollectionValue;
 use App\Models\Departament;
+use App\Models\Event;
 use App\Models\Field;
 use App\Models\Form;
 use App\Models\FormDepartamentType;
@@ -43,11 +44,17 @@ class FormController extends Controller
 
                 $collectionValues = CollectionValue::whereIn('collection_id', $collections->pluck('id'))->get();
 
+                $events = Event::query()
+                    ->where('departament_id', $departament->id)
+                    ->where('filled_at', null)
+                    ->get();
+
                 return [
                     'forms' => $forms,
                     'fields' => $fields->groupBy('form_id'),
                     'collections' => $collections,
                     'collectionValues' => $collectionValues->groupBy('collection_id'),
+                    'events' => $events,
                 ];
             });
 
