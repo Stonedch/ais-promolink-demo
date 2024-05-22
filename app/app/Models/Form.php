@@ -56,6 +56,7 @@ class Form extends Model
     ];
 
     public static $PERIODICITIES = [
+        50 => 'Разовая',
         100 => 'Ежедневно',
         200 => 'Еженедельно',
     ];
@@ -64,4 +65,12 @@ class Form extends Model
         100 => 'Линейный вид',
         200 => 'Табличный вид',
     ];
+
+    public function getStructure()
+    {
+        return json_encode([
+            'form' => $this->toArray(),
+            'fields' => Field::where('form_id', $this->id)->get()->toArray(),
+        ], JSON_UNESCAPED_UNICODE);
+    }
 }

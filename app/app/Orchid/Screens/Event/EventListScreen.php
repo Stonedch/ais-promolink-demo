@@ -1,0 +1,195 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Orchid\Screens\Event;
+
+use App\Exceptions\HumanException;
+use App\Models\Departament;
+use App\Models\DepartamentType;
+use App\Models\Event;
+use App\Models\Form;
+use App\Orchid\Components\DateTimeRender;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Actions\DropDown;
+use Orchid\Screen\Fields\Group;
+use Orchid\Screen\Fields\Select;
+use Orchid\Screen\Screen;
+use Orchid\Screen\TD;
+use Orchid\Support\Facades\Layout;
+use Orchid\Support\Facades\Toast;
+use Throwable;
+
+class EventListScreen extends Screen
+{
+    public $events;
+    public $forms;
+    public $departaments;
+
+    public function query(): iterable
+    {
+        $events = Event::filters()->defaultSort('id', 'desc')->paginate();
+        $forms = Form::whereIn('id', $events->pluck('form_id'))->get();
+        $departaments = Departament::whereIn('id', $events->pluck('departament_id'))->get();
+
+        return [
+            'events' => $events,
+            'forms' => $forms,
+            'departaments' => $departaments,
+        ];
+    }
+
+    public function name(): ?string
+    {
+        return 'События';
+    }
+
+    public function permission(): ?iterable
+    {
+        return [
+            'platform.events.list',
+        ];
+    }
+
+    public function commandBar(): iterable
+    {
+        return [];
+    }
+
+    public function layout(): iterable
+    {
+        return [
+            Layout::block([
+                Layout::rows([
+                    Group::make([
+                        Select::make('events.departament_type_id')
+                            ->empty('-')
+                            ->options(function () {
+                                return Cache::remember('EventListScreen.layout.departament_types.v0', now()->addHour(), function () {
+                                    return DepartamentType::pluck('name', 'id');
+                                });
+                            })
+                            ->title('Ведомства'),
+
+                        Select::make('events.form_id')
+                            ->empty('-')
+                            ->options(function () {
+                                return Cache::remember('EventListScreen.layout.forms.v1', now()->addMinutes(10), function () {
+                                    return Form::where('periodicity', 50)->pluck('name', 'id');
+                                });
+                            })
+                            ->title('Формы'),
+                    ]),
+                ]),
+            ])->title('Создание событий')->commands([
+                Button::make('Создать')
+                    ->icon('bs.check-circle')
+                    ->canSee(Auth::user()->hasAccess('platform.events.create'))
+                    ->method('createEvents')
+            ]),
+
+            Layout::table('events', [
+                TD::make(__('Actions'))
+                    ->align(TD::ALIGN_CENTER)
+                    ->width(100)
+                    ->canSee(Auth::user()->hasAccess('platform.events.edit'))
+                    ->render(fn (Event $event) => DropDown::make()
+                        ->icon('bs.three-dots-vertical')
+                        ->list([
+                            Button::make(__('Delete'))
+                                ->icon('bs.trash3')
+                                ->confirm('Элемент будет удален')
+                                ->method('remove', [
+                                    'id' => $event->id,
+                                ]),
+                        ])),
+
+                TD::make('id', '#')
+                    ->filter(TD::FILTER_NUMERIC)
+                    ->sort()
+                    ->defaultHidden()
+                    ->width(100),
+
+                TD::make('form_id', 'Форма')
+                    ->sort()
+                    ->width(200)
+                    ->render(function (Event $event) {
+                        try {
+                            $form = $this->forms->find($event->form_id);
+                            return "[#$form->id] $form->name";
+                        } catch (Throwable $e) {
+                            return '-';
+                        }
+                    }),
+
+                TD::make('departament_id', 'Ведомство')
+                    ->sort()
+                    ->width(200)
+                    ->render(function (Event $event) {
+                        try {
+                            $departament = $this->departaments->find($event->departament_id);
+                            return "[#$departament->id] $departament->name";
+                        } catch (Throwable $e) {
+                            return '-';
+                        }
+                    }),
+
+                TD::make('filled_at', 'Дата заполнения')
+                    ->usingComponent(DateTimeRender::class)
+                    ->sort()
+                    ->width(200),
+
+                TD::make('filled_at', 'Дата обновления заполнения')
+                    ->usingComponent(DateTimeRender::class)
+                    ->sort()
+                    ->width(200),
+
+                TD::make('created_at', 'Создано')
+                    ->usingComponent(DateTimeRender::class)
+                    ->filter(TD::FILTER_DATE_RANGE)
+                    ->sort()
+                    ->width(200),
+
+                TD::make('updated_at', 'Обновлено')
+                    ->usingComponent(DateTimeRender::class)
+                    ->filter(TD::FILTER_DATE_RANGE)
+                    ->sort()
+                    ->width(200),
+            ])->title('Лог событий'),
+        ];
+    }
+
+    public function createEvents(Request $request)
+    {
+        try {
+            $departamentTypeId = $request->input('events.departament_type_id', null);
+            $formId = $request->input('events.form_id', null);
+
+            throw_if(empty($departamentTypeId), new HumanException('Пожалуйста, укажите ведомства!'));
+            throw_if(empty($formId), new HumanException('Пожалуйста, укажите форму!'));
+
+            $form = Form::find($formId);
+            $departamentType = DepartamentType::find($departamentTypeId);
+
+            throw_if(empty($form), new HumanException('Форма не найдена!'));
+            throw_if(empty($departamentType), new HumanException('Ведомство не найдено!'));
+
+            Event::createBy($form, $departamentType);
+
+            Toast::success('Успешно');
+        } catch (HumanException $e) {
+            Toast::error($e->getMessage());
+        } catch (Throwable $e) {
+            Toast::error("Внутренняя ошибка! {$e->getMessage()}");
+        }
+    }
+
+    public function remove(Request $request): void
+    {
+        Event::findOrFail($request->input('id'))->delete();
+        Toast::info('Успешно удалено!');
+    }
+}

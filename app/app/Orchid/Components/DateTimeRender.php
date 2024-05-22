@@ -16,6 +16,8 @@ class DateTimeRender extends Component
 
     public function render()
     {
+        if (empty($this->value)) return '-';
+
         $this->value = date('d.m.Y H:i:s', strtotime($this->value));
         $date = Carbon::parse($this->value);
 

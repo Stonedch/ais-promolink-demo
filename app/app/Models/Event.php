@@ -44,4 +44,24 @@ class Event extends Model
         'updated_at',
         'created_at',
     ];
+
+    public static function createBy(Form $form, DepartamentType $departamentType)
+    {
+        $formStructure = $form->getStructure();
+
+        Departament::query()
+            ->where('departament_type_id', $departamentType->id)
+            ->get()
+            ->map(function (Departament $departament) use ($formStructure, $form) {
+                $event = new Event();
+
+                $event->fill([
+                    'form_id' => $form->id,
+                    'departament_id' => $departament->id,
+                    'form_structure' => $formStructure,
+                ]);
+
+                $event->save();
+            });
+    }
 }

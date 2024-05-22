@@ -32,7 +32,12 @@ class PlatformProvider extends OrchidServiceProvider
             Menu::make('Коллекции')
                 ->icon('bs.book')
                 ->route('platform.collections')
-                ->permission('platform.collections.list')
+                ->permission('platform.collections.list'),
+
+            Menu::make('События')
+                ->icon('bs.calendar-event')
+                ->route('platform.events')
+                ->permission('platform.events.list')
                 ->divider(),
 
             Menu::make('Типы ведомств')
@@ -83,6 +88,11 @@ class PlatformProvider extends OrchidServiceProvider
             ItemPermission::group('Формы')
                 ->addPermission('platform.forms.list', 'Список')
                 ->addPermission('platform.forms.edit', 'Редактирование'),
+
+            ItemPermission::group('События')
+                ->addPermission('platform.events.list', 'Список')
+                ->addPermission('platform.events.create', 'Создание')
+                ->addPermission('platform.events.edit', 'Редактирование'),
         ];
     }
 }
