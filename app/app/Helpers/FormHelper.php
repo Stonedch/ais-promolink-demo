@@ -43,7 +43,8 @@ class FormHelper
                 $formIdentifiers = collect($formIdentifiers)->unique();
 
                 $query->whereIn('id', $formIdentifiers);
-            });
+            })
+            ->get();
 
         $fields = Field::whereIn('form_id', $forms->pluck('id'))->get();
 
@@ -57,7 +58,7 @@ class FormHelper
             ->where('events.departament_id', $departament->id)
             ->select(['form_results.*', 'events.form_id'])
             ->get()
-            ->groupBy('form_id');
+            ->groupBy(['form_id', 'event_id']);
 
         return collect([
             'forms' => $forms,
