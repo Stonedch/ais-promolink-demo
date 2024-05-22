@@ -123,7 +123,7 @@ class FormListScreen extends Screen
                     ->width(200),
             ])->title('Периодичные формы'),
 
-            Layout::table('periodicityForms', [
+            Layout::table('notPeriodicityForms', [
                 TD::make(__('Actions'))
                     ->align(TD::ALIGN_CENTER)
                     ->width(100)

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Departament;
 
+use App\Models\Collection;
 use App\Models\Departament;
 use App\Models\DepartamentType;
 use App\Orchid\Components\DateTimeRender;
@@ -23,9 +24,13 @@ class DepartamentListScreen extends Screen
 
     public function query(): iterable
     {
+        $departaments = Departament::filters()->defaultSort('id', 'desc')->paginate();
+
         return [
-            'departaments' => Departament::filters()->defaultSort('id', 'desc')->paginate(),
-            'departamentTypes' => DepartamentType::where('id', Departament::pluck('departament_type_id'))->get()
+            'departaments' => $departaments,
+            'departamentTypes' => $departaments->isNotEmpty()
+                ? DepartamentType::where('id', Departament::pluck('departament_type_id') ?: [])->get()
+                : new Collection()
         ];
     }
 

@@ -6,9 +6,12 @@ namespace App\Orchid\Screens\Event;
 
 use App\Helpers\PhoneNormalizer;
 use App\Models\Event;
+use App\Models\Field;
 use App\Models\Form;
 use App\Models\FormResult;
+use App\Models\User;
 use App\Orchid\Components\DateTimeRender;
+use Faker\Core\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Orchid\Screen\Actions\Button;
@@ -22,6 +25,9 @@ use Throwable;
 
 class ResultListScreen extends Screen
 {
+    public $users;
+    public $fields;
+
     public function query(Event $event): iterable
     {
         $formResults = FormResult::query()
@@ -30,8 +36,12 @@ class ResultListScreen extends Screen
             ->defaultSort('id', 'desc')
             ->paginate();
 
+        $fields = collect(json_decode($event->form_structure)->fields);
+
         return [
             'formResults' => $formResults,
+            'users' => User::whereIn('id', $formResults->pluck('user_id'))->get(),
+            'fields' => $fields,
         ];
     }
 
@@ -74,7 +84,7 @@ class ResultListScreen extends Screen
                     ->sort()
                     ->width(200),
 
-                TD::make('user_id', 'Пользователь')
+                TD::make('user_id', 'Поле')
                     ->sort()
                     ->width(200)
                     ->render(function (FormResult $formResult) {

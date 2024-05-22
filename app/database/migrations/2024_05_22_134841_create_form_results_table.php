@@ -23,7 +23,7 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->integer('field_id');
-            $table->text('value');
+            $table->text('value')->nullable();
 
             $table->timestamps();
         });
