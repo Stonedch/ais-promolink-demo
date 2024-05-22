@@ -10,6 +10,7 @@ use App\Orchid\Screens\Departament\DepartamentEditScreen;
 use App\Orchid\Screens\DepartamentType\DepartamentTypeEditScreen;
 use App\Orchid\Screens\DepartamentType\DepartamentTypeListScreen;
 use App\Orchid\Screens\Event\EventListScreen;
+use App\Orchid\Screens\Event\ResultListScreen;
 use App\Orchid\Screens\Form\FormEditScreen;
 use App\Orchid\Screens\Form\FormListScreen;
 use App\Orchid\Screens\PlatformScreen;
@@ -169,9 +170,16 @@ Route::screen('forms/{form}/edit', FormEditScreen::class)
         ->parent('platform.forms')
         ->push('Редактирование', route('platform.forms.edit', $form)));
 
-// Platform > Forms
+// Platform > Events
 Route::screen('events', EventListScreen::class)
     ->name('platform.events')
     ->breadcrumbs(fn (Trail $trail) => $trail
         ->parent('platform.index')
         ->push('События', route('platform.events')));
+
+// Platform > Events > Results
+Route::screen('events/{event}/results', ResultListScreen::class)
+    ->name('platform.events.results')
+    ->breadcrumbs(fn (Trail $trail, $event) => $trail
+        ->parent('platform.index')
+        ->push('Результаты', route('platform.events.results', $event)));

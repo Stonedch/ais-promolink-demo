@@ -93,6 +93,9 @@ class PlatformProvider extends OrchidServiceProvider
                 ->addPermission('platform.events.list', 'Список')
                 ->addPermission('platform.events.create', 'Создание')
                 ->addPermission('platform.events.edit', 'Редактирование'),
+
+            ItemPermission::group('Результаты заполнения')
+                ->addPermission('platform.form_results.list', 'Список')
         ];
     }
 }

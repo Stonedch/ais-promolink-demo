@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
@@ -95,16 +96,22 @@ class EventListScreen extends Screen
                 TD::make(__('Actions'))
                     ->align(TD::ALIGN_CENTER)
                     ->width(100)
-                    ->canSee(Auth::user()->hasAccess('platform.events.edit'))
+                    ->canSee(Auth::user()->hasAccess('platform.form_results.list') || Auth::user()->hasAccess('platform.events.edit'))
                     ->render(fn (Event $event) => DropDown::make()
                         ->icon('bs.three-dots-vertical')
                         ->list([
+                            Link::make('Результаты')
+                                ->route('platform.events.results', $event->id)
+                                ->icon('bs.back')
+                                ->canSee(Auth::user()->hasAccess('platform.form_results.list')),
+
                             Button::make(__('Delete'))
                                 ->icon('bs.trash3')
                                 ->confirm('Элемент будет удален')
                                 ->method('remove', [
                                     'id' => $event->id,
-                                ]),
+                                ])
+                                ->canSee(Auth::user()->hasAccess('platform.events.edit')),
                         ])),
 
                 TD::make('id', '#')
