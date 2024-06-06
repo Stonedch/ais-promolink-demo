@@ -16,7 +16,7 @@ class PlatformScreen extends Screen
 
     public function name(): ?string
     {
-        return 'Главная';
+        return config('app.name');
     }
 
     public function description(): ?string

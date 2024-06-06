@@ -11,6 +11,12 @@ Route::name('web.')->group(function () {
         Route::get('/', 'index')->name('index');
     });
 
+    
+
+    Route::name('forms.')->prefix('/forms')->controller(\App\Http\Controllers\Web\FormController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
+
     Route::name('forms.')->prefix('/forms')->controller(\App\Http\Controllers\Web\FormController::class)->group(function () {
         Route::get('/', 'index')->name('index');
     });
@@ -38,5 +44,7 @@ Route::name('api.')->prefix('/api')->withoutMiddleware([\Illuminate\Foundation\H
         Route::get('/', 'index')->name('index');
         Route::post('/create', 'create')->name('create');
         Route::post('/edit', 'edit')->name('edit');
+        Route::post('/save-draft', 'saveDraft')->name('save-draft');
+        Route::post('/percent', 'percent')->name('percent');
     });
 });

@@ -6,6 +6,7 @@ namespace App\Orchid\Screens\Departament;
 
 use App\Models\Departament;
 use App\Models\DepartamentType;
+use App\Models\District;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\Input;
@@ -27,7 +28,7 @@ class DepartamentEditScreen extends Screen
 
     public function name(): ?string
     {
-        return 'Управление видомствами';
+        return 'Управление ведомствами';
     }
 
     public function permission(): ?iterable
@@ -56,7 +57,7 @@ class DepartamentEditScreen extends Screen
         return [
             Layout::rows([
                 Input::make('departament.name')
-                    ->require()
+                    ->required()
                     ->title('Название'),
 
                 Select::make('departament.departament_type_id')
@@ -64,8 +65,15 @@ class DepartamentEditScreen extends Screen
                     ->options(function () {
                         return DepartamentType::pluck('name', 'id');
                     })
-                    ->require()
+                    ->required()
                     ->title('Тип'),
+
+                Select::make('departament.district_id')
+                    ->empty('-')
+                    ->options(function () {
+                        return District::pluck('name', 'id');
+                    })
+                    ->title('Район'),
             ]),
         ];
     }

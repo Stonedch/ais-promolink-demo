@@ -7,6 +7,7 @@ namespace App\Orchid\Screens\Departament;
 use App\Models\Collection;
 use App\Models\Departament;
 use App\Models\DepartamentType;
+use App\Models\District;
 use App\Orchid\Components\DateTimeRender;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,10 +18,12 @@ use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
+use Throwable;
 
 class DepartamentListScreen extends Screen
 {
     public $departamentTypes;
+    public $districts;
 
     public function query(): iterable
     {
@@ -29,14 +32,17 @@ class DepartamentListScreen extends Screen
         return [
             'departaments' => $departaments,
             'departamentTypes' => $departaments->isNotEmpty()
-                ? DepartamentType::where('id', Departament::pluck('departament_type_id') ?: [])->get()
-                : new Collection()
+                ? DepartamentType::whereIn('id', $departaments->pluck('departament_type_id') ?: [])->get()
+                : new Collection(),
+            'districts' => $departaments->isNotEmpty()
+                ? District::whereIn('id', $departaments->pluck('district_id'))->get()
+                : new Collection(),
         ];
     }
 
     public function name(): ?string
     {
-        return 'Видомства';
+        return 'Ведомства';
     }
 
     public function permission(): ?iterable
@@ -93,7 +99,24 @@ class DepartamentListScreen extends Screen
                 TD::make('departament_type_id', 'Тип')
                     ->sort()
                     ->width(200)
-                    ->render(fn (Departament $departament) => $this->departamentTypes->find($departament->departament_type_id)->name),
+                    ->render(function (Departament $departament) {
+                        try {
+                            return $this->departamentTypes->find($departament->departament_type_id)->name;
+                        } catch (Throwable) {
+                            return '-';
+                        }
+                    }),
+
+                TD::make('district_id', 'Район')
+                    ->sort()
+                    ->width(200)
+                    ->render(function (Departament $departament) {
+                        try {
+                            return $this->districts->find($departament->district_id)->name;
+                        } catch (Throwable) {
+                            return '-';
+                        }
+                    }),
 
                 TD::make('created_at', 'Создано')
                     ->usingComponent(DateTimeRender::class)

@@ -1,0 +1,34 @@
+.report
+  margin: 40px 0
+  margin-left: 35px
+  &__title
+    font-weight: 700
+    font-size: 20px
+    color: #000
+    margin: 0
+  &__content
+    display: grid
+    grid-template-columns: repeat(2, minmax(0,1fr))
+    gap: 20px 40px
+    margin-top: 18px
+  &__field
+    grid-column-end: span 2
+    display: flex
+    flex-direction: column
+    gap: 5px
+    &--half
+      grid-column-end: span 1
+  &__name
+    margin: 0
+    font-weight: 500
+    font-size: 14px
+    color: #000
+  &__input
+    width: 100%
+    border: 1px solid #d9e1ec
+    border-radius: 5px
+    font-size: 16px
+    height: 48px
+    padding-left: 16px
+    &::placeholder
+      color: #a1a7c4

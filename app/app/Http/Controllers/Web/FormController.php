@@ -16,9 +16,7 @@ class FormController extends Controller
         try {
             $user = $request->user();
             throw_if(empty($user), new HumanException('Ошибка авторизации!'));
-            $response = FormHelper::byUser($user);
-            dd($response);
-            return view('web.home.index');
+            return view('web.form.single');
         } catch (HumanException $e) {
             return redirect()
                 ->route('web.index.index')

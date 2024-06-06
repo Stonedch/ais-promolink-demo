@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Helpers\PhoneNormalizer;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -71,5 +72,13 @@ class User extends Authenticatable
         $user->permissions = Dashboard::getAllowAllPermission();
 
         $user->save();
+    }
+
+    public function getDepartamentName(): string
+    {
+        return Cache::remember('User.getDepartamentName', now()->addDays(), function () {
+            $departament = Departament::find($this->departament_id);
+            return $departament->name;
+        });
     }
 }

@@ -12,7 +12,10 @@ use App\Models\Form;
 use App\Models\FormDepartamentType;
 use App\Models\FormResult;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Support\Collection as SupportCollection;
+use Illuminate\Support\Facades\Cache;
 use Throwable;
 
 class FormHelper
@@ -60,17 +63,37 @@ class FormHelper
             ->get()
             ->groupBy(['form_id', 'event_id']);
 
+        $formDeadlines = $forms->pluck('deadline', 'id');
+        $deadlines = new SupportCollection();
+
+        $events->map(function (Event $event) use ($formDeadlines, &$deadlines) {
+            $deadline = $formDeadlines->get($event->form_id);
+            $deadline = empty($deadline) == false
+                ? intval(now()->diff((new Carbon($event->created_at))->addDays($deadline))->format("%d"))
+                : null;
+            $deadlines->put($event->id, $deadline);
+        });
+
         return collect([
-            'forms' => $forms,
+            'deadlines' => $deadlines,
+            'forms' => $forms->keyBy('id'),
             'fields' => $fields->groupBy('form_id'),
             'collections' => $collections,
             'collectionValues' => $collectionValues->groupBy('collection_id'),
-            'events' => $events,
+            'events' => $events->keyBy('id'),
             'formResults' => $formResults,
         ]);
     }
 
     public static function reinitResults(Event $event, array $requestedFields, User $user): void
+    {
+        self::writeResults($event, $requestedFields, $user);
+        $event->filled_at = $event->filled_at ?: now();
+        $event->refilled_at = now();
+        $event->save();
+    }
+
+    public static function writeResults(Event $event, array $requestedFields, User $user): void
     {
         FormResult::query()->where('event_id', $event->id)->delete();
         $structure = json_decode($event->form_structure);
@@ -93,9 +116,18 @@ class FormHelper
                 ])->save();
             }
         }
+    }
 
-        $event->filled_at = $event->filled_at ?: now();
-        $event->refilled_at = now();
-        $event->save();
+    public static function getPercent(Event $event): int
+    {
+        try {
+            $structure = json_decode($event->form_structure);
+            $results = FormResult::query()->where('event_id', $event->id)->get();
+            $filled = $results->whereNotNull('value')->count();
+            $needed = count($structure->fields);
+            return intval($filled / $needed * 100);
+        } catch (Throwable) {
+            return 0;
+        }
     }
 }

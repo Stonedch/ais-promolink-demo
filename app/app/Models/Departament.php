@@ -18,6 +18,7 @@ class Departament extends Model
     protected $fillable = [
         'name',
         'departament_type_id',
+        'district_id',
     ];
 
     protected $allowedFilters = [

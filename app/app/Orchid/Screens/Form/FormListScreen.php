@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Form;
 
+use App\Helpers\FormExporter;
 use App\Models\Form;
 use App\Orchid\Components\DateTimeRender;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
@@ -15,6 +17,7 @@ use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
+use PHPUnit\Event\Code\Throwable;
 
 class FormListScreen extends Screen
 {
@@ -67,6 +70,14 @@ class FormListScreen extends Screen
                     ->render(fn (Form $form) => DropDown::make()
                         ->icon('bs.three-dots-vertical')
                         ->list([
+                            Button::make('Выгрузить')
+                                ->icon('bs.cloud-download')
+                                ->confirm('Подтвердите свои действия')
+                                ->method('exportArchive', [
+                                    'id' => $form->id
+                                ])
+                                ->turbo(false),
+
                             Link::make(__('Edit'))
                                 ->route('platform.forms.edit', $form->id)
                                 ->icon('bs.pencil'),
@@ -131,6 +142,14 @@ class FormListScreen extends Screen
                     ->render(fn (Form $form) => DropDown::make()
                         ->icon('bs.three-dots-vertical')
                         ->list([
+                            Button::make('Выгрузить')
+                                ->icon('bs.cloud-download')
+                                ->confirm('Подтвердите свои действия')
+                                ->method('exportArchive', [
+                                    'id' => $form->id
+                                ])
+                                ->turbo(false),
+
                             Link::make(__('Edit'))
                                 ->route('platform.forms.edit', $form->id)
                                 ->icon('bs.pencil'),
@@ -193,5 +212,10 @@ class FormListScreen extends Screen
     {
         Form::findOrFail($request->input('id'))->delete();
         Toast::info('Успешно удалено!');
+    }
+
+    public function exportArchive(int $id)
+    {
+        return response()->download(FormExporter::exportArchiveBy(Form::find($id)));
     }
 }

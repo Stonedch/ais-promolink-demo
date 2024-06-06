@@ -1,0 +1,11 @@
+.accordion{
+  cursor: pointer;
+}
+
+.accordion__content{
+  display: none;
+}
+
+.accordion.accordion-active .accordion__content{
+  display: block;
+}

@@ -49,7 +49,12 @@ class PlatformProvider extends OrchidServiceProvider
             Menu::make('Ведомства')
                 ->icon('bs.bank')
                 ->route('platform.departaments')
-                ->permission('platform.departaments.list')
+                ->permission('platform.departaments.list'),
+
+            Menu::make('Районы')
+                ->icon('bs.buildings')
+                ->route('platform.districts')
+                ->permission('platform.districts.list')
                 ->divider(),
 
             Menu::make('Пользователи')
@@ -95,7 +100,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ->addPermission('platform.events.edit', 'Редактирование'),
 
             ItemPermission::group('Результаты заполнения')
-                ->addPermission('platform.form_results.list', 'Список')
+                ->addPermission('platform.form_results.list', 'Список'),
+
+            ItemPermission::group('Районы')
+                ->addPermission('platform.districts.list', 'Список')
+                ->addPermission('platform.districts.edit', 'Редактирование'),
         ];
     }
 }

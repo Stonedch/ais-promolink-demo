@@ -23,7 +23,7 @@ class FormController extends Controller
         } catch (HumanException $e) {
             return Responser::returnError([$e->getMessage()]);
         } catch (Throwable $e) {
-            return Responser::returnError();
+            return Responser::returnError([$e->getMessage()]);
         }
     }
 
@@ -34,12 +34,12 @@ class FormController extends Controller
 
             $user = $request->user();
             throw_if(empty($user));
-            throw_if(empty($user->departament_id), new HumanException('Ошибка проверки пользователя!'));
+            throw_if(empty($user->departament_id), new HumanException('600, Ошибка проверки пользователя!'));
 
             $event = Event::find($request->input('event_id', null));
-            throw_if(empty($event), new HumanException('Ошибка проверки формы!'));
-            throw_if($event->departament_id != $user->departament_id, new HumanException('Ошибка проверки пользователя!'));
-            throw_if(empty($event->filled_at) == false, new HumanException('Ошибка проверки формы!'));
+            throw_if(empty($event), new HumanException('602, Ошибка проверки формы!'));
+            throw_if($event->departament_id != $user->departament_id, new HumanException('603, Ошибка проверки пользователя!'));
+            throw_if(empty($event->filled_at) == false, new HumanException('604, Ошибка проверки формы!'));
 
             FormHelper::reinitResults($event, $request->input('fields', []), $user);
 
@@ -70,12 +70,59 @@ class FormController extends Controller
 
             FormHelper::reinitResults($event, $request->input('fields', []), $user);
 
-            $response = [];
             return Responser::returnSuccess($response);
         } catch (HumanException $e) {
             return Responser::returnError([$e->getMessage()]);
         } catch (Throwable $e) {
             return Responser::returnError();
+        }
+    }
+
+    public function saveDraft(Request $request): JsonResponse
+    {
+        try {
+            $response = [];
+
+            $user = $request->user();
+            throw_if(empty($user));
+            throw_if(empty($user->departament_id), new HumanException('600, Ошибка проверки пользователя!'));
+
+            $event = Event::find($request->input('event_id', null));
+            throw_if(empty($event), new HumanException('601, Ошибка проверки формы!'));
+            throw_if($event->departament_id != $user->departament_id, new HumanException('602, Ошибка проверки пользователя!'));
+            throw_if(empty($event->filled_at) == false, new HumanException('603, Ошибка проверки формы!'));
+
+            FormHelper::writeResults($event, $request->input('fields', []), $user);
+
+            return Responser::returnSuccess($response);
+        } catch (HumanException $e) {
+            return Responser::returnError([$e->getMessage()]);
+        } catch (Throwable $e) {
+            return Responser::returnError();
+        }
+    }
+
+    public function percent(Request $request): JsonResponse
+    {
+        try {
+            $response = [];
+
+            $user = $request->user();
+            throw_if(empty($user));
+            throw_if(empty($user->departament_id), new HumanException('600, Ошибка проверки пользователя!'));
+
+            $event = Event::find($request->input('event_id', null));
+            throw_if(empty($event), new HumanException('601, Ошибка проверки формы!'));
+            throw_if($event->departament_id != $user->departament_id, new HumanException('602, Ошибка проверки пользователя!'));
+            throw_if(empty($event->filled_at) == false, new HumanException('603, Ошибка проверки формы!'));
+
+            $response['percent'] = FormHelper::getPercent($event);
+
+            return Responser::returnSuccess($response);
+        } catch (HumanException $e) {
+            return Responser::returnError([$e->getMessage()]);
+        } catch (Throwable $e) {
+            return Responser::returnError([$e->getMessage()]);
         }
     }
 }

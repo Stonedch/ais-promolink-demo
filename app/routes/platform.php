@@ -9,6 +9,8 @@ use App\Orchid\Screens\Departament\DepartamentListScreen;
 use App\Orchid\Screens\Departament\DepartamentEditScreen;
 use App\Orchid\Screens\DepartamentType\DepartamentTypeEditScreen;
 use App\Orchid\Screens\DepartamentType\DepartamentTypeListScreen;
+use App\Orchid\Screens\District\DistrictEditScreen;
+use App\Orchid\Screens\District\DistrictListScreen;
 use App\Orchid\Screens\Event\EventListScreen;
 use App\Orchid\Screens\Event\ResultListScreen;
 use App\Orchid\Screens\Form\FormEditScreen;
@@ -183,3 +185,24 @@ Route::screen('events/{event}/results', ResultListScreen::class)
     ->breadcrumbs(fn (Trail $trail, $event) => $trail
         ->parent('platform.index')
         ->push('Результаты', route('platform.events.results', $event)));
+
+// Platform > Districts
+Route::screen('districts', DistrictListScreen::class)
+    ->name('platform.districts')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push('Районы', route('platform.districts')));
+
+// Platform > Districts > Create
+Route::screen('districts/create', DistrictEditScreen::class)
+    ->name('platform.districts.create')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.districts')
+        ->push('Создание', route('platform.districts.create')));
+
+// Platform > Districts > Edit
+Route::screen('districts/{district}/edit', DistrictEditScreen::class)
+    ->name('platform.districts.edit')
+    ->breadcrumbs(fn (Trail $trail, $district) => $trail
+        ->parent('platform.districts')
+        ->push('Редактирование', route('platform.districts.edit', $district)));

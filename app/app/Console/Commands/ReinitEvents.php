@@ -11,7 +11,7 @@ use App\Models\FormDepartamentType;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Database\Query\Builder;
 
-class Debug extends Command
+class ReinitEvents extends Command
 {
     protected $name = 'app:events:reinit';
     protected $signature = 'app:events:reinit';
