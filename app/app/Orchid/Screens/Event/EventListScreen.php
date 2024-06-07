@@ -12,7 +12,6 @@ use App\Models\Form;
 use App\Orchid\Components\DateTimeRender;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
@@ -69,18 +68,14 @@ class EventListScreen extends Screen
                         Select::make('events.departament_type_id')
                             ->empty('-')
                             ->options(function () {
-                                return Cache::remember('EventListScreen.layout.departament_types.v0', now()->addHour(), function () {
-                                    return DepartamentType::pluck('name', 'id');
-                                });
+                                return DepartamentType::pluck('name', 'id');
                             })
                             ->title('Ведомства'),
 
                         Select::make('events.form_id')
                             ->empty('-')
                             ->options(function () {
-                                return Cache::remember('EventListScreen.layout.forms.v1', now()->addMinutes(10), function () {
-                                    return Form::where('periodicity', 50)->pluck('name', 'id');
-                                });
+                                return Form::where('periodicity', 50)->pluck('name', 'id');
                             })
                             ->title('Формы'),
                     ]),
