@@ -857,3 +857,7 @@ main {
   width: fit-content;
   background-color: var(--yarkiy-siniy);
 }
+
+._display-none {
+  display: none !important;
+}
