@@ -76,7 +76,7 @@ class User extends Authenticatable
 
     public function getDepartamentName(): string
     {
-        return Cache::remember('User.getDepartamentName', now()->addDays(), function () {
+        return Cache::remember("User.getDepartamentName.{$this->id}", now()->addDays(), function () {
             $departament = Departament::find($this->departament_id);
             return $departament->name;
         });

@@ -123,7 +123,7 @@ class FormEditScreen extends Screen
                         'name' => Input::make(),
                         'group' => Input::make(),
                         'type' => Select::make()->options(Field::$TYPES),
-                        'sort' => Input::make()->type('number'),
+                        'sort' => Input::make()->type('number')->class("form-control _sortable"),
                         'collection_id' => Select::make()->options(fn () => Collection::pluck('name', 'id'))->empty('-'),
                     ])
                     ->title('Значения'),

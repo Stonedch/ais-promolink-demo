@@ -816,6 +816,7 @@ main {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
+  align-items: stretch;
 }
 
 .report-list>ul>li {
@@ -831,7 +832,6 @@ main {
   border: none;
   border-radius: 12px;
   background: #ebf1ff;
-  height: 80px !important;
   position: relative;
   padding: 15px 10px 10px 10px;
 }
@@ -860,4 +860,9 @@ main {
 
 ._display-none {
   display: none !important;
+}
+
+.header .button,
+.header {
+  height: fit-content;
 }
