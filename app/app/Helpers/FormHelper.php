@@ -65,17 +65,28 @@ class FormHelper
 
         $formDeadlines = $forms->pluck('deadline', 'id');
         $deadlines = new SupportCollection();
+        $difs = new SupportCollection();
 
-        $events->map(function (Event $event) use ($formDeadlines, &$deadlines) {
+        $events->map(function (Event $event) use ($formDeadlines, &$deadlines, &$difs) {
             $deadline = $formDeadlines->get($event->form_id);
             $deadline = empty($deadline) == false
-                ? intval(now()->diff((new Carbon($event->created_at))->addDays($deadline))->format("%d"))
+                ? intval(now()->diff((new Carbon($event->created_at))->addDays($deadline))->format('%d'))
                 : null;
-            $deadlines->put($event->id, $deadline);
+
+            $deadlines->put(
+                $event->id,
+                $deadline
+            );
+
+            $difs->put(
+                $event->id,
+                now()->diffInSeconds((new Carbon($event->created_at))->addDays($deadline))
+            );
         });
 
         return collect([
             'deadlines' => $deadlines,
+            'difs' => $difs,
             'forms' => $forms->keyBy('id'),
             'fields' => $fields->groupBy('form_id'),
             'collections' => $collections,

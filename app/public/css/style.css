@@ -858,6 +858,22 @@ main {
   background-color: var(--yarkiy-siniy);
 }
 
+.report-list>ul>li>.timer {
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  background-color: var(--blue-color);
+  color: #fff;
+  border-radius: 12px;
+  padding: 3px 7px;
+  font-size: 12px;
+  width: fit-content;
+  background-color: var(--yarkiy-siniy);
+  opacity: .75;
+}
+
 ._display-none {
   display: none !important;
 }
@@ -872,4 +888,3 @@ input[type=number]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
