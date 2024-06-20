@@ -114,7 +114,7 @@ Route::screen('departament-types', DepartamentTypeListScreen::class)
     ->name('platform.departament-types')
     ->breadcrumbs(fn (Trail $trail) => $trail
         ->parent('platform.index')
-        ->push('Типы ведомств', route('platform.departament-types')));
+        ->push('Типы Учреждений', route('platform.departament-types')));
 
 // Platform > DepartamentTypes > Create
 Route::screen('departament-types/create', DepartamentTypeEditScreen::class)
@@ -135,7 +135,7 @@ Route::screen('departaments', DepartamentListScreen::class)
     ->name('platform.departaments')
     ->breadcrumbs(fn (Trail $trail) => $trail
         ->parent('platform.index')
-        ->push('Ведомства', route('platform.departaments')));
+        ->push('Учреждения', route('platform.departaments')));
 
 // Platform > Departaments > Create
 Route::screen('departaments/create', DepartamentEditScreen::class)

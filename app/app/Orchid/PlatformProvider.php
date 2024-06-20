@@ -40,13 +40,13 @@ class PlatformProvider extends OrchidServiceProvider
                 ->permission('platform.events.list')
                 ->divider(),
 
-            Menu::make('Типы ведомств')
+            Menu::make('Типы учреждений')
                 ->icon('bs.card-text')
                 ->route('platform.departament-types')
                 ->permission('platform.departament-types.list')
-                ->title('Ведомства'),
+                ->title('Учреждения'),
 
-            Menu::make('Ведомства')
+            Menu::make('Учреждения')
                 ->icon('bs.bank')
                 ->route('platform.departaments')
                 ->permission('platform.departaments.list'),
@@ -82,11 +82,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ->addPermission('platform.collections.list', 'Список')
                 ->addPermission('platform.collections.edit', 'Редактирование'),
 
-            ItemPermission::group('Типы ведомств')
+            ItemPermission::group('Типы учреждений')
                 ->addPermission('platform.departament-types.list', 'Список')
                 ->addPermission('platform.departament-types.edit', 'Редактирование'),
 
-            ItemPermission::group('Ведомства')
+            ItemPermission::group('Учреждения')
                 ->addPermission('platform.departaments.list', 'Список')
                 ->addPermission('platform.departaments.edit', 'Редактирование'),
 

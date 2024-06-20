@@ -42,7 +42,7 @@ class DepartamentListScreen extends Screen
 
     public function name(): ?string
     {
-        return 'Ведомства';
+        return 'Учреждения';
     }
 
     public function permission(): ?iterable

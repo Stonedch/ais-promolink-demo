@@ -27,7 +27,7 @@ class DepartamentTypeListScreen extends Screen
 
     public function name(): ?string
     {
-        return 'Типы ведомств';
+        return 'Типы Учреждений';
     }
 
     public function permission(): ?iterable

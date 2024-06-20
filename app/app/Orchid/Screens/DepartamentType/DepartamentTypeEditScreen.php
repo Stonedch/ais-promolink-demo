@@ -33,7 +33,7 @@ class DepartamentTypeEditScreen extends Screen
 
     public function name(): ?string
     {
-        return 'Управление типом ведомств';
+        return 'Управление типом учреждений';
     }
 
     public function permission(): ?iterable
@@ -76,7 +76,7 @@ class DepartamentTypeEditScreen extends Screen
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
-            ])->title('Ведомства'),
+            ])->title('Учреждения'),
         ];
     }
 

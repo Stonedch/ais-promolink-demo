@@ -28,7 +28,7 @@ class DepartamentEditScreen extends Screen
 
     public function name(): ?string
     {
-        return 'Управление ведомствами';
+        return 'Управление Учреждениями';
     }
 
     public function permission(): ?iterable
