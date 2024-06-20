@@ -199,9 +199,6 @@ class EventListScreen extends Screen
             throw_if(empty($form), new HumanException('Форма не найдена!'));
             throw_if(empty($departamentType), new HumanException('Ведомство не найдено!'));
 
-            // DEBUG!
-            throw new HumanException("Создание событий временно недоступно!");
-
             Event::createBy($form, $departamentType);
 
             Toast::success('Успешно');
