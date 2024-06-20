@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Form;
 
+use App\Exceptions\HumanException;
 use App\Helpers\FormExporter;
+use App\Models\Field;
 use App\Models\Form;
 use App\Orchid\Components\DateTimeRender;
 use Illuminate\Http\Request;
@@ -13,6 +15,9 @@ use Illuminate\Support\Facades\Auth;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Actions\ModalToggle;
+use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
 use Orchid\Support\Facades\Layout;
@@ -52,6 +57,12 @@ class FormListScreen extends Screen
     public function commandBar(): iterable
     {
         return [
+            ModalToggle::make('Копировать форму')
+                ->icon('bs.copy')
+                ->modal('copyFormModal')
+                ->modalTitle('Копирование формы')
+                ->method('copyForm'),
+
             Link::make(__('Add'))
                 ->icon('bs.plus')
                 ->href(route('platform.forms.create'))
@@ -62,6 +73,16 @@ class FormListScreen extends Screen
     public function layout(): iterable
     {
         return [
+            Layout::modal('copyFormModal', [Layout::rows([
+                Select::make('copyFormModal.form_id')
+                    ->options(fn () => Form::pluck('name', 'id'))
+                    ->title('Форма')
+                    ->required(),
+                Input::make('copyFormModal.name')
+                    ->title('Название')
+                    ->required(),
+            ])]),
+
             Layout::table('periodicityForms', [
                 TD::make(__('Actions'))
                     ->align(TD::ALIGN_CENTER)
@@ -217,5 +238,32 @@ class FormListScreen extends Screen
     public function exportArchive(int $id)
     {
         return response()->download(FormExporter::exportArchiveBy(Form::find($id)));
+    }
+
+    public function copyForm(Request $request): void
+    {
+        try {
+            $form = Form::find($request->input('copyFormModal.form_id'));
+            $name = $request->input('copyFormModal.name');
+
+            throw_if(empty($form), new HumanException('Форма не найдена'));
+            throw_if(empty($name), new HumanException('Пожалуйста, укажите название новой формы'));
+
+            $copiedForm = $form->replicate();
+            $copiedForm->fill(['name' => $name])->save();
+
+            Field::query()
+                ->where('form_id', $form->id)
+                ->get()
+                ->map(function (Field $field) use ($copiedForm) {
+                    $field->replicate()->fill(['form_id' => $copiedForm->id])->save();
+                });
+
+            Toast::info('Успешно!');
+        } catch (HumanException $e) {
+            Toast::error($e->getMessage());
+        } catch (Throwable) {
+            Toast::error('Ошибка сервера!');
+        }
     }
 }
