@@ -22,7 +22,7 @@ class CollectionEditScreen extends Screen
     {
         return [
             'collection' => $collection,
-            'collection_values' => $collection->values()->get(),
+            'collection_values' => $collection->values()->orderBy('sort')->get(),
         ];
     }
 
@@ -63,9 +63,15 @@ class CollectionEditScreen extends Screen
 
             Layout::rows([
                 Matrix::make('collection_values')
-                    ->columns(['Значение' => 'value'])
-                    ->fileds([
+                    ->columns([
+                        '#' => 'id',
+                        'Значение' => 'value',
+                        'Сортировка' => 'sort',
+                    ])
+                    ->fields([
+                        'id' => Input::make()->disabled()->hidden(),
                         'value' => Input::make()->require(),
+                        'sort' => Input::make()->type('number')->class("form-control _sortable"),
                     ])
                     ->title('Значения'),
             ]),
@@ -84,6 +90,7 @@ class CollectionEditScreen extends Screen
                     CollectionValue::create([
                         'value' => $value,
                         'collection_id' => $collection->id,
+                        'sort' => $row['sort'],
                     ]);
                 }
             }
