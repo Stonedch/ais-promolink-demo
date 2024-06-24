@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Event;
 
 use App\Exceptions\HumanException;
+use App\Helpers\FormHelper;
 use App\Models\Departament;
 use App\Models\DepartamentType;
 use App\Models\District;
@@ -158,6 +159,10 @@ class EventListScreen extends Screen
                             return '-';
                         }
                     }),
+
+                TD::make('', 'Процент заполнения')
+                    ->width(200)
+                    ->render(fn (Event $event) => FormHelper::getPercent($event) . '%'),
 
                 TD::make('filled_at', 'Дата заполнения')
                     ->usingComponent(DateTimeRender::class)
