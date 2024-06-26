@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Form;
 
 use App\Models\Collection;
-use App\Models\Departament;
 use App\Models\DepartamentType;
 use App\Models\Field;
 use App\Models\Form;
+use App\Models\FormCategory;
 use App\Models\FormDepartamentType;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
@@ -100,6 +100,11 @@ class FormEditScreen extends Screen
                         ->sendTrueOrFalse()
                         ->title('Возможность редактировать'),
                 ]),
+
+                Select::make('form.form_category_id')
+                    ->empty('-')
+                    ->options(FormCategory::pluck('name', 'id'))
+                    ->title('Категория'),
             ])->title('Базовые настройки'),
 
             Layout::rows([
@@ -130,12 +135,6 @@ class FormEditScreen extends Screen
             ])->title('Поля')->canSee($this->form->exists),
         ];
     }
-    // 'form_id',
-    // 'name',
-    // 'group',
-    // 'type',
-    // 'sort',
-    // 'collection_id',
 
     public function save(Request $request, Form $form)
     {

@@ -23,6 +23,7 @@ class Form extends Model
         'type',
         'is_active',
         'is_editable',
+        'form_category_id',
     ];
 
     protected $allowedFilters = [
@@ -35,6 +36,7 @@ class Form extends Model
         'type' => Where::class,
         'is_active' => Where::class,
         'is_editable' => Where::class,
+        'form_category_id' => Where::class,
 
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
@@ -50,6 +52,7 @@ class Form extends Model
         'type',
         'is_active',
         'is_editable',
+        'form_category_id',
 
         'updated_at',
         'created_at',

@@ -8,9 +8,11 @@ use App\Exceptions\HumanException;
 use App\Helpers\FormExporter;
 use App\Models\Field;
 use App\Models\Form;
+use App\Models\FormCategory;
 use App\Orchid\Components\DateTimeRender;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
@@ -26,19 +28,35 @@ use PHPUnit\Event\Code\Throwable;
 
 class FormListScreen extends Screen
 {
+    public ?Collection $categories = null;
+
     public function query(): iterable
     {
+        $periodicityForms = Form::query()
+            ->where('periodicity', '<>', 50)
+            ->filters()
+            ->defaultSort('id', 'desc')
+            ->paginate();
+
+        $notPeriodicityForms = Form::query()
+            ->where('periodicity', '=', 50)
+            ->filters()
+            ->defaultSort('id', 'desc')
+            ->paginate();
+
+        $categories = FormCategory::query()
+            ->whereIn(
+                'id',
+                $periodicityForms->pluck('form_category_id')->merge(
+                    $notPeriodicityForms->pluck('form_category_id')->toArray()
+                )
+            )
+            ->get();
+
         return [
-            'periodicityForms' => Form::query()
-                ->where('periodicity', '<>', 50)
-                ->filters()
-                ->defaultSort('id', 'desc')
-                ->paginate(),
-            'notPeriodicityForms' => Form::query()
-                ->where('periodicity', '=', 50)
-                ->filters()
-                ->defaultSort('id', 'desc')
-                ->paginate(),
+            'periodicityForms' => $periodicityForms,
+            'notPeriodicityForms' => $notPeriodicityForms,
+            'categories' => $categories,
         ];
     }
 
@@ -142,6 +160,17 @@ class FormListScreen extends Screen
                     ->width(250)
                     ->render(fn (Form $form) => $form->is_editable ? 'Да' : 'Нет'),
 
+                TD::make('form_category_id', 'Категория')
+                    ->sort()
+                    ->width(200)
+                    ->render(function (Form $form) {
+                        try {
+                            return $this->categories->where('id', $form->form_category_id)->first()->name;
+                        } catch (Exception) {
+                            return null;
+                        }
+                    }),
+
                 TD::make('created_at', 'Создано')
                     ->usingComponent(DateTimeRender::class)
                     ->filter(TD::FILTER_DATE_RANGE)
@@ -213,6 +242,17 @@ class FormListScreen extends Screen
                     ->sort()
                     ->width(250)
                     ->render(fn (Form $form) => $form->is_editable ? 'Да' : 'Нет'),
+
+                TD::make('form_category_id', 'Категория')
+                    ->sort()
+                    ->width(200)
+                    ->render(function (Form $form) {
+                        try {
+                            return $this->categories->where('id', $form->form_category_id)->first()->name;
+                        } catch (Exception) {
+                            return null;
+                        }
+                    }),
 
                 TD::make('created_at', 'Создано')
                     ->usingComponent(DateTimeRender::class)

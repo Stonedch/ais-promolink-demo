@@ -29,6 +29,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ->route('platform.forms')
                 ->permission('platform.forms.list'),
 
+            Menu::make('Категории форм')
+                ->icon('bs.pencil-square')
+                ->route('platform.form-categories')
+                ->permission('platform.form-categories.list'),
+
             Menu::make('Коллекции')
                 ->icon('bs.book')
                 ->route('platform.collections')
@@ -93,6 +98,10 @@ class PlatformProvider extends OrchidServiceProvider
             ItemPermission::group('Формы')
                 ->addPermission('platform.forms.list', 'Список')
                 ->addPermission('platform.forms.edit', 'Редактирование'),
+
+            ItemPermission::group('Категории форм')
+                ->addPermission('platform.form-categories.list', 'Список')
+                ->addPermission('platform.form-categories.edit', 'Редактирование'),
 
             ItemPermission::group('События')
                 ->addPermission('platform.events.list', 'Список')

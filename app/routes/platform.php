@@ -15,6 +15,8 @@ use App\Orchid\Screens\Event\EventListScreen;
 use App\Orchid\Screens\Event\ResultListScreen;
 use App\Orchid\Screens\Form\FormEditScreen;
 use App\Orchid\Screens\Form\FormListScreen;
+use App\Orchid\Screens\FormCategory\FormCategoryEditScreen;
+use App\Orchid\Screens\FormCategory\FormCategoryListScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
@@ -171,6 +173,27 @@ Route::screen('forms/{form}/edit', FormEditScreen::class)
     ->breadcrumbs(fn (Trail $trail, $form) => $trail
         ->parent('platform.forms')
         ->push('Редактирование', route('platform.forms.edit', $form)));
+
+// Platform > FormCategories
+Route::screen('form-categories', FormCategoryListScreen::class)
+    ->name('platform.form-categories')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push('Категории форм', route('platform.form-categories')));
+
+// Platform > FormCategories > Create
+Route::screen('form-categiries/create', FormCategoryEditScreen::class)
+    ->name('platform.form-categories.create')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.form-categories')
+        ->push('Создание', route('platform.form-categories.create')));
+
+// Platform > FormCategories > Edit
+Route::screen('form-categories/{formCategory}/edit', FormCategoryEditScreen::class)
+    ->name('platform.form-categories.edit')
+    ->breadcrumbs(fn (Trail $trail, $formCategory) => $trail
+        ->parent('platform.form-categories')
+        ->push('Редактирование', route('platform.form-categories.edit', $formCategory)));
 
 // Platform > Events
 Route::screen('events', EventListScreen::class)

@@ -9,6 +9,7 @@ use App\Models\Departament;
 use App\Models\Event;
 use App\Models\Field;
 use App\Models\Form;
+use App\Models\FormCategory;
 use App\Models\FormDepartamentType;
 use App\Models\FormResult;
 use App\Models\User;
@@ -84,10 +85,15 @@ class FormHelper
             );
         });
 
+        $formCategories = FormCategory::query()
+            ->whereIn('id', $forms->pluck('form_category_id'))
+            ->get();
+
         return collect([
             'deadlines' => $deadlines,
             'difs' => $difs,
             'forms' => $forms->keyBy('id'),
+            'formCategories' => $formCategories,
             'fields' => $fields->groupBy('form_id'),
             'collections' => $collections,
             'collectionValues' => $collectionValues->groupBy('collection_id'),

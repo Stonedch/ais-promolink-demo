@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Helpers\PhoneNormalizer;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Orchid\Filters\Types\Ilike;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
@@ -37,11 +38,11 @@ class User extends Authenticatable
     protected $allowedFilters = [
         'id' => Where::class,
         'departament_id' => Where::class,
-        'phone' => Like::class,
-        'email' => Like::class,
-        'last_name' => Like::class,
-        'first_name' => Like::class,
-        'middle_name' => Like::class,
+        'phone' => Ilike::class,
+        'email' => Ilike::class,
+        'last_name' => Ilike::class,
+        'first_name' => Ilike::class,
+        'middle_name' => Ilike::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
     ];
