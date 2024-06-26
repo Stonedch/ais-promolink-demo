@@ -12,6 +12,7 @@ class Debug extends Command
     protected $signature = 'app:debug:run';
     protected $description = 'This\'s just debug command.';
 
+    // Please clear me after debug
     public function handle(): void
     {
     }
