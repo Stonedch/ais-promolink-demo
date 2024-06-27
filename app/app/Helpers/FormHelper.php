@@ -49,6 +49,14 @@ class FormHelper
             })
             ->get();
 
+        $departaments = Departament::query()
+            ->whereIn(
+                'departament_type_id',
+                FormDepartamentType::whereIn('form_id', $forms->pluck('id'))->pluck('departament_type_id')
+            )
+            ->select(['id', 'name'])
+            ->get();
+
         $fields = Field::whereIn('form_id', $forms->pluck('id'))->get();
 
         $collections = Collection::whereIn('id', $fields->pluck('collection_id'))->get();
@@ -89,13 +97,6 @@ class FormHelper
             ->get()
             ->keyBy('id');
 
-        $writedEvents = Event::query()
-            ->where('departament_id', $departament->id)
-            ->whereNot('filled_at', null)
-            ->get()
-            ->keyBy('id')
-            ->groupBy('form_id', true);
-
         $results = FormResult::query()
             ->whereIn('event_id', $allEvents->pluck('id'))
             ->get()
@@ -125,6 +126,27 @@ class FormHelper
             return $form;
         });
 
+        $writedEvents = Event::query()
+            ->where('departament_id', $departament->id)
+            ->whereNot('filled_at', null)
+            ->get()
+            ->keyBy('id')
+            ->map(function (Event $event) use ($forms, $results) {
+                try {
+                    $form = $forms->where('id', $event->form_id)->first();
+                    if ($form->type == 100 && empty($event->filled_at) == false) {
+                        $structure = json_decode($event->form_structure, true);
+                        $filled = $results[$event->id]->whereNotNull('value')->unique('field_id')->count();
+                        $needed = count($structure['fields']);
+                        $event->percent = intval($filled / $needed * 100);
+                    }
+                } catch (Throwable) {
+                }
+
+                return $event;
+            })
+            ->groupBy('form_id', true);
+
         return collect([
             'deadlines' => $deadlines,
             'difs' => $difs,
@@ -138,6 +160,7 @@ class FormHelper
             'writedEvents' => $writedEvents,
             'allEvents' =>  $allEvents->keyBy('id')->groupBy('form_id', true),
             'results' => $results,
+            'departaments' => $departaments,
         ]);
     }
 
