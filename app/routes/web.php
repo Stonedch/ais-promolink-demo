@@ -17,7 +17,7 @@ Route::name('web.')->group(function () {
     Route::name('forms.')->prefix('/forms')->controller(\App\Http\Controllers\Web\FormController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/show', 'show')->name('show');
-        Route::get('/preview/{form}', 'preview')->name('preview');
+        Route::get('/preview/{departament}/{form}', 'preview')->name('preview');
     });
 
     // web.auth

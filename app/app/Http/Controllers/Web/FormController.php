@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Web;
 use App\Exceptions\HumanException;
 use App\Helpers\FormHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Departament;
+use App\Models\Event;
 use App\Models\Form;
+use App\Models\FormDepartamentType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -36,29 +39,51 @@ class FormController extends Controller
         }
     }
 
-    public function show(Request $request): View|RedirectResponse
-    {
-        try {
-            $user = $request->user();
-            throw_if(empty($user), new HumanException('Ошибка авторизации!'));
-            return view($this->views['show']);
-        } catch (HumanException $e) {
-            return redirect()
-                ->route('web.index.index')
-                ->withErrors([$e->getMessage()]);
-        } catch (Throwable $e) {
-            return redirect()
-                ->route('web.index.index')
-                ->withErrors(['Внутренняя ошибка']);
-        }
-    }
+    // public function show(Request $request): View|RedirectResponse
+    // {
+    //     try {
+    //         $user = $request->user();
+    //         throw_if(empty($user), new HumanException('Ошибка авторизации!'));
+    //         return view($this->views['show']);
+    //     } catch (HumanException $e) {
+    //         return redirect()
+    //             ->route('web.index.index')
+    //             ->withErrors([$e->getMessage()]);
+    //     } catch (Throwable $e) {
+    //         return redirect()
+    //             ->route('web.index.index')
+    //             ->withErrors(['Внутренняя ошибка']);
+    //     }
+    // }
 
-    public function preview(Request $request, Form $form): View|Redirect
+    public function preview(Request $request, Departament $departament, Form $form): View|Redirect
     {
         try {
             $user = $request->user();
-            throw_if(empty($user), new HumanException('Ошибка авторизации!'));
-            $response = ['form' => $form];
+
+            throw_if(empty($user), new HumanException('Ошибка авторизации! Номер ошибки: #1003.'));
+            throw_if($user->departament_id != $departament->id, new HumanException('Ошибка авторизации! Номер ошибки: #1004.'));
+
+            throw_if($form->is_active == false, new HumanException('Ошибка обработки формы! Номер ошибки: #1000.'));
+
+            $availableFormdepartamentTypeIds = FormDepartamentType::where('form_id', $form->id)->pluck('departament_type_id')->toArray();
+            $availableFormDepartamentIds = Departament::where('departament_type_id', $availableFormdepartamentTypeIds)->pluck('id')->toArray();
+
+            throw_if(in_array($departament->id, $availableFormDepartamentIds) == false, new HumanException('Ошибка обработки формы! Номер ошибки: #1001.'));
+
+            $lastFormEvent = Event::query()
+                ->where('form_id', $form->id)
+                ->where('departament_id', $departament->id)
+                ->whereNotNull('filled_at')
+                ->orderBy('id', 'desc')
+                ->first();
+
+            $response = [
+                'form' => $form,
+                'departament' => $departament,
+                'event' => $lastFormEvent,
+            ];
+
             return view($this->views['preview'], $response);
         } catch (HumanException $e) {
             return redirect()
