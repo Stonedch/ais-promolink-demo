@@ -71,17 +71,20 @@ class FormController extends Controller
 
             throw_if(in_array($departament->id, $availableFormDepartamentIds) == false, new HumanException('Ошибка обработки формы! Номер ошибки: #1001.'));
 
-            $lastFormEvent = Event::query()
+            $event = Event::query()
                 ->where('form_id', $form->id)
-                ->where('departament_id', $departament->id)
-                ->whereNotNull('filled_at')
-                ->orderBy('id', 'desc')
-                ->first();
+                ->where('departament_id', $departament->id);
+
+            if ($request->has('event')) {
+                $event = $event->where('id', $request->input('event'))->first();
+            } else {
+                $event = $event->whereNotNull('filled_at')->orderBy('id', 'desc')->first();
+            }
 
             $response = [
                 'form' => $form,
                 'departament' => $departament,
-                'event' => $lastFormEvent,
+                'event' => $event,
             ];
 
             return view($this->views['preview'], $response);
