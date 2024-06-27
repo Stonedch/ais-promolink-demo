@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Web;
 
 use App\Exceptions\HumanException;
-use App\Helpers\FormHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Departament;
 use App\Models\Event;
@@ -17,7 +16,6 @@ use Illuminate\Support\Facades\Redirect;
 class FormController extends Controller
 {
     protected array $views = [
-        'single' => 'web.form.single',
         'show' => 'web.form.show',
         'preview' => 'web.form.preview',
     ];
@@ -27,7 +25,7 @@ class FormController extends Controller
         try {
             $user = $request->user();
             throw_if(empty($user), new HumanException('Ошибка авторизации!'));
-            return view($this->views['single']);
+            return view($this->views['show']);
         } catch (HumanException $e) {
             return redirect()
                 ->route('web.index.index')
@@ -38,23 +36,6 @@ class FormController extends Controller
                 ->withErrors(['Внутренняя ошибка']);
         }
     }
-
-    // public function show(Request $request): View|RedirectResponse
-    // {
-    //     try {
-    //         $user = $request->user();
-    //         throw_if(empty($user), new HumanException('Ошибка авторизации!'));
-    //         return view($this->views['show']);
-    //     } catch (HumanException $e) {
-    //         return redirect()
-    //             ->route('web.index.index')
-    //             ->withErrors([$e->getMessage()]);
-    //     } catch (Throwable $e) {
-    //         return redirect()
-    //             ->route('web.index.index')
-    //             ->withErrors(['Внутренняя ошибка']);
-    //     }
-    // }
 
     public function preview(Request $request, Departament $departament, Form $form): View|Redirect
     {

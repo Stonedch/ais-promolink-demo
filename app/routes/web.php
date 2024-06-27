@@ -16,7 +16,6 @@ Route::name('web.')->group(function () {
     // web.forms
     Route::name('forms.')->prefix('/forms')->controller(\App\Http\Controllers\Web\FormController::class)->group(function () {
         Route::get('/', 'index')->name('index');
-        Route::get('/show', 'show')->name('show');
         Route::get('/preview/{departament}/{form}', 'preview')->name('preview');
     });
 
