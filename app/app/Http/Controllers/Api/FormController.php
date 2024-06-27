@@ -35,6 +35,7 @@ class FormController extends Controller
             $user = $request->user();
             throw_if(empty($user));
             throw_if(empty($user->departament_id), new HumanException('600, Ошибка проверки пользователя!'));
+            throw_if($user->hasAnyAccess(['platform.departament-director.base']), new HumanException('604, Ошибка проверки пользователя!'));
 
             $event = Event::find($request->input('event_id', null));
             throw_if(empty($event), new HumanException('602, Ошибка проверки формы!'));
@@ -59,6 +60,7 @@ class FormController extends Controller
             $user = $request->user();
             throw_if(empty($user));
             throw_if(empty($user->departament_id), new HumanException('Ошибка проверки пользователя!'));
+            throw_if($user->hasAnyAccess(['platform.departament-director.base']), new HumanException('604, Ошибка проверки пользователя!'));
 
             $form = Form::find($request->input('form_id', null));
             throw_if(empty($form), new HumanException('Ошибка проверки формы!'));
@@ -86,6 +88,7 @@ class FormController extends Controller
             $user = $request->user();
             throw_if(empty($user));
             throw_if(empty($user->departament_id), new HumanException('600, Ошибка проверки пользователя!'));
+            throw_if($user->hasAnyAccess(['platform.departament-director.base']), new HumanException('604, Ошибка проверки пользователя!'));
 
             $event = Event::find($request->input('event_id', null));
             throw_if(empty($event), new HumanException('601, Ошибка проверки формы!'));
