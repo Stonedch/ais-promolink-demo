@@ -115,8 +115,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ->addPermission('platform.districts.list', 'Список')
                 ->addPermission('platform.districts.edit', 'Редактирование'),
 
-            ItemPermission::group('Права роли "Директор Ведомства"')
+            ItemPermission::group('Права роли "Директор Учреждения"')
                 ->addPermission('platform.departament-director.base', 'Основные'),
+
+            ItemPermission::group('Права роли "Руководитель"')
+                ->addPermission('platform.supervisor.base', 'Основные'),
         ];
     }
 }

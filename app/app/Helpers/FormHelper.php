@@ -21,24 +21,32 @@ use Throwable;
 
 class FormHelper
 {
-    public static function byUser(User $user): \Illuminate\Support\Collection
+    public static function byUser(User $user): SupportCollection
     {
         throw_if(empty($user->departament_id), new HumanException('Ошибка проверки пользователя!'));
-
         $departament = Departament::find($user->departament_id);
+        throw_if(empty($departament), new HumanException('Ошибка проверки пользователя!'));
+        throw_if(empty($departament->departament_type_id), new HumanException('Ошибка проверки ведомства!'));
+        return self::byDepartaments(new SupportCollection([$departament]));
+    }
 
-        $allEvents = Event::where('departament_id', $departament->id)->get();
+    public static function byDepartaments(SupportCollection $departaments): SupportCollection
+    {
+        $allEvents = Event::whereIn('departament_id', $departaments->pluck('id'))->get();
         $events = $allEvents->where('filled_at', null);
         $writedEvents = $allEvents->where('filled_at', '!=', null)->keyBy('id')->groupBy('form_id', true);
 
-        throw_if(empty($departament), new HumanException('Ошибка проверки пользователя!'));
-        throw_if(empty($departament->departament_type_id), new HumanException('Ошибка проверки ведомства!'));
-
         $forms = Form::query()
             ->where('is_active', true)
-            ->where(function (Builder $query) use ($departament, $events) {
+            ->where(function (Builder $query) use ($departaments, $events) {
+                // dd(
+                //     $departaments->pluck('departament_type_id')->unique()
+                //     // $departaments->pluck('departament_type_id')->toArray()->
+                //     // FormDepartamentType::query()->where('departament_type_id', $departaments->pluck('departament_type_id'))->count()
+                // );
+
                 $formIdentifiers = FormDepartamentType::query()
-                    ->where('departament_type_id', $departament->departament_type_id)
+                    ->whereIn('departament_type_id', $departaments->pluck('departament_type_id')->unique())
                     ->pluck('form_id')
                     ->toArray();
 
@@ -49,24 +57,15 @@ class FormHelper
             })
             ->get();
 
-        $departaments = Departament::query()
-            ->whereIn(
-                'departament_type_id',
-                FormDepartamentType::whereIn('form_id', $forms->pluck('id'))->pluck('departament_type_id')
-            )
-            ->select(['id', 'name'])
-            ->get();
-
         $fields = Field::whereIn('form_id', $forms->pluck('id'))->get();
 
         $collections = Collection::whereIn('id', $fields->pluck('collection_id'))->get();
-
         $collectionValues = CollectionValue::whereIn('collection_id', $collections->pluck('id'))->get();
 
         $formResults = FormResult::query()
             ->join('events', 'events.id', 'form_results.event_id')
             ->whereIn('events.form_id', $forms->pluck('id'))
-            ->where('events.departament_id', $departament->id)
+            ->whereIn('events.departament_id', $departaments->pluck('id'))
             ->select(['form_results.*', 'events.form_id'])
             ->get()
             ->groupBy(['form_id', 'event_id']);
@@ -127,7 +126,7 @@ class FormHelper
         });
 
         $writedEvents = Event::query()
-            ->where('departament_id', $departament->id)
+            ->whereIn('departament_id', $departaments->pluck('id'))
             ->whereNot('filled_at', null)
             ->get()
             ->keyBy('id')
@@ -160,7 +159,7 @@ class FormHelper
             'writedEvents' => $writedEvents,
             'allEvents' =>  $allEvents->keyBy('id')->groupBy('form_id', true),
             'results' => $results,
-            'departaments' => $departaments,
+            'departaments' => $departaments->keyBy('id'),
         ]);
     }
 

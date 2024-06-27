@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Exceptions\HumanException;
 use App\Helpers\FormHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Departament;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,13 @@ class HomeController extends Controller
         try {
             $user = Auth::user();
             throw_if(empty($user), new HumanException('Ошибка авторизации!'));
-            $response = FormHelper::byUser($user);
+
+            if ($user->hasAnyAccess(['platform.supervisor.base'])) {
+                $response = FormHelper::byDepartaments(Departament::whereNotNull('departament_type_id')->get());
+            } else {
+                $response = FormHelper::byUser($user);
+            }
+
             return view('web.home.index', $response);
         } catch (HumanException $e) {
             return redirect()

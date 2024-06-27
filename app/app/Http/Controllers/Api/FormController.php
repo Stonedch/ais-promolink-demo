@@ -6,6 +6,7 @@ use App\Exceptions\HumanException;
 use App\Helpers\FormHelper;
 use App\Helpers\Responser;
 use App\Http\Controllers\Controller;
+use App\Models\Departament;
 use App\Models\Event;
 use App\Models\Form;
 use Illuminate\Http\JsonResponse;
@@ -19,7 +20,14 @@ class FormController extends Controller
         try {
             $user = $request->user();
             throw_if(empty($user));
-            return Responser::returnSuccess(FormHelper::byUser($user)->toArray());
+
+            if ($user->hasAnyAccess(['platform.supervisor.base'])) {
+                $response = FormHelper::byDepartaments(Departament::whereNotNull('departament_type_id')->get());
+            } else {
+                $response = FormHelper::byUser($user);
+            }
+
+            return Responser::returnSuccess($response->toArray());
         } catch (HumanException $e) {
             return Responser::returnError([$e->getMessage()]);
         } catch (Throwable $e) {
@@ -112,11 +120,14 @@ class FormController extends Controller
 
             $user = $request->user();
             throw_if(empty($user));
-            throw_if(empty($user->departament_id), new HumanException('600, Ошибка проверки пользователя!'));
 
             $event = Event::find($request->input('event_id', null));
             throw_if(empty($event), new HumanException('601, Ошибка проверки формы!'));
-            throw_if($event->departament_id != $user->departament_id, new HumanException('602, Ошибка проверки пользователя!'));
+
+            if ($user->hasAnyAccess(['platform.supervisor.base']) == false) {
+                throw_if(empty($user->departament_id), new HumanException('600, Ошибка проверки пользователя!'));
+                throw_if($event->departament_id != $user->departament_id, new HumanException('602, Ошибка проверки пользователя!'));
+            }
 
             $response['percent'] = FormHelper::getPercent($event);
 

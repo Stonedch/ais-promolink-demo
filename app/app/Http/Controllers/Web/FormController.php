@@ -11,7 +11,6 @@ use App\Models\FormDepartamentType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 
 class FormController extends Controller
 {
@@ -37,20 +36,18 @@ class FormController extends Controller
         }
     }
 
-    public function preview(Request $request, Departament $departament, Form $form): View|Redirect
+    public function preview(Request $request, Departament $departament, Form $form): View|RedirectResponse
     {
         try {
             $user = $request->user();
 
             throw_if(empty($user), new HumanException('Ошибка авторизации! Номер ошибки: #1003.'));
-            throw_if($user->departament_id != $departament->id, new HumanException('Ошибка авторизации! Номер ошибки: #1004.'));
+
+            if ($user->hasAnyAccess(['platform.supervisor.base']) == false) {
+                throw_if($user->departament_id != $departament->id, new HumanException('Ошибка авторизации! Номер ошибки: #1004.'));
+            }
 
             throw_if($form->is_active == false, new HumanException('Ошибка обработки формы! Номер ошибки: #1000.'));
-
-            $availableFormdepartamentTypeIds = FormDepartamentType::where('form_id', $form->id)->pluck('departament_type_id')->toArray();
-            $availableFormDepartamentIds = Departament::where('departament_type_id', $availableFormdepartamentTypeIds)->pluck('id')->toArray();
-
-            throw_if(in_array($departament->id, $availableFormDepartamentIds) == false, new HumanException('Ошибка обработки формы! Номер ошибки: #1001.'));
 
             $event = Event::query()
                 ->where('form_id', $form->id)
