@@ -16,6 +16,8 @@ Route::name('web.')->group(function () {
     // web.forms
     Route::name('forms.')->prefix('/forms')->controller(\App\Http\Controllers\Web\FormController::class)->group(function () {
         Route::get('/', 'index')->name('index');
+        Route::get('/show', 'show')->name('show');
+        Route::get('/preview/{form}', 'preview')->name('preview');
     });
 
     // web.auth
@@ -31,6 +33,9 @@ Route::name('web.')->group(function () {
             Route::get('/', 'index')->name('index');
         });
     });
+
+    // web.debug
+    Route::resource('debug', \App\Http\Controllers\Web\DebugController::class);
 });
 
 Route::name('api.')->prefix('/api')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->group(function () {

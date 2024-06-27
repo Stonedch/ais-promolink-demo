@@ -27,10 +27,9 @@ class FormHelper
 
         $departament = Departament::find($user->departament_id);
 
-        $events = Event::query()
-            ->where('departament_id', $departament->id)
-            ->where('filled_at', null)
-            ->get();
+        $allEvents = Event::where('departament_id', $departament->id)->get();
+        $events = $allEvents->where('filled_at', null);
+        $writedEvents = $allEvents->where('filled_at', '!=', null)->keyBy('id')->groupBy('form_id', true);
 
         throw_if(empty($departament), new HumanException('Ошибка проверки пользователя!'));
         throw_if(empty($departament->departament_type_id), new HumanException('Ошибка проверки ведомства!'));
@@ -87,7 +86,44 @@ class FormHelper
 
         $formCategories = FormCategory::query()
             ->whereIn('id', $forms->pluck('form_category_id'))
-            ->get();
+            ->get()
+            ->keyBy('id');
+
+        $writedEvents = Event::query()
+            ->where('departament_id', $departament->id)
+            ->whereNot('filled_at', null)
+            ->get()
+            ->keyBy('id')
+            ->groupBy('form_id', true);
+
+        $results = FormResult::query()
+            ->whereIn('event_id', $allEvents->pluck('id'))
+            ->get()
+            ->groupBy('event_id');
+
+        $forms->map(function (Form $form) use ($allEvents, $results) {
+            try {
+                $form->last_event = $allEvents->where('form_id', $form->id)->sortByDesc('id')->first();
+                $form->last_event->form_structure = json_decode($form->last_event->form_structure, true);
+            } catch (Throwable) {
+            }
+
+            try {
+                if ($form->type == 100 && empty($form->last_event->filled_at) == false) {
+                    $filled = $results[$form->last_event->id]->whereNotNull('value')->count();
+                    $needed = count($form->last_event->form_structure['fields']);
+                    $form->percent = intval($filled / $needed * 100);
+                }
+            } catch (Throwable) {
+            }
+
+            try {
+                $form->form_structure = json_decode($form->getStructure(), true);
+            } catch (Throwable) {
+            }
+
+            return $form;
+        });
 
         return collect([
             'deadlines' => $deadlines,
@@ -97,8 +133,11 @@ class FormHelper
             'fields' => $fields->groupBy('form_id'),
             'collections' => $collections,
             'collectionValues' => $collectionValues->groupBy('collection_id'),
-            'events' => $events->keyBy('id'),
             'formResults' => $formResults,
+            'events' => $events->keyBy('id'),
+            'writedEvents' => $writedEvents,
+            'allEvents' =>  $allEvents->keyBy('id')->groupBy('form_id', true),
+            'results' => $results,
         ]);
     }
 

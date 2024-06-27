@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
@@ -44,6 +45,27 @@ class Event extends Model
         'updated_at',
         'created_at',
     ];
+
+    public static $STATUSES = [
+        100 => 'В процессе',
+        200 => 'Просрочен',
+        300 => 'Выполнен',
+    ];
+
+    public function getCurrentStatus()
+    {
+        $deadline = $this->form_structure['form']['deadline'];
+        $diff = now()->diffInSeconds((new Carbon($this->created_at))->addDays($deadline));
+        $isFilled = empty($this->filled_at) == false;
+
+        if ($isFilled) {
+            return 300;
+        } elseif ($diff < 0) {
+            return 200;
+        } else {
+            return 100;
+        }
+    }
 
     // TODO: rename me pls
     public static function createBy(Form $form, DepartamentType $departamentType)

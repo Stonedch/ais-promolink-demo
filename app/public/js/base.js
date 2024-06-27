@@ -1,6 +1,9 @@
 /* test */
 function showError(text) {
-    $.fancybox.open('<div style="max-width: 500px; padding: 25px;"><h2 style="margin-bottom:0;">Ошибка!</h2><p>'+text+'</p></div>');
+    new Fancybox([{
+        src: '<div style="max-width: 500px; padding: 25px;"><h2 style="margin-bottom:0;">Ошибка!</h2><p>'+text+'</p></div>',
+        type: "html",
+    }]);
 }
 function showPreloader() {
     $("body").append("<div id='loading'></div>");
@@ -11,7 +14,10 @@ function hidePreloader() {
 function showAlert(header, text) {
     header = header || '';
     if ( header != '' ) header = '<h2 style="margin-bottom:0;">' + header + '</h2>';
-    $.fancybox.open('<div style="max-width: 500px; padding: 25px;">'+header+'<p>'+text+'</p></div>');
+    new Fancybox([{
+        src: '<div style="max-width: 500px; padding: 25px;">'+header+'<p>'+text+'</p></div>',
+        type: "html",
+    }]);
 }
 function form2obj(link) {
     var form = $(link).serializeArray();

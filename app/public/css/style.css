@@ -888,3 +888,21 @@ input[type=number]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+._flex-gap-10 {
+  gap: 10px;
+}
+
+._icon-link {
+  display: block;
+  text-decoration: none;
+  color: #000;
+  width: 21px;
+}
+
+._icon-link>img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
