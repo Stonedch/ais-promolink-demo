@@ -43,7 +43,7 @@ class FormController extends Controller
 
             throw_if(empty($user), new HumanException('Ошибка авторизации! Номер ошибки: #1003.'));
 
-            if ($user->hasAnyAccess(['platform.supervisor.base']) == false) {
+            if ($user->hasAnyAccess(['platform.supervisor.base', 'platform.min.base']) == false) {
                 throw_if($user->departament_id != $departament->id, new HumanException('Ошибка авторизации! Номер ошибки: #1004.'));
             }
 

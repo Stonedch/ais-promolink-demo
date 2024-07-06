@@ -6,6 +6,7 @@ namespace App\Orchid\Screens\Form;
 
 use App\Exceptions\HumanException;
 use App\Helpers\FormExporter;
+use App\Models\DepartamentType;
 use App\Models\Field;
 use App\Models\Form;
 use App\Models\FormCategory;
@@ -33,12 +34,14 @@ class FormListScreen extends Screen
     public function query(): iterable
     {
         $periodicityForms = Form::query()
+            ->with('departamentTypes')
             ->where('periodicity', '<>', 50)
             ->filters()
             ->defaultSort('id', 'desc')
             ->paginate();
 
         $notPeriodicityForms = Form::query()
+            ->with('departamentTypes')
             ->where('periodicity', '=', 50)
             ->filters()
             ->defaultSort('id', 'desc')
@@ -140,6 +143,19 @@ class FormListScreen extends Screen
                     ->sort()
                     ->width(200),
 
+                TD::make('', 'Учреждения')
+                    ->width(200)
+                    ->render(function (Form $form) {
+                        try {
+                            return implode(
+                                ';<br> ',
+                                $form->departamentTypes->pluck('name')->toArray()
+                            );
+                        } catch (Throwable) {
+                            return '-';
+                        }
+                    }),
+
                 TD::make('periodicity', 'Периодичность')
                     ->sort()
                     ->width(200)
@@ -159,6 +175,10 @@ class FormListScreen extends Screen
                     ->sort()
                     ->width(250)
                     ->render(fn (Form $form) => $form->is_editable ? 'Да' : 'Нет'),
+
+                TD::make('sort', 'Сортировка')
+                    ->sort()
+                    ->width(250),
 
                 TD::make('form_category_id', 'Категория')
                     ->sort()
@@ -223,6 +243,19 @@ class FormListScreen extends Screen
                     ->sort()
                     ->width(200),
 
+                TD::make('', 'Учреждения')
+                    ->width(200)
+                    ->render(function (Form $form) {
+                        try {
+                            return implode(
+                                ';<br> ',
+                                $form->departamentTypes->pluck('name')->toArray()
+                            );
+                        } catch (Throwable) {
+                            return '-';
+                        }
+                    }),
+
                 TD::make('periodicity', 'Периодичность')
                     ->sort()
                     ->width(200)
@@ -242,6 +275,10 @@ class FormListScreen extends Screen
                     ->sort()
                     ->width(250)
                     ->render(fn (Form $form) => $form->is_editable ? 'Да' : 'Нет'),
+
+                TD::make('sort', 'Сортировка')
+                    ->sort()
+                    ->width(250),
 
                 TD::make('form_category_id', 'Категория')
                     ->sort()

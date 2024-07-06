@@ -86,6 +86,11 @@ class FormCategoryListScreen extends Screen
                     ->sort()
                     ->width(200),
 
+                TD::make('sort', 'Сортировка')
+                    ->filter(TD::FILTER_NUMERIC)
+                    ->sort()
+                    ->width(200),
+
                 TD::make('created_at', 'Создано')
                     ->usingComponent(DateTimeRender::class)
                     ->filter(TD::FILTER_DATE_RANGE)

@@ -101,10 +101,15 @@ class FormEditScreen extends Screen
                         ->title('Возможность редактировать'),
                 ]),
 
-                Select::make('form.form_category_id')
-                    ->empty('-')
-                    ->options(FormCategory::pluck('name', 'id'))
-                    ->title('Категория'),
+                Group::make([
+                    Select::make('form.form_category_id')
+                        ->empty('-')
+                        ->options(FormCategory::pluck('name', 'id'))
+                        ->title('Категория'),
+
+                    Input::make('form.sort')
+                        ->title('Сортировка'),
+                ]),
             ])->title('Базовые настройки'),
 
             Layout::rows([

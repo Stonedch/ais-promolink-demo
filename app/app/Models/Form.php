@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -24,6 +26,7 @@ class Form extends Model
         'is_active',
         'is_editable',
         'form_category_id',
+        'sort',
     ];
 
     protected $allowedFilters = [
@@ -74,5 +77,10 @@ class Form extends Model
             'form' => $this->toArray(),
             'fields' => Field::where('form_id', $this->id)->get()->toArray(),
         ], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function departamentTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(DepartamentType::class, 'form_departament_types');
     }
 }

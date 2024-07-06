@@ -55,6 +55,11 @@ Route::name('api.')->prefix('/api')->withoutMiddleware([\Illuminate\Foundation\H
         Route::post('/percent', 'percent')->name('percent');
     });
 
+    // api.event-store
+    Route::name('event-store.')->prefix('/event-store')->controller(\App\Http\Controllers\Api\EventStoreController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
+
     // api.debug
     Route::apiResource('debug', \App\Http\Controllers\Api\DebugController::class);
 });

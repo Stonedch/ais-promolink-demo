@@ -72,13 +72,15 @@ class EventListScreen extends Screen
                                 Select::make('events.departament_type_id')
                                     ->empty('-')
                                     ->options(fn () => DepartamentType::pluck('name', 'id'))
-                                    ->title('Ведомства'),
+                                    ->title('Ведомства')
+                                    ->class('form-control _relation-departament-type'),
                                 Select::make('events.form_id')
                                     ->empty('-')
                                     ->options(function () {
                                         return Form::where('periodicity', 50)->pluck('name', 'id');
                                     })
-                                    ->title('Формы'),
+                                    ->title('Формы')
+                                    ->class('form-control _relation-departament-type-forms'),
                             ]),
                             Button::make('Создать')
                                 ->icon('bs.check-circle')
@@ -91,13 +93,15 @@ class EventListScreen extends Screen
                             Select::make('eventsByDistrict.district_id')
                                 ->empty('-')
                                 ->options(fn () => District::pluck('name', 'id'))
-                                ->title('Районы'),
+                                ->title('Районы')
+                                ->class('form-control _relation-districts'),
                             Select::make('eventsByDistrict.form_id')
                                 ->empty('-')
                                 ->options(function () {
                                     return Form::where('periodicity', 50)->pluck('name', 'id');
                                 })
-                                ->title('Формы'),
+                                ->title('Формы')
+                                ->class('form-control _relation-district-forms'),
                         ]),
                         Button::make('Создать')
                             ->icon('bs.check-circle')

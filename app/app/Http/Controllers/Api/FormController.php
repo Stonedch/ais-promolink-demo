@@ -21,7 +21,7 @@ class FormController extends Controller
             $user = $request->user();
             throw_if(empty($user));
 
-            if ($user->hasAnyAccess(['platform.supervisor.base'])) {
+            if ($user->hasAnyAccess(['platform.supervisor.base', 'platform.min.base'])) {
                 $response = FormHelper::byDepartaments(Departament::whereNotNull('departament_type_id')->get());
             } else {
                 $response = FormHelper::byUser($user);

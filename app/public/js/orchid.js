@@ -1,5 +1,6 @@
 $(document).ready(function () {
     initSortableMatrix();
+    initRelationSelectForms();
 });
 
 function updateSortableMatrix(input = ".matrix ._sortable") {
@@ -20,16 +21,47 @@ function initSortableMatrix(input = ".matrix ._sortable") {
         });
     }
 
-    if (0 < $(input).length) {
-        init();
-    } else {
-        $("a[data-action=\"matrix#addRow\"]").click(function () {
-            if ($(this).closest(".matrix").find(".ui-sortable").length == 0) {
-                setTimeout(() => {
-                    updateSortableMatrix(input);
-                    init();
-                }, 1000);
+    init();
+
+    $("a[data-action=\"matrix#addRow\"]").click(function (event) {
+        if ($(this).closest(".matrix").find(".ui-sortable").length == 0) {
+            init();
+        }
+
+        updateSortableMatrix(input);
+    });
+}
+
+function initRelationSelectForms() {
+    const filter = (mainSelect, filteringSelect, paramKey) => {
+        $(mainSelect).change(function () {
+            const value = $(this).val();
+
+            if (value == "") {
+                $(`${filteringSelect} .ts-dropdown-content>*:not([data-value=""])`).show();
+                return;
             }
+
+            $(filteringSelect)
+                .val(null)
+                .change()
+                .closest(".form-group")
+                .find(".ts-control>.item")
+                .text(null);
+
+            $(`${filteringSelect} .ts-dropdown-content>*:not([data-value=""])`).hide();
+
+            params = {};
+            params[paramKey] = value;
+
+            $.get("/api/event-store", params, function (response) {
+                $.each(response.data.forms, function (form) {
+                    $(`${filteringSelect} .ts-dropdown-content>*[data-value="${form}"]`).show();
+                });
+            });
         });
-    }
+    };
+
+    filter("._relation-departament-type", "._relation-departament-type-forms", "departamentType");
+    filter("._relation-districts", "._relation-district-forms", "district");
 }

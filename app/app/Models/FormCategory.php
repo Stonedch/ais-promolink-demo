@@ -17,11 +17,13 @@ class FormCategory extends Model
 
     protected $fillable = [
         'name',
+        'sort',
     ];
 
     protected $allowedFilters = [
         'id' => Where::class,
         'name' => Like::class,
+        'sort' => Where::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
     ];
@@ -29,6 +31,7 @@ class FormCategory extends Model
     protected $allowedSorts = [
         'id',
         'name',
+        'sort',
         'updated_at',
         'created_at',
     ];

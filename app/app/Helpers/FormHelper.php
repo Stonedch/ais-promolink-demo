@@ -6,6 +6,8 @@ use App\Exceptions\HumanException;
 use App\Models\Collection;
 use App\Models\CollectionValue;
 use App\Models\Departament;
+use App\Models\DepartamentType;
+use App\Models\District;
 use App\Models\Event;
 use App\Models\Field;
 use App\Models\Form;
@@ -39,12 +41,6 @@ class FormHelper
         $forms = Form::query()
             ->where('is_active', true)
             ->where(function (Builder $query) use ($departaments, $events) {
-                // dd(
-                //     $departaments->pluck('departament_type_id')->unique()
-                //     // $departaments->pluck('departament_type_id')->toArray()->
-                //     // FormDepartamentType::query()->where('departament_type_id', $departaments->pluck('departament_type_id'))->count()
-                // );
-
                 $formIdentifiers = FormDepartamentType::query()
                     ->whereIn('departament_type_id', $departaments->pluck('departament_type_id')->unique())
                     ->pluck('form_id')
@@ -146,6 +142,9 @@ class FormHelper
             })
             ->groupBy('form_id', true);
 
+        $departamentTypes = DepartamentType::whereIn('id', $departaments->pluck('departament_type_id'))->get();
+        $districts = District::whereIn('id', $departaments->pluck('district_id'))->get();
+
         return collect([
             'deadlines' => $deadlines,
             'difs' => $difs,
@@ -160,6 +159,8 @@ class FormHelper
             'allEvents' =>  $allEvents->keyBy('id')->groupBy('form_id', true),
             'results' => $results,
             'departaments' => $departaments->keyBy('id'),
+            'departamentTypes' => $departamentTypes->keyBy('id'),
+            'districts' => $districts,
         ]);
     }
 

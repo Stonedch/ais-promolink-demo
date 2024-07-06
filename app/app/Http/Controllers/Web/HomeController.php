@@ -9,26 +9,40 @@ use App\Models\Departament;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 class HomeController extends Controller
 {
+    public static array $views = [
+        'index' => 'web.home.index',
+        'min' => 'web.home.min',
+    ];
+
     public function index(): View|RedirectResponse
     {
         try {
             $user = Auth::user();
             throw_if(empty($user), new HumanException('Ошибка авторизации!'));
 
-            if ($user->hasAnyAccess(['platform.supervisor.base'])) {
+            if ($user->hasAnyAccess(['platform.supervisor.base', 'platform.min.base'])) {
                 $response = FormHelper::byDepartaments(Departament::whereNotNull('departament_type_id')->get());
             } else {
                 $response = FormHelper::byUser($user);
             }
 
-            return view('web.home.index', $response);
+            $view = self::$views['index'];
+
+            if ($user->hasAnyAccess(['platform.min.base'])) {
+                $view = self::$views['min'];
+            }
+
+            return view($view, $response);
         } catch (HumanException $e) {
             return redirect()
                 ->route('web.index.index')
                 ->withErrors([$e->getMessage()]);
+        } catch (Throwable) {
+            abort(500);
         }
     }
 }

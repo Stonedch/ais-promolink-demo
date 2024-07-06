@@ -120,6 +120,9 @@ class PlatformProvider extends OrchidServiceProvider
 
             ItemPermission::group('Права роли "Руководитель"')
                 ->addPermission('platform.supervisor.base', 'Основные'),
+
+            ItemPermission::group('Права роли "Министр"')
+                ->addPermission('platform.min.base', 'Основные'),
         ];
     }
 }

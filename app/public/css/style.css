@@ -906,3 +906,25 @@ input[type=number]::-webkit-inner-spin-button {
   object-fit: contain;
   object-position: center;
 }
+
+.table-purple {
+  --bs-table-bg: #4e41ef;
+}
+
+.table>.table-purple:not(caption)>*>* {
+  color: #fff;
+}
+
+.max-content {
+  width: max-content;
+}
+
+.table .rounded th:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.table .rounded th:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}

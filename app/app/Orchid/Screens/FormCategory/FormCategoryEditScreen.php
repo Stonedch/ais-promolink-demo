@@ -8,6 +8,7 @@ use App\Exceptions\HumanException;
 use App\Models\FormCategory;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
@@ -55,9 +56,13 @@ class FormCategoryEditScreen extends Screen
     {
         return [
             Layout::rows([
-                Input::make('formCategory.name')
-                    ->required()
-                    ->title('Название'),
+                Group::make([
+                    Input::make('formCategory.name')
+                        ->required()
+                        ->title('Название'),
+                    Input::make('formCategory.sort')
+                        ->title('Сортировка'),
+                ]),
             ]),
         ];
     }
