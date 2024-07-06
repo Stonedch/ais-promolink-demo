@@ -24,18 +24,16 @@ $ docker-compose up -d --build
 $ docker-compose exec laravel composer install
 $ docker-compose exec laravel php artisan key:generate --ansi
 $ docker-compose exec laravel php artisan migrate
-$ docker-compose up -d --build
-$ docker-compose exec laravel php artisan migrate
 $ docker-compose exec laravel php artisan orchid:admin
 ```
 
-## DB dump loading
+## Data base dump loading
 
 ```console
 $ docker-compose exec -T db psql -U formfiller formfiller < dump.sql (dumping)
 ```
 
-## Make DB dump
+## Make data base dump
 
 ```console
 $ docker-compose exec db pg_dump -U formfiller --data-only --column-inserts formfiller > dump_`date +%Y-%m-%d"_"%H_%M_%S`.sql
