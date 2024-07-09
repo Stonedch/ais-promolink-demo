@@ -15,5 +15,6 @@ class Debug extends Command
     // Please clear me after debug
     public function handle(): void
     {
+        dd(now()->yesterday()->timestamp);
     }
 }

@@ -6,8 +6,10 @@ use App\Exceptions\HumanException;
 use App\Helpers\FormHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Departament;
+use App\Models\DistrictDashboardParam;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
 
@@ -18,7 +20,7 @@ class HomeController extends Controller
         'min' => 'web.home.min',
     ];
 
-    public function index(): View|RedirectResponse
+    public function index(Request $request): View|RedirectResponse
     {
         try {
             $user = Auth::user();
@@ -33,6 +35,14 @@ class HomeController extends Controller
             $view = self::$views['index'];
 
             if ($user->hasAnyAccess(['platform.min.base'])) {
+                // TODO: костыль, убрать
+                if ($request->has('district')) {
+                    $response['dashboard'] = DistrictDashboardParam::query()
+                        ->where('district_id', $request->input('district'))
+                        ->orderBy('sort')
+                        ->get();
+                }
+
                 $view = self::$views['min'];
             }
 

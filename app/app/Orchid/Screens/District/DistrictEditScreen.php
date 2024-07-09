@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\District;
 
 use App\Models\District;
+use App\Models\DistrictDashboardParam;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Matrix;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
+use Throwable;
 
 class DistrictEditScreen extends Screen
 {
@@ -20,6 +24,9 @@ class DistrictEditScreen extends Screen
     {
         return [
             'district' => $district,
+            'dashboard_params' => $district->exists
+                ? DistrictDashboardParam::where('district_id', $district->id)->get()
+                : new Collection(),
         ];
     }
 
@@ -57,6 +64,23 @@ class DistrictEditScreen extends Screen
                     ->require()
                     ->title('Название'),
             ]),
+
+            Layout::rows([
+                Matrix::make('dashboard_params')
+                    ->columns([
+                        '#' => 'id',
+                        'Заголовок' => 'name',
+                        'Значение' => 'value',
+                        'Сортировка' => 'sort',
+                    ])
+                    ->fields([
+                        'id' => Input::make()->disabled()->hidden(),
+                        'name' => Input::make(),
+                        'value' => Input::make(),
+                        'sort' => Input::make()->type('number')->class("form-control _sortable"),
+                    ])
+                    ->title('Значения'),
+            ])->title('Статистика')->canSee($this->district->exists),
         ];
     }
 
@@ -64,6 +88,27 @@ class DistrictEditScreen extends Screen
     {
         $district->fill($request->input('district', []));
         $district->save();
+
+        $dashboardParams = DistrictDashboardParam::where('district_id', $district->id)->get();
+        $requestedDashboardParams = collect($request->input('dashboard_params', []));
+        $isDashboardParamsReinit = true;
+
+        if ($isDashboardParamsReinit) {
+            $dashboardParams->map(fn (DistrictDashboardParam $param) => $param->delete());
+
+            foreach ($requestedDashboardParams as $item) {
+                try {
+                    $param = new DistrictDashboardParam();
+                    $param->fill($item);
+                    $param->district_id = $district->id;
+                    $param->sort = $param->sort ?: 100;
+                    $param->save();
+                } catch (Throwable) {
+                    continue;
+                }
+            }
+        }
+
         Toast::info('Успешно сохранено!');
         return redirect()->route('platform.districts.edit', $district);
     }
