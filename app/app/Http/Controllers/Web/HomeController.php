@@ -17,7 +17,6 @@ class HomeController extends Controller
 {
     public static array $views = [
         'index' => 'web.home.index',
-        'min' => 'web.home.min',
     ];
 
     public function index(Request $request): View|RedirectResponse
@@ -26,25 +25,15 @@ class HomeController extends Controller
             $user = Auth::user();
             throw_if(empty($user), new HumanException('Ошибка авторизации!'));
 
-            if ($user->hasAnyAccess(['platform.supervisor.base', 'platform.min.base'])) {
+            if ($user->hasAnyAccess(['platform.min.base'])) return redirect()->route('web.minister.index');
+
+            if ($user->hasAnyAccess(['platform.supervisor.base'])) {
                 $response = FormHelper::byDepartaments(Departament::whereNotNull('departament_type_id')->get());
             } else {
                 $response = FormHelper::byUser($user);
             }
 
             $view = self::$views['index'];
-
-            if ($user->hasAnyAccess(['platform.min.base'])) {
-                // TODO: костыль, убрать
-                if ($request->has('district')) {
-                    $response['dashboard'] = DistrictDashboardParam::query()
-                        ->where('district_id', $request->input('district'))
-                        ->orderBy('sort')
-                        ->get();
-                }
-
-                $view = self::$views['min'];
-            }
 
             return view($view, $response);
         } catch (HumanException $e) {

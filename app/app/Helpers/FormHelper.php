@@ -23,6 +23,10 @@ use Throwable;
 
 class FormHelper
 {
+    public static array $cachekeys = [
+        'byDepartaments' => 'FormHelper.byDepartaments.v0.',
+    ];
+
     public static function byUser(User $user): SupportCollection
     {
         throw_if(empty($user->departament_id), new HumanException('Ошибка проверки пользователя!'));

@@ -33,6 +33,13 @@ Route::name('web.')->group(function () {
         });
     });
 
+    // web.minister
+    Route::name('minister.')->prefix('/minister')->controller(\App\Http\Controllers\Web\MinisterController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/by-district/{district?}/{departament?}', 'byDistrict')->name('by-district');
+        Route::get('/by-departament-type/{departamentType?}/{district?}/{departament?}', 'byDepartamentType')->name('by-departament-type');
+    });
+
     // web.debug
     Route::resource('debug', \App\Http\Controllers\Web\DebugController::class);
 });
