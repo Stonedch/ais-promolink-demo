@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Helpers\PhoneNormalizer;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Orchid\Attachment\Models\Attachment;
 use Orchid\Filters\Types\Ilike;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -83,6 +84,19 @@ class User extends Authenticatable
                 $departament = Departament::find($this->departament_id);
                 return $departament->name;
             });
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    public function avatar(): ?Attachment
+    {
+        try {
+            return Cache::remember(
+                "User.avatar.v0.[$this->attachment_id]",
+                now()->addDays(7),
+                fn () => Attachment::find($this->attachment_id)
+            );
         } catch (Throwable) {
             return null;
         }

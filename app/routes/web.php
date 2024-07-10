@@ -67,6 +67,11 @@ Route::name('api.')->prefix('/api')->withoutMiddleware([\Illuminate\Foundation\H
         Route::get('/', 'index')->name('index');
     });
 
+    // api.user-avatar
+    Route::name('user-avatar')->prefix('/user-avatar')->controller(\App\Http\Controllers\Api\UserAvatarController::class)->group(function () {
+        Route::post('/', 'store')->name('store');
+    });
+
     // api.debug
     Route::apiResource('debug', \App\Http\Controllers\Api\DebugController::class);
 });
