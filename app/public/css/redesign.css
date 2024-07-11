@@ -1,0 +1,8 @@
+@import 'cfg/normalize.css';
+@import 'cfg/containers.css';
+@import 'cfg/vars.css';
+
+@import 'blocks/header.css';
+@import 'blocks/notifications.css';
+@import 'blocks/tables.css';
+

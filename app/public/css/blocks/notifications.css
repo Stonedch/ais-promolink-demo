@@ -1,0 +1,124 @@
+.notifications__button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    background: #fff;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+}
+
+.notifications-prev{
+    left: 0;
+}
+
+.notifications-next{
+    right: 0;
+    transform: translateY(-50%) rotate(180deg) ;
+}
+
+.notification{
+    height: 145px;
+    padding: 15px 20px;
+    background: white;
+    box-shadow: 0 4px 10px 0 var(--ias-seryy);
+    border-radius: 5px 11px 11px 5px;
+}
+
+.new.notification{
+    border-left: 3px solid var(--status-new);
+}
+
+.in_work.notification{
+    border-left: 3px solid var(--status-in-work);
+}
+.expired.notification{
+    border-left: 3px solid var(--status-expired);
+}
+
+.notification__top{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.notification__title{
+    margin: 0;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 125%;
+}
+
+.new .notification__title{
+    color: var(--status-new);
+}
+.in_work .notification__title{
+    color: var(--status-in-work);
+}
+.expired .notification__title{
+
+    color: var(--status-expired);
+}
+
+.notification__text{
+    margin: 10px 0 0 0;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 125%;
+    color: var(--ias-chernyy);
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 4;
+}
+
+.notification__date{
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 138%;
+    color: var(--ias-temno-seryy);
+}
+
+.notifications__swiper-wrapper{
+    margin-top: 20px;
+    padding: 0 23px;
+    position: relative;
+}
+
+.notifications__top{
+    margin-top: 25px;
+}
+
+.notifications__status::before{
+    content: '';
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+}
+
+.new.notifications__status::before{
+    background: var(--status-new);
+}
+.in_work.notifications__status::before{
+    background: var(--status-in-work);
+}
+.expired.notifications__status::before{
+    background: var(--status-expired);
+}
+
+.notifications__status{
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 125%;
+    color: var(--ias-chernyy);
+}
