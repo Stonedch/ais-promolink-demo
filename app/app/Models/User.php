@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Helpers\PhoneNormalizer;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Orchid\Attachment\Models\Attachment;
 use Orchid\Filters\Types\Ilike;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -76,13 +77,48 @@ class User extends Authenticatable
         $user->save();
     }
 
+    public function getDepartament(): ?Departament
+    {
+        try {
+            return Cache::remember("User.getDepartament.v0.{$this->id}", now()->addHour(), function () {
+                $departament = Departament::find($this->departament_id);
+                return $departament;
+            });
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
     public function getDepartamentName(): ?string
     {
         try {
-            return Cache::remember("User.getDepartamentName.{$this->id}", now()->addDays(), function () {
-                $departament = Departament::find($this->departament_id);
-                return $departament->name;
-            });
+            return $this->getDepartament()->name;
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    public function avatar(): ?Attachment
+    {
+        try {
+            return Cache::remember(
+                "User.avatar.v0.[$this->attachment_id]",
+                now()->addDays(7),
+                fn () => Attachment::find($this->attachment_id)
+            );
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    public function getFullname(): ?string
+    {
+        try {
+            return implode(' ', [
+                $this->last_name,
+                $this->first_name,
+                $this->middle_name
+            ]);
         } catch (Throwable) {
             return null;
         }
