@@ -4,3 +4,4 @@ docker/postgres/init/
 docker/datalens/metadata/
 docker/datalens/certs/
 docker/datalens/nginx/htpasswd
+docker/datalens/nginx/.htpasswd
