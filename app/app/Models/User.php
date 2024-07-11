@@ -77,13 +77,22 @@ class User extends Authenticatable
         $user->save();
     }
 
+    public function getDepartament(): ?Departament
+    {
+        try {
+            return Cache::remember("User.getDepartament.v0.{$this->id}", now()->addHour(), function () {
+                $departament = Departament::find($this->departament_id);
+                return $departament;
+            });
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
     public function getDepartamentName(): ?string
     {
         try {
-            return Cache::remember("User.getDepartamentName.{$this->id}", now()->addDays(), function () {
-                $departament = Departament::find($this->departament_id);
-                return $departament->name;
-            });
+            return $this->getDepartament()->name;
         } catch (Throwable) {
             return null;
         }
@@ -97,6 +106,19 @@ class User extends Authenticatable
                 now()->addDays(7),
                 fn () => Attachment::find($this->attachment_id)
             );
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    public function getFullname(): ?string
+    {
+        try {
+            return implode(' ', [
+                $this->last_name,
+                $this->first_name,
+                $this->middle_name
+            ]);
         } catch (Throwable) {
             return null;
         }

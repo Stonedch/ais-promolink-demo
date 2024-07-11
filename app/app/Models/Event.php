@@ -54,7 +54,10 @@ class Event extends Model
 
     public function getCurrentStatus()
     {
-        $deadline = $this->form_structure['form']['deadline'];
+        $formStructure = is_array($this->form_structure)
+            ? $this->form_structure
+            : json_decode($this->form_structure, true);
+        $deadline = $formStructure['form']['deadline'];
         $diff = now()->diffInSeconds((new Carbon($this->created_at))->addDays($deadline));
         $isFilled = empty($this->filled_at) == false;
 
