@@ -95,6 +95,7 @@ class HomeController extends Controller
             })
             ->get();
 
+
         $response['deadlines'] = new Collection();
         $response['difs'] = new Collection();
 
@@ -132,9 +133,11 @@ class HomeController extends Controller
                 }
 
                 $response['formCategoryCounters'][$formCategoryIdentifier][$currentEventStatus] += 1;
+
             } catch (Throwable) {
             }
         });
+
 
         return view(self::$views['index'], $response);
     }
