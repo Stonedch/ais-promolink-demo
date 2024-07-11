@@ -79,7 +79,10 @@
     --status-new: #48e1a8;
     --status-in-work: #3c63c7;;
     --status-expired: #e82548;
-    /*  bootstrap  */
+    /*  notification status  */
+    --status-danger: #E82548;
+    --status-dark: #121212;
+    --status-default: #3C63C7;
 
 }
 
