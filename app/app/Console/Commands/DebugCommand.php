@@ -6,15 +6,14 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class Debug extends Command
+class DebugCommand extends Command
 {
-    protected $name = 'app:debug:run';
-    protected $signature = 'app:debug:run';
+    protected $name = 'debug:run';
+    protected $signature = 'debug:run';
     protected $description = 'This\'s just debug command.';
 
     // Please clear me after debug
     public function handle(): void
     {
-        dd(now()->yesterday()->timestamp);
     }
 }
