@@ -94,6 +94,15 @@
     color: var(--ias-chernyy);
 }
 
+.new.notifications__status::before{
+    background: var(--status-new);
+}
+.in_work.notifications__status::before{
+    background: var(--status-in-work);
+}
+.expired.notifications__status::before{
+    background: var(--status-expired);
+}
 
 .danger.notifications__status::before{
     background: var(--status-danger);

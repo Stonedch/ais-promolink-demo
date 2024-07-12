@@ -12,6 +12,11 @@
 
 .table tr{
     border-bottom: 1px solid var(--ias-seryy);
+    transition: .15s all ease-in-out;
+}
+
+.table tbody tr:hover td, .table tr:hover th{
+    background: var(--ias-svetlo-seryy);
 }
 
 .accordion-button::after{
@@ -76,10 +81,17 @@
 }
 
 .table__sort{
-    background: none;
+    background: url("/img/sort.svg") no-repeat center;
+    background-size: cover;
     border: none;
-    max-width: 21px;
-    max-height: 17px;
+    height: 17px;
+    width: 17px;
+    margin-left: 3px;
+}
+
+.table__sort.active{
+    background: url("/img/active-sort.svg") no-repeat center;
+    background-size: cover;
 }
 
 .table__sort img{
@@ -89,3 +101,31 @@
 .table__title{
     width: 250px;
 }
+
+.table__status{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 125%;
+    border-radius: 15px;
+    padding: 10px 20px;
+    min-width: 120px;
+    width: max-content;
+    height: 32px;
+}
+
+.table__status.new{
+    color: var(--status-new);
+    border: 1px solid var(--status-new);
+}
+.table__status.in_work{
+    color: var(--status-in-work);
+    border: 1px solid var(--status-in-work);
+}
+.table__status.expired{
+    color: var(--status-expired);
+    border: 1px solid var(--status-expired);
+}
+

@@ -77,6 +77,11 @@
     background: var(--ias-svetlo-seryy);
 }
 
+.header__tool.active{
+    background: var(--main-color);
+    color: var(--ias-chernyy);
+}
+
 .header__left {
     display: flex;
     align-items: center;
