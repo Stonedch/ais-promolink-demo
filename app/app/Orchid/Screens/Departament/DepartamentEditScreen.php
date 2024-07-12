@@ -60,6 +60,10 @@ class DepartamentEditScreen extends Screen
                     ->required()
                     ->title('Название'),
 
+                Input::make('departament.sort')
+                ->type('number')
+                    ->title('Сортировка'),
+
                 Select::make('departament.departament_type_id')
                     ->empty('-')
                     ->options(function () {
