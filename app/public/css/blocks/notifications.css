@@ -16,12 +16,17 @@
     left: 0;
 }
 
+.notifications__button.swiper-button-disabled{
+    display: none;
+}
+
 .notifications-next{
     right: 0;
     transform: translateY(-50%) rotate(180deg) ;
 }
 
 .notification{
+    cursor: pointer;
     height: 145px;
     padding: 15px 20px;
     background: white;
