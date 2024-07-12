@@ -136,8 +136,6 @@ class HomeController extends Controller
             }
         });
 
-        dd($response['difs']);
-
         return view(self::$views['index'], $response);
     }
 
