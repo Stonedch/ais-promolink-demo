@@ -168,3 +168,16 @@ main {
     background: #ebf1ff;
     color: #4a4a4a;
 }
+
+.button--green{
+    background: var(--main-color);
+}
+
+.cover{
+    object-fit: cover;
+}
+
+.login__button {
+    border: none;
+    background: var(--main-color);
+}

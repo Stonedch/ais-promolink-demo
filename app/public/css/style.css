@@ -64,10 +64,6 @@
   border-radius: 10px;
 }
 
-.login__button {
-  border: none;
-}
-
 .report {
   margin: 40px 0;
   margin-left: 35px;
@@ -381,4 +377,11 @@ input[type=number]::-webkit-inner-spin-button {
   bottom: 0;
   background: rgba(255, 255, 255, 0.8) url(/img/preloader.svg) no-repeat center center/ 150px auto;
   z-index: 99999;
+}
+
+.avatar-modal__form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }

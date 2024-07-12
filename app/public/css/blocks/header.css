@@ -128,3 +128,7 @@
     color: var(--ias-chernyy);
     background: var(--status-new);
 }
+
+.header .header__avatar{
+    margin-left: 0;
+}
