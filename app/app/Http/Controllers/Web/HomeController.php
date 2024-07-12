@@ -100,7 +100,7 @@ class HomeController extends Controller
         $response['difs'] = new Collection();
 
         $response['events']->map(function (Event $event) use (&$response) {
-            $deadline = $response['forms']->where('id', $event->form_id)->first();
+            $deadline = $response['forms']->where('id', $event->form_id)->first()->deadline;
             $deadline = empty($deadline) == false
                 ? intval(now()->diff((new Carbon($event->created_at))->addDays($deadline))->format('%d'))
                 : null;
