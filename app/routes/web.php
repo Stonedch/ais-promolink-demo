@@ -42,6 +42,7 @@ Route::name('web.')->group(function () {
 
     // web.debug
     Route::resource('debug', \App\Http\Controllers\Web\DebugController::class);
+
 });
 
 Route::name('api.')->prefix('/api')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->group(function () {
@@ -74,4 +75,9 @@ Route::name('api.')->prefix('/api')->withoutMiddleware([\Illuminate\Foundation\H
 
     // api.debug
     Route::apiResource('debug', \App\Http\Controllers\Api\DebugController::class);
+
+    //api.notification
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markAsRead'])->name('notifications.read');
+
+
 });

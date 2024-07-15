@@ -1,4 +1,4 @@
-.notifications__button{
+.notifications__button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -12,20 +12,20 @@
     z-index: 2;
 }
 
-.notifications-prev{
+.notifications-prev {
     left: 0;
 }
 
-.notifications__button.swiper-button-disabled{
+.notifications__button.swiper-button-disabled {
     display: none;
 }
 
-.notifications-next{
+.notifications-next {
     right: 0;
-    transform: translateY(-50%) rotate(180deg) ;
+    transform: translateY(-50%) rotate(180deg);
 }
 
-.notification{
+.notification {
     cursor: pointer;
     height: 145px;
     padding: 15px 20px;
@@ -35,13 +35,13 @@
 }
 
 
-.notification__top{
+.notification__top {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.notification__title{
+.notification__title {
     margin: 0;
     font-weight: 600;
     font-size: 16px;
@@ -49,8 +49,7 @@
 }
 
 
-
-.notification__text{
+.notification__text {
     margin: 10px 0 0 0;
     font-weight: 400;
     font-size: 17px;
@@ -63,24 +62,24 @@
     -webkit-line-clamp: 4;
 }
 
-.notification__date{
+.notification__date {
     font-weight: 500;
     font-size: 13px;
     line-height: 138%;
     color: var(--ias-temno-seryy);
 }
 
-.notifications__swiper-wrapper{
+.notifications__swiper-wrapper {
     margin-top: 20px;
     padding: 0 23px;
     position: relative;
 }
 
-.notifications__top{
+.notifications__top {
     margin-top: 25px;
 }
 
-.notifications__status::before{
+.notifications__status::before {
     content: '';
     display: block;
     width: 20px;
@@ -88,7 +87,7 @@
     border-radius: 100%;
 }
 
-.notifications__status{
+.notifications__status {
     display: flex;
     align-items: center;
     gap: 7px;
@@ -99,43 +98,102 @@
     color: var(--ias-chernyy);
 }
 
-.new.notifications__status::before{
+.new.notifications__status::before {
     background: var(--status-new);
 }
-.in_work.notifications__status::before{
+
+.in_work.notifications__status::before {
     background: var(--status-in-work);
 }
-.expired.notifications__status::before{
+
+.expired.notifications__status::before {
     background: var(--status-expired);
 }
 
-.danger.notifications__status::before{
+.danger.notifications__status::before {
     background: var(--status-danger);
 }
-.default.notifications__status::before{
+
+.default.notifications__status::before {
     background: var(--status-default);
 }
-.dark.notifications__status::before{
+
+.dark.notifications__status::before {
     background: var(--status-dark);
 }
 
-.danger .notification__title{
+.danger .notification__title {
     color: var(--status-danger);
 }
-.default .notification__title{
+
+.default .notification__title {
     color: var(--status-default);
 }
-.dark .notification__title{
+
+.dark .notification__title {
     color: var(--status-dark);
 }
 
-.danger.notification{
+.danger.notification {
     border-left: 3px solid var(--status-danger);
 }
 
-.default.notification{
+.default.notification {
     border-left: 3px solid var(--status-default);
 }
-.dark.notification{
+
+.dark.notification {
     border-left: 3px solid var(--status-dark);
+}
+
+.notification-modal{
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 470px;
+    width: 100%;
+}
+
+.notification-modal__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.notification-modal__title{
+    margin: 30px 0 0 0;
+    font-weight: 600;
+    font-size: 20px;
+    color: var(--ias-chernyy);
+}
+
+.notification-modal__text{
+    margin: 15px 0 0 0;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 125%;
+    color: var(--ias-chernyy);
+}
+
+.notification-modal__bottom {
+    margin: 30px 0 0 0;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    align-items: center;
+    gap: 18px;
+}
+
+.notification-modal__next{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--ias-seryy);
+}
+
+.notification-modal__next:after{
+    content: '';
+    display: block;
+    width: 20px;
+    height: 12px;
+    background: url("/img/arrow-next-notification.svg");
+    background-size: cover;
 }
