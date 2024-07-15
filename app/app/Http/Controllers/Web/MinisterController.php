@@ -31,7 +31,7 @@ class MinisterController extends Controller
             $response = [
                 'districts' => District::orderBy('name')->get(),
                 'departaments' => Departament::all(),
-                'departamentTypes' => DepartamentType::all(),
+                'departamentTypes' => DepartamentType::where('show_minister_view', true)->get(),
             ];
 
             return view(self::$views['index'], $response);
@@ -39,7 +39,8 @@ class MinisterController extends Controller
             return redirect()
                 ->route('web.index.index')
                 ->withErrors([$e->getMessage()]);
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            dd($e);
             abort(500);
         }
     }

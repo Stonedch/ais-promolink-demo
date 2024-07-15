@@ -19,12 +19,14 @@ class Departament extends Model
         'name',
         'departament_type_id',
         'district_id',
+        'sort',
     ];
 
     protected $allowedFilters = [
         'id' => Where::class,
         'name' => Like::class,
         'departament_type_id' => Where::class,
+        'sort' => Where::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
     ];
@@ -33,6 +35,7 @@ class Departament extends Model
         'id',
         'name',
         'departament_type_id',
+        'sort',
         'updated_at',
         'created_at',
     ];

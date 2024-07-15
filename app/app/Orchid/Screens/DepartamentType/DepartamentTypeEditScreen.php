@@ -8,6 +8,7 @@ use App\Models\Departament;
 use App\Models\DepartamentType;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
@@ -64,6 +65,10 @@ class DepartamentTypeEditScreen extends Screen
                 Input::make('departamentType.name')
                     ->require()
                     ->title('Название'),
+
+                CheckBox::make('departamentType.show_minister_view')
+                    ->sendTrueOrFalse()
+                    ->title('Показывать в списках Министра?'),
             ]),
 
             Layout::table('departaments', [
