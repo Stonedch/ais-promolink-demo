@@ -44,13 +44,13 @@ class FormHelper
 
         $forms = Form::query()
             ->where('is_active', true)
-            ->where(function (Builder $query) use ($departaments, $events) {
+            ->where(function (Builder $query) use ($departaments, $allEvents) {
                 $formIdentifiers = FormDepartamentType::query()
                     ->whereIn('departament_type_id', $departaments->pluck('departament_type_id')->unique())
                     ->pluck('form_id')
                     ->toArray();
 
-                $formIdentifiers = array_merge($formIdentifiers, $events->pluck('form_id')->toArray());
+                $formIdentifiers = array_merge($formIdentifiers, $allEvents->pluck('form_id')->toArray());
                 $formIdentifiers = collect($formIdentifiers)->unique();
 
                 $query->whereIn('id', $formIdentifiers);
@@ -149,8 +149,10 @@ class FormHelper
         $departamentTypes = DepartamentType::whereIn('id', $departaments->pluck('departament_type_id'))->get();
         $districts = District::whereIn('id', $departaments->pluck('district_id'))->get();
 
-        return collect([
-            'deadlines' => $deadlines,
+
+        $formCategoryCounters = [];
+
+        return collect(['deadlines' => $deadlines,
             'difs' => $difs,
             'forms' => $forms->keyBy('id'),
             'formCategories' => $formCategories,
@@ -160,15 +162,16 @@ class FormHelper
             'formResults' => $formResults,
             'events' => $events->keyBy('id'),
             'writedEvents' => $writedEvents,
-            'allEvents' =>  $allEvents->keyBy('id')->groupBy('form_id', true),
+            'allEvents' => $allEvents->keyBy('id')->groupBy('form_id', true),
             'results' => $results,
             'departaments' => $departaments->keyBy('id'),
             'departamentTypes' => $departamentTypes->keyBy('id'),
             'districts' => $districts,
-        ]);
+            'formCategoryCounters' => $formCategoryCounters]);
     }
 
-    public static function reinitResults(Event $event, array $requestedFields, User $user): void
+    public
+    static function reinitResults(Event $event, array $requestedFields, User $user): void
     {
         self::writeResults($event, $requestedFields, $user);
         $event->filled_at = $event->filled_at ?: now();
@@ -176,7 +179,8 @@ class FormHelper
         $event->save();
     }
 
-    public static function writeResults(Event $event, array $requestedFields, User $user): void
+    public
+    static function writeResults(Event $event, array $requestedFields, User $user): void
     {
         FormResult::query()->where('event_id', $event->id)->delete();
         $structure = json_decode($event->form_structure);
@@ -201,7 +205,8 @@ class FormHelper
         }
     }
 
-    public static function getPercent(Event $event): int
+    public
+    static function getPercent(Event $event): int
     {
         try {
             $structure = json_decode($event->form_structure);

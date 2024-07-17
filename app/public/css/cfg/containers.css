@@ -4,6 +4,7 @@
 }
 
 .container-wrap {
+  width: 100%;
   max-width: var(--container-width);
   padding: 0 var(--container-padding);
   margin: 0 auto;

@@ -57,6 +57,7 @@ class FormController extends Controller
                 $event = $event->where('id', $request->input('event'))->first();
             } else {
                 $event = $event->whereNotNull('filled_at')->orderBy('id', 'desc')->first();
+
             }
 
             $response = [

@@ -383,6 +383,7 @@ input[type=number]::-webkit-inner-spin-button {
     gap: 10px;
 }
 
+
 .breadcrumb-item a {
     font-weight: 400;
     font-size: 20px;
@@ -393,4 +394,35 @@ input[type=number]::-webkit-inner-spin-button {
 
 .breadcrumb .breadcrumb-item:last-child a {
     color: var(--ias-chernyy);
+}
+
+.accordion-search-input {
+    width: 350px;
+    border-radius: 20px;
+    height: 40px;
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0 10px;
+    margin-left: auto;
+    margin-right: 60px;
+}
+
+.accordion-search-input::before{
+    content: '';
+    display: block;
+    min-width: 20px;
+    height: 20px;
+    background: url('/img/search-gray.svg') no-repeat no-repeat center / cover;
+}
+
+.accordion-search-input input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 20px;
+    outline: none;
 }

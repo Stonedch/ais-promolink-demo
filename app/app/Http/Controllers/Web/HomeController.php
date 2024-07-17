@@ -65,7 +65,8 @@ class HomeController extends Controller
 
     private function indexUser(User $user = null): View
     {
-        if (empty($user)) $user = Auth::user();
+        if (empty($user))
+            $user = Auth::user();
 
         $response = [];
 
@@ -78,7 +79,8 @@ class HomeController extends Controller
 
         $response['allEvents'] = Event::where('departament_id', $response['departament']->id)->get();
         $response['events'] = $response['allEvents']->where('filled_at', null);
-        $response['writedEvents'] = $response['allEvents']->where('filled_at', '!=', null)->keyBy('id')->groupBy('form_id', true);
+
+        $response['departaments'] = Departament::filters()->defaultSort('id', 'desc')->get();
 
         $response['forms'] = Form::query()
             ->where('is_active', true)
@@ -88,13 +90,35 @@ class HomeController extends Controller
                     ->pluck('form_id')
                     ->toArray();
 
-                $formIdentifiers = array_merge($formIdentifiers, $response['events']->pluck('form_id')->toArray());
+                $formIdentifiers = array_merge($formIdentifiers, $response['allEvents']->pluck('form_id')->toArray());
                 $formIdentifiers = collect($formIdentifiers)->unique();
 
                 $query->whereIn('id', $formIdentifiers);
             })
             ->get();
 
+
+        $response['writedEvents'] = Event::query()
+            ->whereIn('departament_id', $response['departament']->pluck('id'))
+            ->whereNot('filled_at', null)
+            ->get()
+            ->keyBy('id')
+            ->map(function (Event $event) use ($response) {
+                try {
+                    $form = $response['forms']->where('id', $event->form_id)->first();
+                    if ($form->type == 100 && empty($event->filled_at) == false) {
+                        $structure = json_decode($event->form_structure, true);
+                        $filled = $response[$event->id]->whereNotNull('value')->unique('field_id')->count();
+                        $needed = count($structure['fields']);
+                        $event->percent = intval($filled / $needed * 100);
+                    }
+                } catch (Throwable) {
+                }
+
+                return $event;
+            })
+            ->groupBy('form_id', true);
+        // $response['writedEvents'] = $response['allEvents']->where('filled_at', '!=', null)->keyBy('id')->groupBy('form_id', true);
 
         $response['deadlines'] = new Collection();
         $response['difs'] = new Collection();
@@ -108,6 +132,19 @@ class HomeController extends Controller
             $response['difs']->put($event->id, now()->diffInSeconds((new Carbon($event->created_at))->addDays($deadline)));
         });
 
+        //
+        $response['forms']->map(function (Form $form) use ($response) {
+            try {
+                $form->last_event = $response['allEvents']->where('form_id', $form->id)->sortByDesc('id')->first();
+                $form->last_event->form_structure = json_decode($form->last_event->form_structure, true);
+            } catch (Throwable) {
+            }
+
+            return $form;
+        });
+
+        //
+        // dd($response['forms']);
         $response['formCategories'] = FormCategory::query()
             ->whereIn('id', $response['forms']->pluck('form_category_id'))
             ->get()
@@ -144,7 +181,8 @@ class HomeController extends Controller
 
     private function checkAccess(User $user = null): void
     {
-        if (empty($user)) $user = Auth::user();
+        if (empty($user))
+            $user = Auth::user();
         throw_if(empty($user), new HumanException('Ошибка авторизации!'));
     }
 }

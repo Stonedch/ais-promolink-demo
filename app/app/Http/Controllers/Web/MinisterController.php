@@ -8,12 +8,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Departament;
 use App\Models\DepartamentType;
 use App\Models\District;
+use App\Models\Event;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
+
+// TODO: REMOVE ME
+ini_set('memory_limit', '256M');
 
 class MinisterController extends Controller
 {
@@ -31,7 +36,7 @@ class MinisterController extends Controller
             $response = [
                 'districts' => District::orderBy('name')->get(),
                 'departaments' => Departament::all(),
-                'departamentTypes' => DepartamentType::where('show_minister_view', true)->get(),
+                'departamentTypes' => DepartamentType::where('show_minister_view', true)->orderBy('name')->get(),
             ];
 
             return view(self::$views['index'], $response);
@@ -46,9 +51,10 @@ class MinisterController extends Controller
     }
 
     public function byDistrict(
-        District $district,
+        District    $district,
         Departament $departament
-    ): View|RedirectResponse {
+    ): View|RedirectResponse
+    {
         try {
             $this->checkAccess();
 
@@ -58,18 +64,22 @@ class MinisterController extends Controller
             ];
 
             if ($district->exists && $departament->exists) {
+                $responseCollection = FormHelper::byDepartaments(Departament::whereNotNull('departament_type_id')->get());
+
                 $response = array_merge(
-                    FormHelper::byDepartaments(Departament::whereNotNull('departament_type_id')->get())->toArray(),
+                    $responseCollection->toArray(),
                     $response
                 );
 
                 $departamentTypeEvents = [];
+                $departamentTypeEventsCollection = [];
 
-                collect($response['writedEvents'])->map(function ($events, $key) use (&$departamentTypeEvents, $departament) {
+                collect($response['writedEvents'])->map(function ($events, $key) use (&$departamentTypeEvents, &$departamentTypeEventsCollection, $departament) {
                     $finded = collect($events)->where('departament_id', $departament->id);
 
                     if ($finded->count()) {
                         $departamentTypeEvents[$key] = $finded->keyBy('id')->toArray();
+                        $departamentTypeEventsCollection[$key] = $finded->keyBy('id');
                     }
                 });
 
@@ -91,6 +101,10 @@ class MinisterController extends Controller
 
                 $response['forms'] = $includeForms;
                 $response['writedEvents'] = $departamentTypeEvents;
+                $response['events'] = $responseCollection['events'];
+                $response['allEvents'] = $responseCollection['allEvents'];
+
+
             } elseif ($district->exists) {
                 $response['districts'] = new Collection();
                 $response['departaments'] = Departament::where('district_id', $district->id)->orderBy('name')->get();
@@ -104,16 +118,18 @@ class MinisterController extends Controller
             return redirect()
                 ->route('web.index.index')
                 ->withErrors([$e->getMessage()]);
-        } catch (Throwable) {
+        } catch (Throwable $e) {
             abort(500);
         }
     }
 
+
     public function byDepartamentType(
         DepartamentType $departamentType,
-        District $district,
-        Departament $departament
-    ): View|RedirectResponse {
+        District        $district,
+        Departament     $departament
+    ): View|RedirectResponse
+    {
         try {
             $this->checkAccess();
 
@@ -124,8 +140,10 @@ class MinisterController extends Controller
             ];
 
             if ($departamentType->exists && $district->exists && $departament->exists) {
+                $responseCollection = FormHelper::byDepartaments(Departament::whereNotNull('departament_type_id')->get());
+
                 $response = array_merge(
-                    FormHelper::byDepartaments(Departament::whereNotNull('departament_type_id')->get())->toArray(),
+                    $responseCollection->toArray(),
                     $response
                 );
 
@@ -157,6 +175,8 @@ class MinisterController extends Controller
 
                 $response['forms'] = $includeForms;
                 $response['writedEvents'] = $departamentTypeEvents;
+                $response['events'] = $responseCollection['events'];
+
             } elseif ($departamentType->exists && $district->exists) {
                 $response['departaments'] = Departament::query()
                     ->where('departament_type_id', $departamentType->id)

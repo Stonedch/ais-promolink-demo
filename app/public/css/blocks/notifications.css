@@ -26,12 +26,20 @@
 }
 
 .notification {
+    display: flex;
+    flex-direction: column;
     cursor: pointer;
     height: 145px;
     padding: 15px 20px;
     background: white;
     box-shadow: 0 4px 10px 0 var(--ias-seryy);
     border-radius: 5px 11px 11px 5px;
+}
+
+.notification__status{
+    margin-top: auto;
+    align-self: end;
+    color: var(--ias-temno-seryy);
 }
 
 
@@ -180,6 +188,10 @@
     grid-template-columns: 2fr 1fr;
     align-items: center;
     gap: 18px;
+}
+
+.notification-modal__bottom.row{
+    display: flex;
 }
 
 .notification-modal__next{
