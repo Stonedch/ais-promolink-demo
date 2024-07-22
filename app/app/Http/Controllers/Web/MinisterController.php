@@ -53,8 +53,7 @@ class MinisterController extends Controller
     public function byDistrict(
         District    $district,
         Departament $departament
-    ): View|RedirectResponse
-    {
+    ): View|RedirectResponse {
         try {
             $this->checkAccess();
 
@@ -105,7 +104,6 @@ class MinisterController extends Controller
                 $response['writedEvents'] = $departamentTypeEvents;
                 $response['events'] = $responseCollection['events'];
                 $response['allEvents'] = $responseCollection['allEvents'];
-
             } elseif ($district->exists) {
                 $response['districts'] = new Collection();
                 $response['departaments'] = Departament::where('district_id', $district->id)->orderBy('name')->get();
@@ -129,8 +127,7 @@ class MinisterController extends Controller
         DepartamentType $departamentType,
         District        $district,
         Departament     $departament
-    ): View|RedirectResponse
-    {
+    ): View|RedirectResponse {
         try {
             $this->checkAccess();
 
@@ -177,7 +174,7 @@ class MinisterController extends Controller
                 $response['forms'] = $includeForms;
                 $response['writedEvents'] = $departamentTypeEvents;
                 $response['events'] = $responseCollection['events'];
-
+                $response['allEvents'] = $responseCollection['allEvents'];
             } elseif ($departamentType->exists && $district->exists) {
                 $response['departaments'] = Departament::query()
                     ->where('departament_type_id', $departamentType->id)

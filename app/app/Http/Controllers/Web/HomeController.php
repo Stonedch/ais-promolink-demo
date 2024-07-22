@@ -89,7 +89,6 @@ class HomeController extends Controller
             ->get()
             ->groupBy('event_id');
 
-
         $response['forms'] = Form::query()
             ->whereIn('id', $response['allEvents']->pluck('form_id'))
             ->where('is_active', true)
@@ -163,8 +162,8 @@ class HomeController extends Controller
         $response['difs'] = new Collection();
 
         $response['events']->map(function (Event $event) use (&$response) {
-            $deadline = $response['forms']->where('id', $event->form_id)->first()->deadline;
-            // $deadline = null;
+            // $deadline = $response['forms']->where('id', $event->form_id)->first()->deadline;
+            $deadline = null;
             $deadline = empty($deadline) == false
                 ? intval(now()->diff((new Carbon($event->created_at))->addDays($deadline))->format('%d'))
                 : null;
