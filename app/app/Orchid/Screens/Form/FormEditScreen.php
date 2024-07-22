@@ -34,7 +34,7 @@ class FormEditScreen extends Screen
                 ? FormDepartamentType::where('form_id', $form->id)->pluck('departament_type_id')->toArray()
                 : null,
             'fields' => $form->exists
-                ? Field::where('form_id', $form->id)->get()
+                ? Field::where('form_id', $form->id)->orderBy('sort')->get()
                 : null
         ];
     }
