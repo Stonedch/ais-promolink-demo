@@ -124,7 +124,7 @@ class FormController extends Controller
             $event = Event::find($request->input('event_id', null));
             throw_if(empty($event), new HumanException('601, Ошибка проверки формы!'));
 
-            if ($user->hasAnyAccess(['platform.supervisor.base']) == false) {
+            if ($user->hasAnyAccess(['platform.supervisor.base', 'platform.min.base']) == false) {
                 throw_if(empty($user->departament_id), new HumanException('600, Ошибка проверки пользователя!'));
                 throw_if($event->departament_id != $user->departament_id, new HumanException('602, Ошибка проверки пользователя!'));
             }
