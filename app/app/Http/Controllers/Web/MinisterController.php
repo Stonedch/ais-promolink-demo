@@ -34,7 +34,7 @@ class MinisterController extends Controller
             $this->checkAccess();
 
             $response = [
-                'districts' => District::orderBy('name')->get(),
+                'districts' => District::orderBy('name')->whereNotIn('id', [10])->get(),
                 'departaments' => Departament::all(),
                 'departamentTypes' => DepartamentType::where('show_minister_view', true)->orderBy('name')->get(),
             ];
