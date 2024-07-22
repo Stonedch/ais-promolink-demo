@@ -89,7 +89,9 @@ class HomeController extends Controller
             ->get()
             ->groupBy('event_id');
 
+
         $response['forms'] = Form::query()
+            ->whereIn('id', $response['allEvents']->pluck('form_id'))
             ->where('is_active', true)
             ->where(function (Builder $query) use ($response) {
                 $formIdentifiers = FormDepartamentType::query()
