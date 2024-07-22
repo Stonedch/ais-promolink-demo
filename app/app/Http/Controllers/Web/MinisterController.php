@@ -99,11 +99,12 @@ class MinisterController extends Controller
                     collect($departamentTypeEventsNotGroupping)->pluck('form_id'),
                 );
 
+                // dd($includeForms);
+
                 $response['forms'] = $includeForms;
                 $response['writedEvents'] = $departamentTypeEvents;
                 $response['events'] = $responseCollection['events'];
                 $response['allEvents'] = $responseCollection['allEvents'];
-
 
             } elseif ($district->exists) {
                 $response['districts'] = new Collection();

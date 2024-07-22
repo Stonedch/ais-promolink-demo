@@ -10,6 +10,7 @@ use App\Models\Event;
 use App\Models\Form;
 use App\Models\FormCategory;
 use App\Models\FormDepartamentType;
+use App\Models\FormResult;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Database\Query\Builder;
@@ -83,6 +84,11 @@ class HomeController extends Controller
 
         $response['departaments'] = Departament::filters()->defaultSort('id', 'desc')->get();
 
+        $results = FormResult::query()
+            ->whereIn('event_id', $response['allEvents']->pluck('id'))
+            ->get()
+            ->groupBy('event_id');
+
         $response['forms'] = Form::query()
             ->where('is_active', true)
             ->where(function (Builder $query) use ($response) {
@@ -96,20 +102,48 @@ class HomeController extends Controller
 
                 $query->whereIn('id', $formIdentifiers);
             })
-            ->get();
+            ->get()
+            ->map(function (Form $form) use ($response, $results) {
+                try {
+                    $form->last_event = $response['allEvents']->where('form_id', $form->id)->sortByDesc('id')->first();
+                    $form->last_event->form_structure = json_decode($form->last_event->form_structure, true);
+                } catch (Throwable) {
+                }
 
+                try {
+                    if ($form->type == 100 && empty($form->last_event->filled_at) == false) {
+                        $filled = $results[$form->last_event->id]->whereNotNull('value')->count();
+                        $needed = count($form->last_event->form_structure['fields']);
+                        $form->percent = intval($filled / $needed * 100);
+                    }
+                } catch (Throwable) {
+                }
+
+                return $form;
+            });
+        // dd($response['forms']);
+        // ->map(function () {
+        // //     try {
+        // //         if ($form->type == 100 && empty($form->last_event->filled_at) == false) {
+        // //             $filled = $results[$form->last_event->id]->whereNotNull('value')->count();
+        // //             $needed = count($form->last_event->form_structure['fields']);
+        // //             $form->percent = intval($filled / $needed * 100);
+        // //         }
+        // //     } catch (Throwable) {
+        // //     }
+        // });
 
         $response['writedEvents'] = Event::query()
-            ->whereIn('departament_id', $response['departament']->pluck('id'))
+            ->where('departament_id', $response['departament']->id)
             ->whereNot('filled_at', null)
             ->get()
             ->keyBy('id')
-            ->map(function (Event $event) use ($response) {
+            ->map(function (Event $event) use ($response, $results) {
                 try {
                     $form = $response['forms']->where('id', $event->form_id)->first();
                     if ($form->type == 100 && empty($event->filled_at) == false) {
                         $structure = json_decode($event->form_structure, true);
-                        $filled = $response[$event->id]->whereNotNull('value')->unique('field_id')->count();
+                        $filled = $results[$event->id]->whereNotNull('value')->unique('field_id')->count();
                         $needed = count($structure['fields']);
                         $event->percent = intval($filled / $needed * 100);
                     }
@@ -121,12 +155,14 @@ class HomeController extends Controller
             ->groupBy('form_id', true);
         // $response['writedEvents'] = $response['allEvents']->where('filled_at', '!=', null)->keyBy('id')->groupBy('form_id', true);
 
+        // dd($response);
+
         $response['deadlines'] = new Collection();
         $response['difs'] = new Collection();
 
         $response['events']->map(function (Event $event) use (&$response) {
-            // $deadline = $response['forms']->where('id', $event->form_id)->first()->deadline;
-            $deadline = null;
+            $deadline = $response['forms']->where('id', $event->form_id)->first()->deadline;
+            // $deadline = null;
             $deadline = empty($deadline) == false
                 ? intval(now()->diff((new Carbon($event->created_at))->addDays($deadline))->format('%d'))
                 : null;
@@ -154,6 +190,8 @@ class HomeController extends Controller
 
         $response['formCategoryCounters'] = [];
 
+        // dd($response);
+
         $response['allEvents']->map(function (Event $event) use (&$response) {
             try {
                 $formCategoryIdentifier = $response['forms']->where('id', $event->form_id)->first()->form_category_id;
@@ -172,9 +210,10 @@ class HomeController extends Controller
                 }
 
                 $response['formCategoryCounters'][$formCategoryIdentifier][$currentEventStatus] += 1;
-
             } catch (Throwable) {
             }
+
+            return $event;
         });
 
         return view(self::$views['index'], $response);

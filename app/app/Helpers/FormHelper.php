@@ -152,7 +152,8 @@ class FormHelper
 
         $formCategoryCounters = [];
 
-        return collect(['deadlines' => $deadlines,
+        return collect([
+            'deadlines' => $deadlines,
             'difs' => $difs,
             'forms' => $forms->keyBy('id'),
             'formCategories' => $formCategories,
@@ -167,11 +168,11 @@ class FormHelper
             'departaments' => $departaments->keyBy('id'),
             'departamentTypes' => $departamentTypes->keyBy('id'),
             'districts' => $districts,
-            'formCategoryCounters' => $formCategoryCounters]);
+            'formCategoryCounters' => $formCategoryCounters
+        ]);
     }
 
-    public
-    static function reinitResults(Event $event, array $requestedFields, User $user): void
+    public static function reinitResults(Event $event, array $requestedFields, User $user): void
     {
         self::writeResults($event, $requestedFields, $user);
         $event->filled_at = $event->filled_at ?: now();
@@ -179,8 +180,7 @@ class FormHelper
         $event->save();
     }
 
-    public
-    static function writeResults(Event $event, array $requestedFields, User $user): void
+    public static function writeResults(Event $event, array $requestedFields, User $user): void
     {
         FormResult::query()->where('event_id', $event->id)->delete();
         $structure = json_decode($event->form_structure);
@@ -205,8 +205,7 @@ class FormHelper
         }
     }
 
-    public
-    static function getPercent(Event $event): int
+    public static function getPercent(Event $event): int
     {
         try {
             $structure = json_decode($event->form_structure);
