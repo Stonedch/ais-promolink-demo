@@ -40,6 +40,7 @@ class HomeController extends Controller
                 return $this->indexUser();
             }
         } catch (HumanException $e) {
+
             return redirect()
                 ->route('web.index.index')
                 ->withErrors([$e->getMessage()]);
@@ -124,7 +125,8 @@ class HomeController extends Controller
         $response['difs'] = new Collection();
 
         $response['events']->map(function (Event $event) use (&$response) {
-            $deadline = $response['forms']->where('id', $event->form_id)->first()->deadline;
+            // $deadline = $response['forms']->where('id', $event->form_id)->first()->deadline;
+            $deadline = null;
             $deadline = empty($deadline) == false
                 ? intval(now()->diff((new Carbon($event->created_at))->addDays($deadline))->format('%d'))
                 : null;
@@ -174,7 +176,6 @@ class HomeController extends Controller
             } catch (Throwable) {
             }
         });
-
 
         return view(self::$views['index'], $response);
     }
