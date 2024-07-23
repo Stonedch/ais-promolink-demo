@@ -116,7 +116,7 @@ class FormEditScreen extends Screen
                 Select::make('departament_types')
                     ->options(fn () => DepartamentType::pluck('name', 'id'))
                     ->multiple(),
-            ])->title('Ведомства'),
+            ])->title('Учреждения'),
 
             Layout::rows([
                 Matrix::make('fields')
