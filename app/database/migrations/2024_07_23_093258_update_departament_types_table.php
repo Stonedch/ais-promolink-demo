@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('departament_types', function (Blueprint $table) {
-            if (Schema::hasColumn('departament_types', 'show_minister_view') == false) {
-                $table->boolean('show_minister_view')->default(true)->nullable();
+            if (Schema::hasColumn('departament_types', 'sort') == false) {
+                $table->integer('sort')->default(100)->nullable();
             }
         });
     }
@@ -18,7 +18,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('departament_types', function (Blueprint $table) {
-            $table->dropColumn('show_minister_view');
+            $table->dropColumn('sort');
         });
     }
 };

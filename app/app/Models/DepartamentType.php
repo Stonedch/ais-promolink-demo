@@ -18,11 +18,13 @@ class DepartamentType extends Model
     protected $fillable = [
         'name',
         'show_minister_view',
+        'sort',
     ];
 
     protected $allowedFilters = [
         'id' => Where::class,
         'name' => Like::class,
+        'sort' => Where::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
     ];
@@ -30,6 +32,7 @@ class DepartamentType extends Model
     protected $allowedSorts = [
         'id',
         'name',
+        'sort',
         'updated_at',
         'created_at',
     ];

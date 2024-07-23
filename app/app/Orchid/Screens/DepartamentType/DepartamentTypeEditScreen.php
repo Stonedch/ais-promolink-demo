@@ -66,6 +66,9 @@ class DepartamentTypeEditScreen extends Screen
                     ->require()
                     ->title('Название'),
 
+                Input::make('departamentType.sort')
+                    ->title('Сортировка'),
+
                 CheckBox::make('departamentType.show_minister_view')
                     ->sendTrueOrFalse()
                     ->title('Показывать в списках Министра?'),

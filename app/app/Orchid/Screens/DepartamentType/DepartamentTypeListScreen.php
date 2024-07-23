@@ -81,6 +81,10 @@ class DepartamentTypeListScreen extends Screen
                     ->sort()
                     ->width(200),
 
+                TD::make('sort', 'Сортировка')
+                    ->sort()
+                    ->width(200),
+
                 TD::make('created_at', 'Создано')
                     ->usingComponent(DateTimeRender::class)
                     ->filter(TD::FILTER_DATE_RANGE)
