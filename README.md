@@ -8,6 +8,7 @@ Repository of the "Form Filler" application from Promolink.
 - [Setup](#setup)
 - [Data base dump loading](#db-dump-loading)
 - [Make data base dump](#make-db-dump)
+- [Reload containers](#reload-containers)
 - [Contacts](#contacts)
 
 ## General info
@@ -37,6 +38,12 @@ $ docker-compose exec -T db psql -U formfiller formfiller < dump.sql (dumping)
 
 ```console
 $ docker-compose exec db pg_dump -U formfiller --data-only --column-inserts formfiller > dump_`date +%Y-%m-%d"_"%H_%M_%S`.sql
+```
+
+## Reload containers
+
+```console
+$ docker-compose down && docker-compose up -d --build
 ```
 
 ## Contacts
