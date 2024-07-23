@@ -433,6 +433,6 @@ select:disabled {
     border-color: rgba(118, 118, 118, 0.3);
 }
 
-._disabled {
+.header__tool._disabled {
     opacity: .5;
 }
