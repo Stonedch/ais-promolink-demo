@@ -152,7 +152,7 @@ class EventListScreen extends Screen
                         }
                     }),
 
-                TD::make('departament_id', 'Ведомство')
+                TD::make('departament_id', 'Учреждение')
                     ->sort()
                     ->width(200)
                     ->render(function (Event $event) {

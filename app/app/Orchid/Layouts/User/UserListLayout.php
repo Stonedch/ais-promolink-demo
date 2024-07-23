@@ -56,7 +56,7 @@ class UserListLayout extends Table
                 ->sort()
                 ->filter(Input::make()),
 
-            TD::make('departament_id', 'Ведомство')
+            TD::make('departament_id', 'Учреждение')
                 ->sort()
                 ->render(function (User $user) {
                     try {

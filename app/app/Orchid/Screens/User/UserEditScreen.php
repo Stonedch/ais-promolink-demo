@@ -119,7 +119,7 @@ class UserEditScreen extends Screen
                     ->options(function () {
                         return Departament::pluck('name', 'id');
                     }),
-            ]))->title('Ведомство')
+            ]))->title('Учреждение')
                 ->commands(
                     Button::make(__('Save'))
                         ->type(Color::BASIC)
