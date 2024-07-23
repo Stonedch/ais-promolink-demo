@@ -432,3 +432,7 @@ select:disabled {
     color: light-dark(rgb(84, 84, 84), rgb(170, 170, 170));
     border-color: rgba(118, 118, 118, 0.3);
 }
+
+._disabled {
+    opacity: .5;
+}
