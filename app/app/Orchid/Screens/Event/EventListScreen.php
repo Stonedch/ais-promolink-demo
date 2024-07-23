@@ -66,13 +66,13 @@ class EventListScreen extends Screen
         return [
             Layout::block([
                 Layout::tabs([
-                    'По ведомству' => [
+                    'По типу учреждения' => [
                         Layout::rows([
                             Group::make([
                                 Select::make('events.departament_type_id')
                                     ->empty('-')
                                     ->options(fn () => DepartamentType::pluck('name', 'id'))
-                                    ->title('Ведомства')
+                                    ->title('Тип учреждения')
                                     ->class('form-control _relation-departament-type'),
                                 Select::make('events.form_id')
                                     ->empty('-')
