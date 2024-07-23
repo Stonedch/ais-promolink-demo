@@ -28,6 +28,7 @@ services:
         working_dir: /var/www/
         volumes:
             - ./app/:/var/www
+            - ./docker/php/conf/:/usr/local/etc/php
         networks:
             - main
         depends_on:
