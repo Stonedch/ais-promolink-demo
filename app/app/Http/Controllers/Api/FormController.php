@@ -52,6 +52,8 @@ class FormController extends Controller
 
             FormHelper::reinitResults($event, $request->input('fields', []), $user);
 
+            dd($response);
+
             return Responser::returnSuccess($response);
         } catch (HumanException $e) {
             return Responser::returnError([$e->getMessage()]);

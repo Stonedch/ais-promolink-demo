@@ -149,8 +149,12 @@ class FormHelper
         $departamentTypes = DepartamentType::whereIn('id', $departaments->pluck('departament_type_id'))->get();
         $districts = District::whereIn('id', $departaments->pluck('district_id'))->get();
 
-
         $formCategoryCounters = [];
+
+        $allEvents->map(function (Event $event) use ($formResults) {
+            $event->maxIndex = $formResults->get($event->form_id)->get($event->id)->max('index');
+            return $event;
+        });
 
         return collect([
             'deadlines' => $deadlines,
