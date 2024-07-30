@@ -66,6 +66,23 @@ class UserListLayout extends Table
                     }
                 }),
 
+            TD::make('last_name', 'Фамилия')
+                ->width(200),
+
+            TD::make('first_name', 'Имя')
+                ->width(200),
+
+            TD::make('middle_name', 'Отчество')
+                ->width(200),
+
+            TD::make('', 'Установлен аватар?')
+                ->width(200)
+                ->render(function (User $user) {
+                    return empty($user->attachment_id)
+                        ? '<b class="badge bg-danger col-auto ms-auto">Нет</b>'
+                        : '<b class="badge bg-success col-auto ms-auto">Да</b>';
+                }),
+
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeRender::class)
                 ->align(TD::ALIGN_RIGHT)
