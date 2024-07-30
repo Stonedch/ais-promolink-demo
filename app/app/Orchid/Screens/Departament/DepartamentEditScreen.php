@@ -78,6 +78,10 @@ class DepartamentEditScreen extends Screen
                         return District::pluck('name', 'id');
                     })
                     ->title('Район'),
+
+                Input::make('departament.rating')
+                    ->type('double')
+                    ->title('Рейтинг'),
             ]),
         ];
     }

@@ -96,6 +96,10 @@ class DepartamentListScreen extends Screen
                     ->sort()
                     ->width(200),
 
+                TD::make('rating', 'Рейтинг')
+                    ->sort()
+                    ->width(200),
+
                 TD::make('sort', 'Сортировка')
                     ->sort()
                     ->width(200),
