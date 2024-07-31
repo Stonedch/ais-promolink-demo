@@ -24,11 +24,26 @@ class MinisterController extends Controller
 {
     public static array $views = [
         'index' => 'web.minister.index',
+        'reports' => 'web.minister.reports',
         'by-district' => 'web.minister.by-district',
         'by-departament-type' => 'web.minister.by-departament-type',
     ];
 
     public function index(): View|RedirectResponse
+    {
+        try {
+            $this->checkAccess();
+            return view(self::$views['index']);
+        } catch (HumanException $e) {
+            return redirect()
+                ->route('web.index.index')
+                ->withErrors([$e->getMessage()]);
+        } catch (Throwable $e) {
+            abort(500);
+        }
+    }
+
+    public function reports(): View|RedirectResponse
     {
         try {
             $this->checkAccess();
@@ -39,13 +54,12 @@ class MinisterController extends Controller
                 'departamentTypes' => DepartamentType::where('show_minister_view', true)->orderBy('name')->get(),
             ];
 
-            return view(self::$views['index'], $response);
+            return view(self::$views['reports'], $response);
         } catch (HumanException $e) {
             return redirect()
                 ->route('web.index.index')
                 ->withErrors([$e->getMessage()]);
         } catch (Throwable $e) {
-            dd($e);
             abort(500);
         }
     }
