@@ -35,4 +35,7 @@ return [
         ],
     ],
 
+    'yandex' => [
+        'maps' => env('YANDEX_MAPS_API_TOKEN'),
+    ],
 ];

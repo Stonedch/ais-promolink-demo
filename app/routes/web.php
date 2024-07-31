@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+// web
 Route::name('web.')->group(function () {
     // web.index
     Route::name('index.')->prefix('/')->controller(\App\Http\Controllers\Web\IndexController::class)->group(function () {
@@ -43,10 +44,14 @@ Route::name('web.')->group(function () {
     // web.debug
     Route::resource('debug', \App\Http\Controllers\Web\DebugController::class);
 
+    Route::name('external-departament-map.')->prefix('/external-departament-map')->controller(\App\Http\Controllers\Web\ExternalDepartamentMapController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
 });
 
+// api
 Route::name('api.')->prefix('/api')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->group(function () {
-    //api.auth
+    // api.auth
     Route::name('auth.')->prefix('/auth')->group(function () {
         //api.auth.login
         Route::name('login.')->prefix('/login')->controller(\App\Http\Controllers\Api\LoginController::class)->group(function () {
@@ -76,8 +81,6 @@ Route::name('api.')->prefix('/api')->withoutMiddleware([\Illuminate\Foundation\H
     // api.debug
     Route::apiResource('debug', \App\Http\Controllers\Api\DebugController::class);
 
-    //api.notification
+    // api.notification
     Route::post('/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markAsRead'])->name('notifications.read');
-
-
 });
