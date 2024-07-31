@@ -101,11 +101,7 @@ class User extends Authenticatable
     public function avatar(): ?Attachment
     {
         try {
-            return Cache::remember(
-                "User.avatar.v0.[$this->attachment_id]",
-                now()->addDays(7),
-                fn () => Attachment::find($this->attachment_id)
-            );
+            return Attachment::find($this->attachment_id);
         } catch (Throwable) {
             return null;
         }

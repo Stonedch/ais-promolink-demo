@@ -441,3 +441,18 @@ select:disabled {
     width: 100%;
     height: 80vh;
 }
+
+.info__avatar {
+    width: 256px;
+    height: 256px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: auto;
+}
+
+.info__avatar>img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}

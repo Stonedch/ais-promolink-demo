@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -42,4 +43,9 @@ class Departament extends Model
         'updated_at',
         'created_at',
     ];
+
+    public function getUsers(): Collection
+    {
+        return User::where('departament_id', $this->id)->get();
+    }
 }
