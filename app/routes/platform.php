@@ -13,6 +13,8 @@ use App\Orchid\Screens\District\DistrictEditScreen;
 use App\Orchid\Screens\District\DistrictListScreen;
 use App\Orchid\Screens\Event\EventListScreen;
 use App\Orchid\Screens\Event\ResultListScreen;
+use App\Orchid\Screens\ExternalDepartament\ExternalDepartamentEditScreen;
+use App\Orchid\Screens\ExternalDepartament\ExternalDepartamentListScreen;
 use App\Orchid\Screens\Form\FormEditScreen;
 use App\Orchid\Screens\Form\FormListScreen;
 use App\Orchid\Screens\FormCategory\FormCategoryEditScreen;
@@ -229,3 +231,24 @@ Route::screen('districts/{district}/edit', DistrictEditScreen::class)
     ->breadcrumbs(fn (Trail $trail, $district) => $trail
         ->parent('platform.districts')
         ->push('Редактирование', route('platform.districts.edit', $district)));
+
+// Platform > ExternalDepartaments
+Route::screen('external-departaments', ExternalDepartamentListScreen::class)
+    ->name('platform.external-departaments')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push('Внешние учреждения', route('platform.external-departaments')));
+
+// Platform > ExternalDepartaments > Create
+Route::screen('external-departaments/create', ExternalDepartamentEditScreen::class)
+    ->name('platform.external-departaments.create')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.external-departaments')
+        ->push('Создание', route('platform.external-departaments.create')));
+
+// Platform > ExternalDepartaments > Edit
+Route::screen('external-departaments/{externalDepartament}/edit', ExternalDepartamentEditScreen::class)
+    ->name('platform.external-departaments.edit')
+    ->breadcrumbs(fn (Trail $trail, $externalDepartament) => $trail
+        ->parent('platform.external-departaments')
+        ->push('Редактирование', route('platform.external-departaments.edit', $externalDepartament)));

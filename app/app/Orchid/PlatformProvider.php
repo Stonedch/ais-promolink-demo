@@ -62,6 +62,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ->permission('platform.districts.list')
                 ->divider(),
 
+            Menu::make('Внешние учреждения')
+                ->icon('bs.bank')
+                ->route('platform.external-departaments')
+                ->permission('platform.external-departaments.list'),
+
             Menu::make('Пользователи')
                 ->icon('bs.people')
                 ->route('platform.systems.users')
@@ -123,6 +128,10 @@ class PlatformProvider extends OrchidServiceProvider
 
             ItemPermission::group('Права роли "Министр"')
                 ->addPermission('platform.min.base', 'Основные'),
+
+            ItemPermission::group('Внешние учреждения')
+                ->addPermission('platform.external-departaments.list', 'Список')
+                ->addPermission('platform.external-departaments.edit', 'Редактирование'),
         ];
     }
 }
