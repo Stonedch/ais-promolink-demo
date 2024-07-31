@@ -456,3 +456,18 @@ select:disabled {
     object-fit: cover;
     object-position: center;
 }
+
+.report__content {
+    grid-template-columns: 1fr;
+    gap: 20px 0;
+}
+
+.report__content .tables__accordion {
+    margin-top: 0;
+}
+
+.report__content .tables__accordion .accordion-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px 0;
+}
