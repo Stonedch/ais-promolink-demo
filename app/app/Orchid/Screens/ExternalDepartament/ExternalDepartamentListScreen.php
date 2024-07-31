@@ -76,122 +76,122 @@ class ExternalDepartamentListScreen extends Screen
                     ->defaultHidden()
                     ->width(100),
 
-                TD::make('orgname', 'orgname')
+                TD::make('orgname', 'Наименование организации')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('orgsokrname', 'orgsokrname')
+                TD::make('orgsokrname', 'Сокращенное наименование организации')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('orgpubname', 'orgpubname')
+                TD::make('orgpubname', 'Полное наименование организации')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('type', 'type')
+                TD::make('type', 'Тип')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('post', 'post')
+                TD::make('post', 'Должность руководителя')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('rukfio', 'rukfio')
+                TD::make('rukfio', 'ФИО руководителя')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('orgfunc', 'orgfunc')
+                TD::make('orgfunc', 'Задача организации')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('index', 'index')
+                TD::make('index', 'Индекс')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('region', 'region')
+                TD::make('region', 'Регион')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('area', 'area')
+                TD::make('area', 'Район')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('town', 'town')
+                TD::make('town', 'Город')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('street', 'street')
+                TD::make('street', 'Улица')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('house', 'house')
+                TD::make('house', 'Дом')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('latitude', 'latitude')
+                TD::make('latitude', 'Широта')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('longitude', 'longitude')
+                TD::make('longitude', 'Долгота')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('mail', 'mail')
+                TD::make('mail', 'E-mail')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('telephone', 'telephone')
+                TD::make('telephone', 'Телефон')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('fax', 'fax')
+                TD::make('fax', 'Факс')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('telephonedop', 'telephonedop')
+                TD::make('telephonedop', 'Доп. телефон')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('url', 'url')
+                TD::make('url', 'Сайт')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('okpo', 'okpo')
+                TD::make('okpo', 'ОКПО')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('ogrn', 'ogrn')
+                TD::make('ogrn', 'ОГРН')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('inn', 'inn')
+                TD::make('inn', 'ИНН')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
 
-                TD::make('schedule', 'schedule')
+                TD::make('schedule', 'Расписание')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),

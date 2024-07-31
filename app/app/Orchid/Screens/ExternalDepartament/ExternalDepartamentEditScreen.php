@@ -59,76 +59,76 @@ class ExternalDepartamentEditScreen extends Screen
             Layout::rows([
                 Input::make('externalDepartament.orgname')
                     ->required()
-                    ->title('orgname'),
+                    ->title('Наименование организации'),
 
                 Input::make('externalDepartament.orgsokrname')
-                    ->title('orgsokrname'),
+                    ->title('Сокращенное наименование организации'),
 
                 Input::make('externalDepartament.orgpubname')
-                    ->title('orgpubname'),
+                    ->title('Полное наименование организации'),
 
                 Input::make('externalDepartament.type')
-                    ->title('type'),
+                    ->title('Тип'),
 
                 Input::make('externalDepartament.post')
-                    ->title('post'),
+                    ->title('Должность руководителя'),
 
                 Input::make('externalDepartament.rukfio')
-                    ->title('rukfio'),
+                    ->title('ФИО руководителя'),
 
                 Input::make('externalDepartament.orgfunc')
-                    ->title('orgfunc'),
+                    ->title('Задача организации'),
 
                 Input::make('externalDepartament.index')
-                    ->title('index'),
+                    ->title('Индекс'),
 
                 Input::make('externalDepartament.region')
-                    ->title('region'),
+                    ->title('Регион'),
 
                 Input::make('externalDepartament.area')
-                    ->title('area'),
+                    ->title('Район'),
 
                 Input::make('externalDepartament.town')
-                    ->title('town'),
+                    ->title('Город'),
 
                 Input::make('externalDepartament.street')
-                    ->title('street'),
+                    ->title('Улица'),
 
                 Input::make('externalDepartament.house')
-                    ->title('house'),
+                    ->title('Дом'),
 
                 Input::make('externalDepartament.latitude')
-                    ->title('latitude'),
+                    ->title('Широта'),
 
                 Input::make('externalDepartament.longitude')
-                    ->title('longitude'),
+                    ->title('Долгота'),
 
                 Input::make('externalDepartament.mail')
-                    ->title('mail'),
+                    ->title('E-mail'),
 
                 Input::make('externalDepartament.telephone')
-                    ->title('telephone'),
+                    ->title('Телефон'),
 
                 Input::make('externalDepartament.fax')
-                    ->title('fax'),
+                    ->title('Факс'),
 
                 Input::make('externalDepartament.telephonedop')
-                    ->title('telephonedop'),
+                    ->title('Доп. телефон'),
 
                 Input::make('externalDepartament.url')
-                    ->title('url'),
+                    ->title('Сайт'),
 
                 Input::make('externalDepartament.okpo')
-                    ->title('okpo'),
+                    ->title('ОКПО'),
 
                 Input::make('externalDepartament.ogrn')
-                    ->title('ogrn'),
+                    ->title('ОГРН'),
 
                 Input::make('externalDepartament.inn')
-                    ->title('inn'),
+                    ->title('ИНН'),
 
                 Input::make('externalDepartament.schedule')
-                    ->title('schedule'),
+                    ->title('Расписание'),
             ]),
         ];
     }
