@@ -98,15 +98,18 @@ class MinisterController extends Controller
                     collect($departamentTypeEventsNotGroupping)->pluck('form_id'),
                 );
 
-                // dd($includeForms);
-
                 $response['forms'] = $includeForms;
                 $response['writedEvents'] = $departamentTypeEvents;
                 $response['events'] = $responseCollection['events'];
                 $response['allEvents'] = $responseCollection['allEvents'];
             } elseif ($district->exists) {
                 $response['districts'] = new Collection();
-                $response['departaments'] = Departament::where('district_id', $district->id)->orderBy('name')->get();
+                $response['departaments'] = Departament::query()
+                    ->select(['departaments.*', 'departament_types.sort as departament_type_sort'])
+                    ->leftJoin('departament_types', 'departaments.departament_type_id', '=', 'departament_types.id')
+                    ->where('district_id', $district->id)
+                    ->orderBy('departament_type_sort')
+                    ->get();
             } else {
                 $response['districts'] = District::orderBy('name')->get();
                 $response['departaments'] = Departament::orderBy('name')->get();
