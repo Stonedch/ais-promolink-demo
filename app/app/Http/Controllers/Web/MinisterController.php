@@ -9,10 +9,11 @@ use App\Models\Departament;
 use App\Models\DepartamentType;
 use App\Models\District;
 use App\Models\Event;
+use App\Models\Form;
+use App\Models\FormResult;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
@@ -27,6 +28,7 @@ class MinisterController extends Controller
         'reports' => 'web.minister.reports',
         'by-district' => 'web.minister.by-district',
         'by-departament-type' => 'web.minister.by-departament-type',
+        'by-form' => 'web.minister.by-form',
     ];
 
     public function index(): View|RedirectResponse
@@ -48,13 +50,64 @@ class MinisterController extends Controller
         try {
             $this->checkAccess();
 
+            $forms = Form::query()
+                ->select(['forms.*'])
+                ->where('is_active', true)
+                ->get();
+
+            $forms = $forms->whereIn(
+                'id',
+                Event::whereIn('form_id', $forms->pluck('id'))->pluck('form_id')->unique()
+            );
+
             $response = [
                 'districts' => District::orderBy('name')->whereNotIn('id', [10])->get(),
                 'departaments' => Departament::all(),
                 'departamentTypes' => DepartamentType::where('show_minister_view', true)->orderBy('name')->get(),
+                'forms' => $forms,
             ];
 
             return view(self::$views['reports'], $response);
+        } catch (HumanException $e) {
+            return redirect()
+                ->route('web.index.index')
+                ->withErrors([$e->getMessage()]);
+        } catch (Throwable $e) {
+            dd($e);
+            abort(500);
+        }
+    }
+
+    public function byForm(Form $form): View|RedirectResponse
+    {
+        try {
+            $this->checkAccess();
+
+            throw_if($form->is_active == false, new HumanException('Ошибка обработки формы! Номер ошибки: #1000'));
+
+            $events = Event::query()
+                ->select(['events.*', 'departaments.name as departament_name'])
+                ->leftJoin('departaments', 'departaments.id', '=', 'events.departament_id')
+                ->whereNotNull('filled_at')
+                ->where('form_id', $form->id)
+                ->get()
+                ->map(function (Event $event) {
+                    $event->form_structure = json_decode($event->form_structure);
+                    return $event;
+                })
+                ->sortByDesc('created_at');
+
+            $formResults = FormResult::query()
+                ->whereIn('event_id', $events->pluck('id'))
+                ->get()
+                ->groupBy('event_id');
+
+            return view(self::$views['by-form'], [
+                'events' => $events,
+                'formResults' => $formResults,
+                'form' => $form,
+                'headers' => collect(@$events->sortByDesc('created_at')->first()->form_structure->fields)->sortBy('sort'),
+            ]);
         } catch (HumanException $e) {
             return redirect()
                 ->route('web.index.index')
