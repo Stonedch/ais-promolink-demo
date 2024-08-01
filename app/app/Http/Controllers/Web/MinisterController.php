@@ -10,6 +10,7 @@ use App\Models\DepartamentType;
 use App\Models\District;
 use App\Models\Event;
 use App\Models\Form;
+use App\Models\FormDepartamentType;
 use App\Models\FormResult;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
@@ -51,17 +52,61 @@ class MinisterController extends Controller
             $this->checkAccess();
 
             $forms = Form::query()
-                ->select(['forms.*'])
+                ->select(['forms.*', 'form_categories.name as form_category_name'])
+                ->leftJoin('form_categories', 'form_categories.id', '=', 'forms.form_category_id')
                 ->where('is_active', true)
                 ->get();
 
-            $forms = $forms->whereIn(
-                'id',
-                Event::whereIn('form_id', $forms->pluck('id'))->pluck('form_id')->unique()
-            );
+            $formEvents = Event::query()
+                ->whereIn('form_id', $forms->where('type', 100)->pluck('id'))
+                ->whereNotNull('filled_at')
+                ->get();
+
+            $forms = $forms->whereIn('id', $formEvents->pluck('form_id'));
+
+            $formDepartamentTypes = FormDepartamentType::query()
+                ->select(['form_departament_types.form_id', 'departament_types.name'])
+                ->whereIn('form_id', $forms->pluck('id'))
+                ->leftJoin('departament_types', 'departament_types.id', '=', 'form_departament_types.departament_type_id')
+                ->get();
+
+            $forms->map(function (Form $form) use ($formDepartamentTypes) {
+                try {
+                    $form->departament_types = $formDepartamentTypes->where('form_id', $form->id);
+                } catch (Throwable) {
+                } finally {
+                    return $form;
+                }
+            });
+
+            $formResults = FormResult::query()
+                ->whereIn('event_id', $formEvents->pluck('id'))
+                ->whereNotNull('value')
+                ->where('value', '!=', '')
+                ->select(['form_results.id', 'form_results.event_id'])
+                ->get()
+                ->groupBy('event_id');
+
+            $formEvents->map(function (Event $event) use ($formResults) {
+                $event->form_structure = json_decode($event->form_structure);
+                $event->filled_percent = $formResults[$event->id]->count() / count($event->form_structure->fields) * 100;
+                return $event;
+            });
+
+            $forms->map(function (Form $form) use ($formEvents) {
+                try {
+                    $findedFilledPercents = $formEvents->where('form_id', $form->id)->pluck('filled_percent')->toArray();
+                    $form->summary_filled_percent = array_sum($findedFilledPercents) / count($findedFilledPercents);
+                } catch (Throwable $e) {
+                    dd($formEvents->where('form_id', $form->id), $form);
+                    $form->summary_filled_percent = 0;
+                }
+
+                return $form;
+            });
 
             $response = [
-                'districts' => District::orderBy('name')->whereNotIn('id', [10])->get(),
+                'districts' => District::orderBy('name')->whereNot('show_minister_view', false)->get(),
                 'departaments' => Departament::all(),
                 'departamentTypes' => DepartamentType::where('show_minister_view', true)->orderBy('name')->get(),
                 'forms' => $forms,
@@ -172,13 +217,13 @@ class MinisterController extends Controller
             } elseif ($district->exists) {
                 $response['districts'] = new Collection();
                 $response['departaments'] = Departament::query()
-                    ->select(['departaments.*', 'departament_types.sort as departament_type_sort'])
+                    ->select(['departaments.*', 'departament_types.sort as departament_type_sort', 'departament_types.name as departament_type_name'])
                     ->leftJoin('departament_types', 'departaments.departament_type_id', '=', 'departament_types.id')
                     ->where('district_id', $district->id)
                     ->orderBy('departament_type_sort')
                     ->get();
             } else {
-                $response['districts'] = District::orderBy('name')->get();
+                $response['districts'] = District::orderBy('name')->whereNot('show_minister_view', false)->get();
                 $response['departaments'] = Departament::orderBy('name')->get();
             }
 
@@ -253,7 +298,7 @@ class MinisterController extends Controller
                     ->get();
             } elseif ($departamentType->exists) {
                 $response['departaments'] = Departament::where('departament_type_id', $departamentType->id)->orderBy('name')->get();
-                $response['districts'] = District::query()->whereIn('id', $response['departaments']->pluck('district_id'))->orderBy('name')->get();
+                $response['districts'] = District::query()->whereIn('id', $response['departaments']->pluck('district_id'))->whereNot('show_minister_view', false)->orderBy('name')->get();
             } else {
                 $response['departamentTypes'] = DepartamentType::orderBy('name')->get();
                 $response['departaments'] = Departament::orderBy('name')->get();

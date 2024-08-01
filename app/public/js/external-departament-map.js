@@ -60,6 +60,8 @@ $(document).ready(function() {
             }, {
                 preset: "islands#bluePersonCircleIcon",
                 iconColor: colorLuminance(getRandomColor(id)),
+                balloonMaxWidth: 500,
+                balloonMaxHeight: 700,
             });
 
             clustererPlacemarks.push(placemark);

@@ -9,6 +9,7 @@ use App\Models\DistrictDashboardParam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Matrix;
 use Orchid\Screen\Screen;
@@ -63,6 +64,10 @@ class DistrictEditScreen extends Screen
                 Input::make('district.name')
                     ->require()
                     ->title('Название'),
+
+                CheckBox::make('district.show_minister_view')
+                    ->sendTrueOrFalse()
+                    ->title('Показывать в списках Министра?'),
             ]),
 
             Layout::rows([

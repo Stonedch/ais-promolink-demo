@@ -542,3 +542,10 @@ select:disabled {
     opacity: .75;
     pointer-events: none;
 }
+
+.info__avatar {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    margin: unset;
+}

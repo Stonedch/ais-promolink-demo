@@ -18,6 +18,7 @@ class District extends Model
 
     protected $fillable = [
         'name',
+        'show_minister_view',
     ];
 
     protected $allowedFilters = [
