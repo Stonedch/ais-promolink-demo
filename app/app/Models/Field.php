@@ -20,6 +20,7 @@ class Field extends Model
         'type',
         'sort',
         'collection_id',
+        'checker_user_id',
     ];
 
     protected $allowedFilters = [
@@ -31,6 +32,7 @@ class Field extends Model
         'type' => Where::class,
         'sort' => Where::class,
         'collection_id' => Where::class,
+        'checker_user_id' => Where::class,
 
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,

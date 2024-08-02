@@ -13,9 +13,6 @@ use ZipArchive;
 
 class FieldGetter
 {
-    // departament
-    // fields
-
     public static function find(Departament $departament, array $forms, array $fields)
     {
         $values = [];

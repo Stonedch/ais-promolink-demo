@@ -46,7 +46,13 @@ Route::name('web.')->group(function () {
     // web.debug
     Route::resource('debug', \App\Http\Controllers\Web\DebugController::class);
 
+    // web.external-departament-map
     Route::name('external-departament-map.')->prefix('/external-departament-map')->controller(\App\Http\Controllers\Web\ExternalDepartamentMapController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
+
+    // web.form-checker
+    Route::name('form-checker.')->prefix('/form-checker')->controller(\App\Http\Controllers\Web\FormCheckerController::class)->group(function () {
         Route::get('/', 'index')->name('index');
     });
 });

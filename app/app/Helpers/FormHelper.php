@@ -38,123 +38,131 @@ class FormHelper
 
     public static function byDepartaments(SupportCollection $departaments): SupportCollection
     {
-        $allEvents = Event::whereIn('departament_id', $departaments->pluck('id'))->get();
-        $events = $allEvents->where('filled_at', null);
-        $writedEvents = $allEvents->where('filled_at', '!=', null)->keyBy('id')->groupBy('form_id', true);
+        try {
+            $allEvents = Event::whereIn('departament_id', $departaments->pluck('id'))->get();
+            $events = $allEvents->where('filled_at', null);
+            $writedEvents = $allEvents->where('filled_at', '!=', null)->keyBy('id')->groupBy('form_id', true);
 
-        $forms = Form::query()
-            ->where('is_active', true)
-            ->where(function (Builder $query) use ($departaments, $allEvents) {
-                $formIdentifiers = FormDepartamentType::query()
-                    ->whereIn('departament_type_id', $departaments->pluck('departament_type_id')->unique())
-                    ->pluck('form_id')
-                    ->toArray();
+            $forms = Form::query()
+                ->where('is_active', true)
+                ->where(function (Builder $query) use ($departaments, $allEvents) {
+                    $formIdentifiers = FormDepartamentType::query()
+                        ->whereIn('departament_type_id', $departaments->pluck('departament_type_id')->unique())
+                        ->pluck('form_id')
+                        ->toArray();
 
-                $formIdentifiers = array_merge($formIdentifiers, $allEvents->pluck('form_id')->toArray());
-                $formIdentifiers = collect($formIdentifiers)->unique();
+                    $formIdentifiers = array_merge($formIdentifiers, $allEvents->pluck('form_id')->toArray());
+                    $formIdentifiers = collect($formIdentifiers)->unique();
 
-                $query->whereIn('id', $formIdentifiers);
-            })
-            ->get();
+                    $query->whereIn('id', $formIdentifiers);
+                })
+                ->get();
 
-        $fields = Field::whereIn('form_id', $forms->pluck('id'))->get();
+            $fields = Field::whereIn('form_id', $forms->pluck('id'))->get();
 
-        $collections = Collection::whereIn('id', $fields->pluck('collection_id'))->get();
-        $collectionValues = CollectionValue::whereIn('collection_id', $collections->pluck('id'))->get();
+            $collections = Collection::whereIn('id', $fields->pluck('collection_id'))->get();
+            $collectionValues = CollectionValue::whereIn('collection_id', $collections->pluck('id'))->get();
 
-        $formResults = FormResult::query()
-            ->join('events', 'events.id', 'form_results.event_id')
-            ->whereIn('events.form_id', $forms->pluck('id'))
-            ->whereIn('events.departament_id', $departaments->pluck('id'))
-            ->select(['form_results.*', 'events.form_id'])
-            ->get()
-            ->groupBy(['form_id', 'event_id']);
+            $formResults = FormResult::query()
+                ->join('events', 'events.id', 'form_results.event_id')
+                ->whereIn('events.form_id', $forms->pluck('id'))
+                ->whereIn('events.departament_id', $departaments->pluck('id'))
+                ->select(['form_results.*', 'events.form_id'])
+                ->get()
+                ->groupBy(['form_id', 'event_id']);
 
-        $formDeadlines = $forms->pluck('deadline', 'id');
-        $deadlines = new SupportCollection();
-        $difs = new SupportCollection();
+            $formDeadlines = $forms->pluck('deadline', 'id');
+            $deadlines = new SupportCollection();
+            $difs = new SupportCollection();
 
-        $events->map(function (Event $event) use ($formDeadlines, &$deadlines, &$difs) {
-            $deadline = $formDeadlines->get($event->form_id);
-            $deadline = empty($deadline) == false
-                ? intval(now()->diff((new Carbon($event->created_at))->addDays($deadline))->format('%d'))
-                : null;
+            $events->map(function (Event $event) use ($formDeadlines, &$deadlines, &$difs) {
+                $deadline = $formDeadlines->get($event->form_id);
+                $deadline = empty($deadline) == false
+                    ? intval(now()->diff((new Carbon($event->created_at))->addDays($deadline))->format('%d'))
+                    : null;
 
-            $deadlines->put(
-                $event->id,
-                $deadline
-            );
+                $deadlines->put(
+                    $event->id,
+                    $deadline
+                );
 
-            $difs->put(
-                $event->id,
-                now()->diffInSeconds((new Carbon($event->created_at))->addDays($deadline))
-            );
-        });
+                $difs->put(
+                    $event->id,
+                    now()->diffInSeconds((new Carbon($event->created_at))->addDays($deadline))
+                );
+            });
 
-        $formCategories = FormCategory::query()
-            ->whereIn('id', $forms->pluck('form_category_id'))
-            ->get()
-            ->keyBy('id');
+            $formCategories = FormCategory::query()
+                ->whereIn('id', $forms->pluck('form_category_id'))
+                ->get()
+                ->keyBy('id');
 
-        $results = FormResult::query()
-            ->whereIn('event_id', $allEvents->pluck('id'))
-            ->get()
-            ->groupBy('event_id');
+            $results = FormResult::query()
+                ->whereIn('event_id', $allEvents->pluck('id'))
+                ->get()
+                ->groupBy('event_id');
 
-        $forms->map(function (Form $form) use ($allEvents, $results) {
-            try {
-                $form->last_event = $allEvents->where('form_id', $form->id)->sortByDesc('id')->first();
-                $form->last_event->form_structure = json_decode($form->last_event->form_structure, true);
-            } catch (Throwable) {
-            }
-
-            try {
-                if ($form->type == 100 && empty($form->last_event->filled_at) == false) {
-                    $filled = $results[$form->last_event->id]->whereNotNull('value')->count();
-                    $needed = count($form->last_event->form_structure['fields']);
-                    $form->percent = intval($filled / $needed * 100);
-                }
-            } catch (Throwable) {
-            }
-
-            try {
-                $form->form_structure = json_decode($form->getStructure(), true);
-            } catch (Throwable) {
-            }
-
-            return $form;
-        });
-
-        $writedEvents = Event::query()
-            ->whereIn('departament_id', $departaments->pluck('id'))
-            ->whereNot('filled_at', null)
-            ->get()
-            ->keyBy('id')
-            ->map(function (Event $event) use ($forms, $results) {
+            $forms->map(function (Form $form) use ($allEvents, $results) {
                 try {
-                    $form = $forms->where('id', $event->form_id)->first();
-                    if ($form->type == 100 && empty($event->filled_at) == false) {
-                        $structure = json_decode($event->form_structure, true);
-                        $filled = $results[$event->id]->whereNotNull('value')->unique('field_id')->count();
-                        $needed = count($structure['fields']);
-                        $event->percent = intval($filled / $needed * 100);
+                    $form->last_event = $allEvents->where('form_id', $form->id)->sortByDesc('id')->first();
+                    $form->last_event->form_structure = json_decode($form->last_event->form_structure, true);
+                } catch (Throwable) {
+                }
+
+                try {
+                    if ($form->type == 100 && empty($form->last_event->filled_at) == false) {
+                        $filled = $results[$form->last_event->id]->whereNotNull('value')->count();
+                        $needed = count($form->last_event->form_structure['fields']);
+                        $form->percent = intval($filled / $needed * 100);
                     }
                 } catch (Throwable) {
                 }
 
+                try {
+                    $form->form_structure = json_decode($form->getStructure(), true);
+                } catch (Throwable) {
+                }
+
+                return $form;
+            });
+
+            $writedEvents = Event::query()
+                ->whereIn('departament_id', $departaments->pluck('id'))
+                ->whereNot('filled_at', null)
+                ->get()
+                ->keyBy('id')
+                ->map(function (Event $event) use ($forms, $results) {
+                    try {
+                        $form = $forms->where('id', $event->form_id)->first();
+                        if ($form->type == 100 && empty($event->filled_at) == false) {
+                            $structure = json_decode($event->form_structure, true);
+                            $filled = $results[$event->id]->whereNotNull('value')->unique('field_id')->count();
+                            $needed = count($structure['fields']);
+                            $event->percent = intval($filled / $needed * 100);
+                        }
+                    } catch (Throwable) {
+                    }
+
+                    return $event;
+                })
+                ->groupBy('form_id', true);
+
+            $departamentTypes = DepartamentType::whereIn('id', $departaments->pluck('departament_type_id'))->get();
+            $districts = District::whereIn('id', $departaments->pluck('district_id'))->get();
+
+            $formCategoryCounters = [];
+
+            $allEvents->map(function (Event $event) use ($formResults) {
+                try {
+                    $event->maxIndex = $formResults->get($event->form_id)->get($event->id)->max('index');
+                } catch (Throwable) {
+                }
+
                 return $event;
-            })
-            ->groupBy('form_id', true);
-
-        $departamentTypes = DepartamentType::whereIn('id', $departaments->pluck('departament_type_id'))->get();
-        $districts = District::whereIn('id', $departaments->pluck('district_id'))->get();
-
-        $formCategoryCounters = [];
-
-        $allEvents->map(function (Event $event) use ($formResults) {
-            $event->maxIndex = $formResults->get($event->form_id)->get($event->id)->max('index');
-            return $event;
-        });
+            });
+        } catch (Throwable $e) {
+            dd($e);
+        }
 
         return collect([
             'deadlines' => $deadlines,

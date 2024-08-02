@@ -1,0 +1,25 @@
+._modal-row {
+    cursor: pointer;
+}
+
+._modal-row:hover {
+    -webkit-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+    -moz-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+    box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+    position: relative;
+    z-index: 1;
+}
+
+._modal-row .form-group {
+    pointer-events: none;
+}
+
+._modal-inputs__container {
+    width: 100%;
+    max-width: 600px;
+    padding: 0;
+}
+
+.matrix .form-control {
+    height: 80px !important;
+}

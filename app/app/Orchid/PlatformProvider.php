@@ -129,6 +129,9 @@ class PlatformProvider extends OrchidServiceProvider
             ItemPermission::group('Права роли "Министр"')
                 ->addPermission('platform.min.base', 'Основные'),
 
+            ItemPermission::group('Права роли "Проверяющий"')
+                ->addPermission('platform.checker.base', 'Основные'),
+
             ItemPermission::group('Внешние учреждения')
                 ->addPermission('platform.external-departaments.list', 'Список')
                 ->addPermission('platform.external-departaments.edit', 'Редактирование'),

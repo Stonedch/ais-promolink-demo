@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Form;
 
+use App\Helpers\PhoneNormalizer;
 use App\Models\Collection;
 use App\Models\DepartamentType;
 use App\Models\Field;
 use App\Models\Form;
 use App\Models\FormCategory;
+use App\Models\FormChecker;
 use App\Models\FormDepartamentType;
+use App\Models\User;
+use App\Orchid\Fields\FormItemMatrix;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\CheckBox;
@@ -119,7 +124,7 @@ class FormEditScreen extends Screen
             ])->title('Учреждения'),
 
             Layout::rows([
-                Matrix::make('fields')
+                FormItemMatrix::make('fields')
                     ->columns([
                         '#' => 'id',
                         'Заголовок' => 'name',
@@ -127,6 +132,7 @@ class FormEditScreen extends Screen
                         'Тип' => 'type',
                         'Сортировка' => 'sort',
                         'Коллекция' => 'collection_id',
+                        'Проверяющий' => 'checker_user_id',
                     ])
                     ->fields([
                         'id' => Input::make()->disabled()->hidden(),
@@ -135,6 +141,15 @@ class FormEditScreen extends Screen
                         'type' => Select::make()->options(Field::$TYPES),
                         'sort' => Input::make()->type('number')->class("form-control _sortable"),
                         'collection_id' => Select::make()->options(fn () => Collection::pluck('name', 'id'))->empty('-'),
+                        'checker_user_id' => Select::make()->options(function () {
+                            $options = [];
+
+                            foreach (User::whereHas('roles', fn (Builder $query) => $query->where('slug', 'checker'))->get() as $user) {
+                                $options[$user->id] = '#' . $user->id . ', ' . $user->getFullname() . ', ' . PhoneNormalizer::humanizePhone($user->phone);
+                            }
+
+                            return $options;
+                        })->empty('-'),
                     ])
                     ->title('Значения'),
             ])->title('Поля')->canSee($this->form->exists),
@@ -179,8 +194,11 @@ class FormEditScreen extends Screen
         $requestedFields = collect($request->input('fields', []));
         $isFieldsReinit = true;
 
+        $checkers = FormChecker::where('form_id', $form->id)->get();
+
         if ($isFieldsReinit) {
             $fields->map(fn (Field $field) => $field->delete());
+            $checkers->map(fn (FormChecker $checker) => $checker->delete());
 
             foreach ($requestedFields as $item) {
                 try {
@@ -189,6 +207,14 @@ class FormEditScreen extends Screen
                     $field->form_id = $form->id;
                     $field->sort = $field->sort ?: 100;
                     $field->save();
+
+                    if (empty($item['checker_user_id']) == false) {
+                        (new FormChecker())->fill([
+                            'user_id' => $item['checker_user_id'],
+                            'form_id' => $form->id,
+                            'field_id' => $field->id,
+                        ])->save();
+                    }
                 } catch (Throwable $e) {
                     continue;
                 }
@@ -196,6 +222,7 @@ class FormEditScreen extends Screen
         }
 
         Toast::info('Успешно сохранено!');
+
         return redirect()->route('platform.forms.edit', $form);
     }
 
