@@ -54,6 +54,8 @@ Route::name('web.')->group(function () {
     // web.form-checker
     Route::name('form-checker.')->prefix('/form-checker')->controller(\App\Http\Controllers\Web\FormCheckerController::class)->group(function () {
         Route::get('/', 'index')->name('index');
+        Route::get('/accept', 'accept')->name('accept');
+        Route::get('/reject', 'reject')->name('reject');
     });
 });
 

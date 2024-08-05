@@ -41,15 +41,23 @@
                     @endif
                 @endif
             @endif
-            <tr class="border-bottom">
+            <tr @if (isset($row['data']) && empty($row['data']) == false) @foreach ($row['data'] as $dataKey => $dataValue)
+                            data-{{ $dataKey }}="{{ $dataValue }}"
+                            @endforeach @endif
+                class="border-bottom">
                 @foreach ($row['cells'] as $key => $value)
                     <td>
                         <a href="{{ $row['link'] }}"
                             @if ($loop->first) class="text-start" @elseif ($loop->last) class="text-end" @endif>
-                            <span>{{ $value }}</span>
+                            <span>{!! $value !!}</span>
                         </a>
                     </td>
                 @endforeach
+                @if (isset($row['extra']) && empty($row['extra']) == false)
+                    @foreach ($row['extra'] as $item)
+                        <td>{!! $item !!}</td>
+                    @endforeach
+                @endif
             </tr>
         @endforeach
     </tbody>
