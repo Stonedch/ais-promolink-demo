@@ -554,3 +554,7 @@ select:disabled {
 .report__container.container-wrap {
     max-width: calc(100% - 40px);
 }
+
+.report__status-icon {
+    width: 32px;
+}
