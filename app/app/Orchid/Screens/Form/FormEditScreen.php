@@ -18,6 +18,7 @@ use App\Orchid\Fields\FormItemMatrix;
 use App\Orchid\Fields\SimpleSelect;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection as SupportCollection;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Group;
@@ -36,7 +37,7 @@ class FormEditScreen extends Screen
 
     public function query(Form $form): iterable
     {
-        $groups =  $form->exists ? FormGroup::where('form_id', $form->id)->orderBy('sort')->get() : null;
+        $groups =  $form->exists ? FormGroup::where('form_id', $form->id)->orderBy('sort')->get() : new SupportCollection();
 
         $groups->map(function (FormGroup $formGroup) use ($groups) {
             if (empty($formGroup->parent_id)) return $formGroup;
