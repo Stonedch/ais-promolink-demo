@@ -123,36 +123,100 @@ class MinisterController extends Controller
         }
     }
 
-    public function byForm(Form $form): View|RedirectResponse
+    public function byForm(Form $form = null): View|RedirectResponse
     {
         try {
             $this->checkAccess();
 
-            throw_if($form->is_active == false, new HumanException('Ошибка обработки формы! Номер ошибки: #1000'));
+            $response = [];
 
-            $events = Event::query()
-                ->select(['events.*', 'departaments.name as departament_name'])
-                ->leftJoin('departaments', 'departaments.id', '=', 'events.departament_id')
-                ->whereNotNull('filled_at')
-                ->where('form_id', $form->id)
-                ->get()
-                ->map(function (Event $event) {
+            if (empty($form) == false) {
+                throw_if($form->is_active == false, new HumanException('Ошибка обработки формы! Номер ошибки: #1000'));
+
+                $events = Event::query()
+                    ->select(['events.*', 'departaments.name as departament_name'])
+                    ->leftJoin('departaments', 'departaments.id', '=', 'events.departament_id')
+                    ->whereNotNull('filled_at')
+                    ->where('form_id', $form->id)
+                    ->get()
+                    ->map(function (Event $event) {
+                        $event->form_structure = json_decode($event->form_structure);
+                        return $event;
+                    })
+                    ->sortByDesc('created_at');
+
+                $formResults = FormResult::query()
+                    ->whereIn('event_id', $events->pluck('id'))
+                    ->get()
+                    ->groupBy('event_id');
+
+                $response = [
+                    'events' => $events,
+                    'formResults' => $formResults,
+                    'form' => $form,
+                    'headers' => collect(@$events->sortByDesc('created_at')->first()->form_structure->fields)->sortBy('sort'),
+                ];
+            } else {
+                $forms = Form::query()
+                    ->select(['forms.*', 'form_categories.name as form_category_name'])
+                    ->leftJoin('form_categories', 'form_categories.id', '=', 'forms.form_category_id')
+                    ->where('is_active', true)
+                    ->get();
+
+                $formEvents = Event::query()
+                    ->whereIn('form_id', $forms->where('type', 100)->pluck('id'))
+                    ->whereNotNull('filled_at')
+                    ->get();
+
+                $forms = $forms->whereIn('id', $formEvents->pluck('form_id'));
+
+                $formDepartamentTypes = FormDepartamentType::query()
+                    ->select(['form_departament_types.form_id', 'departament_types.name'])
+                    ->whereIn('form_id', $forms->pluck('id'))
+                    ->leftJoin('departament_types', 'departament_types.id', '=', 'form_departament_types.departament_type_id')
+                    ->get();
+
+                $forms->map(function (Form $form) use ($formDepartamentTypes) {
+                    try {
+                        $form->departament_types = $formDepartamentTypes->where('form_id', $form->id);
+                    } catch (Throwable) {
+                    } finally {
+                        return $form;
+                    }
+                });
+
+                $formResults = FormResult::query()
+                    ->whereIn('event_id', $formEvents->pluck('id'))
+                    ->whereNotNull('value')
+                    ->where('value', '!=', '')
+                    ->select(['form_results.id', 'form_results.event_id'])
+                    ->get()
+                    ->groupBy('event_id');
+
+                $formEvents->map(function (Event $event) use ($formResults) {
                     $event->form_structure = json_decode($event->form_structure);
+                    $event->filled_percent = $formResults[$event->id]->count() / count($event->form_structure->fields) * 100;
                     return $event;
-                })
-                ->sortByDesc('created_at');
+                });
 
-            $formResults = FormResult::query()
-                ->whereIn('event_id', $events->pluck('id'))
-                ->get()
-                ->groupBy('event_id');
+                $forms->map(function (Form $form) use ($formEvents) {
+                    try {
+                        $findedFilledPercents = $formEvents->where('form_id', $form->id)->pluck('filled_percent')->toArray();
+                        $form->summary_filled_percent = array_sum($findedFilledPercents) / count($findedFilledPercents);
+                    } catch (Throwable $e) {
+                        dd($formEvents->where('form_id', $form->id), $form);
+                        $form->summary_filled_percent = 0;
+                    }
 
-            return view(self::$views['by-form'], [
-                'events' => $events,
-                'formResults' => $formResults,
-                'form' => $form,
-                'headers' => collect(@$events->sortByDesc('created_at')->first()->form_structure->fields)->sortBy('sort'),
-            ]);
+                    return $form;
+                });
+
+                $response = [
+                    'forms' => $forms,
+                ];
+            }
+
+            return view(self::$views['by-form'], $response);
         } catch (HumanException $e) {
             return redirect()
                 ->route('web.index.index')

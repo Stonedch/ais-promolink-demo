@@ -40,7 +40,7 @@ Route::name('web.')->group(function () {
         Route::get('/reports', 'reports')->name('reports');
         Route::get('/by-district/{district?}/{departament?}', 'byDistrict')->name('by-district');
         Route::get('/by-departament-type/{departamentType?}/{district?}/{departament?}', 'byDepartamentType')->name('by-departament-type');
-        Route::get('/by-form/{form}', 'byForm')->name('by-form');
+        Route::get('/by-form/{form?}', 'byForm')->name('by-form');
     });
 
     // web.debug
