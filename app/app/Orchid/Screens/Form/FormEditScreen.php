@@ -15,6 +15,7 @@ use App\Models\FormDepartamentType;
 use App\Models\FormGroup;
 use App\Models\User;
 use App\Orchid\Fields\FormItemMatrix;
+use App\Orchid\Fields\SimpleSelect;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
@@ -140,14 +141,14 @@ class FormEditScreen extends Screen
                         'Родительская группа' => 'parent',
                         'Заголовок' => 'name',
                         'Сортировка' => 'sort',
-                        'Слаг' => 'slug',
+                        '' => 'slug',
                     ])
                     ->fields([
                         'id' => Input::make()->hidden(),
-                        'parent' => Input::make(),
+                        'parent' => SimpleSelect::make()->empty('-')->class('form-control _group-select'),
                         'name' => Input::make(),
                         'sort' => Input::make()->type('number')->class("form-control _sortable"),
-                        'slug' => Input::make()->class("form-control _sluggable"),
+                        'slug' => Input::make()->class("form-control _sluggable")->hidden(),
                     ])
             ]))->title('Группы')->canSee($this->form->exists)->commands([
                 Button::make('Сохранить структуру')

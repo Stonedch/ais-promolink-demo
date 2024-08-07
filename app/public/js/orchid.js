@@ -3,7 +3,48 @@ $(document).ready(function () {
     initRelationSelectForms();
     initModalRow();
     initSluggableMatrix();
+    renderGroupSelect();
 });
+
+function renderGroupSelect() {
+    const render = (withBackValues = false) => {
+        const options = {};
+
+        $.each($("input[name$=\"[name]\"][name^=\"groups\"]"), function () {
+            const slug = $(this).closest("tr").find("input[name$=\"[slug]\"][name^=\"groups\"]").val();
+            const name = $(this).val();
+            options[slug] = name;
+        });
+
+        $.each($("select._group-select"), function () {
+            const select = $(this);
+            const value = select.val();
+
+            select.html("<option value=\"\" selected=\"\">-</option>");
+
+            $.each(options, (slug, name) => {
+                select.append(`<option value="${slug}">${name}</option>`);
+            });
+
+            if (withBackValues) {
+                select.val($(select).data("value")).change();
+            } else {
+                select.val(value).change();
+            }
+        });
+
+        var template = $("._group-select").closest("table").find(".matrix-template")[0];
+        var templateOptions = "<option value=\"\" selected=\"\">-</option>";
+
+        $.each(options, (slug, name) => templateOptions += `<option value=\"${slug}\">${name}</option>`);
+        template.content.querySelector("select._group-select").innerHTML = templateOptions;
+    }
+
+    if (0 < $("._group-select").length) {
+        render(true);
+        $("select._group-select").on("focus", () => render());
+    }
+}
 
 function initSluggableMatrix(event) {
     const init = function () {
