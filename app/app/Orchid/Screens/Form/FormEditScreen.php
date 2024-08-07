@@ -161,8 +161,8 @@ class FormEditScreen extends Screen
                     ->columns([
                         '#' => 'id',
                         'Заголовок' => 'name',
-                        // 'Группа' => 'group',
-                        'Группа' => 'group_id',
+                        'Группа' => 'group',
+                        'Группа (демо)' => 'group_id',
                         'Тип' => 'type',
                         'Сортировка' => 'sort',
                         'Коллекция' => 'collection_id',
@@ -171,7 +171,7 @@ class FormEditScreen extends Screen
                     ->fields([
                         'id' => Input::make()->disabled()->hidden(),
                         'name' => Input::make(),
-                        // 'group' => Input::make(),
+                        'group' => Input::make(),
                         'group_id' => Select::make()->empty('-')->options(FormGroup::where('form_id', $this->form->id)->pluck('name', 'id')),
                         'type' => Select::make()->options(Field::$TYPES),
                         'sort' => Input::make()->type('number')->class("form-control _sortable"),
