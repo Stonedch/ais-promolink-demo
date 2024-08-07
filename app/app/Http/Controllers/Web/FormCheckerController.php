@@ -71,8 +71,8 @@ class FormCheckerController extends Controller
             $forms = Form::query()
                 ->whereIn('id', $events->pluck('form_id'))
                 ->get();
-            $departaments = Departament::where('id', $events->pluck('departament_id'));
-            $formResults = FormResult::where('event_id', $events->pluck('id'))->get();
+            $departaments = Departament::whereIn('id', $events->pluck('departament_id'));
+            $formResults = FormResult::whereIn('event_id', $events->pluck('id'))->get();
 
             return view(self::$views['index'], [
                 'formCheckers' => $formCheckers,

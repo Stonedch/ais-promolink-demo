@@ -13,6 +13,7 @@ use App\Models\Field;
 use App\Models\Form;
 use App\Models\FormCategory;
 use App\Models\FormDepartamentType;
+use App\Models\FormGroup;
 use App\Models\FormResult;
 use App\Models\User;
 use Carbon\Carbon;
@@ -164,11 +165,14 @@ class FormHelper
             dd($e);
         }
 
+        $formGroups = FormGroup::whereIn('form_id', $forms->pluck('id'))->orderBy('sort')->get()->groupBy('form_id', true);
+
         return collect([
             'deadlines' => $deadlines,
             'difs' => $difs,
             'forms' => $forms->keyBy('id'),
             'formCategories' => $formCategories,
+            'formGroups' => $formGroups,
             'fields' => $fields->groupBy('form_id'),
             'collections' => $collections,
             'collectionValues' => $collectionValues->groupBy('collection_id'),

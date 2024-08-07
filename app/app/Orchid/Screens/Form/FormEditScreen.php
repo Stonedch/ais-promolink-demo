@@ -12,6 +12,7 @@ use App\Models\Form;
 use App\Models\FormCategory;
 use App\Models\FormChecker;
 use App\Models\FormDepartamentType;
+use App\Models\FormGroup;
 use App\Models\User;
 use App\Orchid\Fields\FormItemMatrix;
 use Illuminate\Contracts\Database\Query\Builder;
@@ -23,6 +24,7 @@ use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Matrix;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
+use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 use Throwable;
@@ -33,6 +35,13 @@ class FormEditScreen extends Screen
 
     public function query(Form $form): iterable
     {
+        $groups =  $form->exists ? FormGroup::where('form_id', $form->id)->orderBy('sort')->get() : null;
+
+        $groups->map(function (FormGroup $formGroup) use ($groups) {
+            if (empty($formGroup->parent_id)) return $formGroup;
+            $formGroup->parent = $groups->where('id', $formGroup->parent_id)->first()->slug;
+        });
+
         return [
             'form' => $form,
             'departament_types' => $form->exists
@@ -40,7 +49,8 @@ class FormEditScreen extends Screen
                 : null,
             'fields' => $form->exists
                 ? Field::where('form_id', $form->id)->orderBy('sort')->get()
-                : null
+                : null,
+            'groups' => $groups,
         ];
     }
 
@@ -123,12 +133,36 @@ class FormEditScreen extends Screen
                     ->multiple(),
             ])->title('Учреждения'),
 
+            Layout::block(Layout::rows([
+                Matrix::make('groups')
+                    ->columns([
+                        '#' => 'id',
+                        'Родительская группа' => 'parent',
+                        'Заголовок' => 'name',
+                        'Сортировка' => 'sort',
+                        'Слаг' => 'slug',
+                    ])
+                    ->fields([
+                        'id' => Input::make()->hidden(),
+                        'parent' => Input::make(),
+                        'name' => Input::make(),
+                        'sort' => Input::make()->type('number')->class("form-control _sortable"),
+                        'slug' => Input::make()->class("form-control _sluggable"),
+                    ])
+            ]))->title('Группы')->canSee($this->form->exists)->commands([
+                Button::make('Сохранить структуру')
+                    ->type(Color::BASIC)
+                    ->icon('bs.check-circle')
+                    ->method('saveGroups')
+            ]),
+
             Layout::rows([
                 FormItemMatrix::make('fields')
                     ->columns([
                         '#' => 'id',
                         'Заголовок' => 'name',
-                        'Группа' => 'group',
+                        // 'Группа' => 'group',
+                        'Группа' => 'group_id',
                         'Тип' => 'type',
                         'Сортировка' => 'sort',
                         'Коллекция' => 'collection_id',
@@ -137,7 +171,8 @@ class FormEditScreen extends Screen
                     ->fields([
                         'id' => Input::make()->disabled()->hidden(),
                         'name' => Input::make(),
-                        'group' => Input::make(),
+                        // 'group' => Input::make(),
+                        'group_id' => Select::make()->empty('-')->options(FormGroup::where('form_id', $this->form->id)->pluck('name', 'id')),
                         'type' => Select::make()->options(Field::$TYPES),
                         'sort' => Input::make()->type('number')->class("form-control _sortable"),
                         'collection_id' => Select::make()->options(fn () => Collection::pluck('name', 'id'))->empty('-'),
@@ -154,6 +189,51 @@ class FormEditScreen extends Screen
                     ->title('Значения'),
             ])->title('Поля')->canSee($this->form->exists),
         ];
+    }
+
+    public function saveGroups(Request $request, Form $form)
+    {
+        $groups = collect($request->input('groups', []));
+        $currentParent = null;
+        $slugges = [];
+        $identifiers = [];
+
+        while (true) {
+            foreach ($groups->where('parent_id', $currentParent) as $group) {
+                try {
+                    $formGroup = empty($group['id']) == false
+                        ? FormGroup::find($group['id'])
+                        : new FormGroup();
+
+                    $parent = empty($group['parent']) == false
+                        ? $identifiers[$group['parent']]
+                        : null;
+
+                    $formGroup->fill([
+                        'name' => $group['name'],
+                        'slug' => $group['slug'],
+                        'sort' => $group['sort'],
+                        'form_id' => $form->id,
+                        'parent_id' => $parent,
+                    ])->save();
+
+                    $slugges[] = $group['slug'];
+                    $identifiers[$group['slug']] = $formGroup->id;
+                } catch (Throwable) {
+                    continue;
+                }
+            }
+
+            if (empty($slugges)) break;
+
+            $currentParent = array_pop($slugges);
+        }
+
+        FormGroup::query()
+            ->where('form_id', $form->id)
+            ->whereNotIn('id', array_values($identifiers))
+            ->get()
+            ->map(fn (FormGroup $formGroup) => $formGroup->delete());
     }
 
     public function save(Request $request, Form $form)

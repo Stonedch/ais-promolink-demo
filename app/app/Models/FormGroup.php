@@ -4,36 +4,34 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Orchid\Filters\Filterable;
+use Orchid\Filters\Types\Ilike;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
 
-class Field extends Model
+class FormGroup extends Model
 {
     use AsSource, Filterable;
 
+    protected $table = 'form_groups';
+
     protected $fillable = [
-        'form_id',
         'name',
-        'group',
-        'group_id',
-        'type',
+        'slug',
         'sort',
-        'collection_id',
-        'checker_user_id',
+        'form_id',
+        'parent_id',
     ];
 
     protected $allowedFilters = [
         'id' => Where::class,
 
-        'form_id' => Where::class,
-        'name' => Like::class,
-        'group' => Like::class,
-        'type' => Where::class,
+        'name' => Ilike::class,
+        'slug' => ILike::class,
         'sort' => Where::class,
-        'collection_id' => Where::class,
-        'checker_user_id' => Where::class,
+        'form_id' => Where::class,
+        'parent_id' => Where::class,
 
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
@@ -41,16 +39,14 @@ class Field extends Model
 
     protected $allowedSorts = [
         'id',
+
         'name',
+        'slug',
+        'sort',
+        'form_id',
+        'parent_id',
+
         'updated_at',
         'created_at',
-    ];
-
-    public static $TYPES = [
-        100 => 'Текстовое поле',
-        200 => 'Одиночный выбор',
-        300 => 'Множественный выбор',
-        400 => 'Дата',
-        500 => 'Число',
     ];
 }

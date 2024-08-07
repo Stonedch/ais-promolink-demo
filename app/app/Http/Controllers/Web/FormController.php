@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Departament;
 use App\Models\Event;
 use App\Models\Form;
+use App\Models\FormCheckerResult;
 use App\Models\FormDepartamentType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -57,13 +58,13 @@ class FormController extends Controller
                 $event = $event->where('id', $request->input('event'))->first();
             } else {
                 $event = $event->whereNotNull('filled_at')->orderBy('id', 'desc')->first();
-
             }
 
             $response = [
                 'form' => $form,
                 'departament' => $departament,
                 'event' => $event,
+                'formCheckerResults' => FormCheckerResult::where('event_id', $event->id)->get(),
             ];
 
             return view($this->views['preview'], $response);

@@ -2,7 +2,29 @@ $(document).ready(function () {
     initSortableMatrix();
     initRelationSelectForms();
     initModalRow();
+    initSluggableMatrix();
 });
+
+function initSluggableMatrix(event) {
+    const init = function () {
+        $.each(
+            $("._sluggable"),
+            function () {
+                if ($(this).data("sluggable-setted") != "1" && $(this).val() == "") {
+                    const date = new Date();
+                    $(this).val(date.getTime());
+                    $(this).data("sluggable-setted", 1);
+                }
+            }
+        );
+    }
+
+    init();
+
+    $("a[data-action=\"matrix#addRow\"]").click(function (event) {
+        init();
+    });
+}
 
 function showModalRow(event) {
     new Fancybox([
@@ -89,11 +111,13 @@ function initModalRow() {
 }
 
 function updateSortableMatrix(input = ".matrix ._sortable") {
-    var counter = 0;
+    $.each($(".matrix"), function () {
+        var counter = 0;
 
-    $.each($(input), function () {
-        counter += 100;
-        $(this).val(counter);
+        $.each($(this).find("._sortable"), function () {
+            counter += 100;
+            $(this).val(counter);
+        });
     });
 }
 
