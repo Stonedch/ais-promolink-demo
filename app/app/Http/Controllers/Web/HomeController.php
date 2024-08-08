@@ -6,6 +6,8 @@ use App\Exceptions\HumanException;
 use App\Helpers\FormHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Departament;
+use App\Models\DepartamentType;
+use App\Models\District;
 use App\Models\Event;
 use App\Models\Form;
 use App\Models\FormCategory;
@@ -59,7 +61,8 @@ class HomeController extends Controller
     private function indexSupervisor(): View
     {
         $response = FormHelper::byDepartaments(
-            Departament::whereNotNull('departament_type_id')->get()
+            Departament::whereNotNull('departament_type_id')->get(),
+            arrayReturn: true
         );
 
         return view(self::$views['index'], $response);

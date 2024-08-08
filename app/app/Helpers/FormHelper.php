@@ -37,7 +37,7 @@ class FormHelper
         return self::byDepartaments(new SupportCollection([$departament]));
     }
 
-    public static function byDepartaments(SupportCollection $departaments): SupportCollection
+    public static function byDepartaments(SupportCollection $departaments, bool $arrayReturn = false): SupportCollection|array
     {
         try {
             $allEvents = Event::whereIn('departament_id', $departaments->pluck('id'))->get();
@@ -167,8 +167,8 @@ class FormHelper
 
         $formGroups = FormGroup::whereIn('form_id', $forms->pluck('id'))->orderBy('sort')->get()->groupBy('form_id', true);
 
-        return collect([
-            'deadlines' => $deadlines,
+        $response = [
+             'deadlines' => $deadlines,
             'difs' => $difs,
             'forms' => $forms->keyBy('id'),
             'formCategories' => $formCategories,
@@ -185,7 +185,9 @@ class FormHelper
             'departamentTypes' => $departamentTypes->keyBy('id'),
             'districts' => $districts,
             'formCategoryCounters' => $formCategoryCounters
-        ]);
+       ];
+
+        return $arrayReturn ? $response : collect($response);
     }
 
     public static function reinitResults(Event $event, array $requestedFields, User $user): void
