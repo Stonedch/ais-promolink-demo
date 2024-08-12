@@ -25,6 +25,13 @@ class FormExporter
 
         mkdir($rootFolderPath);
 
+        $filename = "dot.txt";
+        $filepath = $rootFolderPath . $filename;
+        $file = fopen($filepath, 'a');
+        fputs($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+        fwrite($file, 'dot' . PHP_EOL);
+        fclose($file);
+
         foreach ($departaments as $departament) {
             $departamentFolderName = $departament->name;
             $departamentFolderPath = $rootFolderPath . "$departamentFolderName/";
