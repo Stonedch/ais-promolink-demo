@@ -123,4 +123,5 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'custom_reports' => env('CUSTOM_REPORTS', false),
 ];

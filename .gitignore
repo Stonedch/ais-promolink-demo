@@ -1,8 +1,10 @@
 .env
 docker/postgres/data/
+docker/postgres-custom-reports/data/
 docker/postgres/init/
 docker/datalens/metadata/
 docker/datalens/certs/
 docker/datalens/nginx/htpasswd
 docker/datalens/nginx/.htpasswd
+app/temp_*
 .idea

@@ -15,6 +15,20 @@ services:
         networks:
             - main
 
+    db-custom-reports:
+        image: postgres:13-alpine
+        container_name: ${DOCKER_NAME}-db-custom-reports
+        restart: unless-stopped
+        volumes:
+            - ./docker/postgres-custom-reports/init:/docker-entrypoint-initdb.d
+            - ./docker/postgres-custom-reports/data/:/var/lib/postgresql/data/
+        environment:
+            POSTGRES_DB: ${CUSTOM_REPORTS_DB_DATABASE}
+            POSTGRES_USER: ${CUSTOM_REPORTS_DB_USERNAME}
+            POSTGRES_PASSWORD: ${CUSTOM_REPORTS_DB_PASSWORD}
+        networks:
+            - main
+
     laravel:
         build:
             args:
