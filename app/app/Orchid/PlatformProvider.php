@@ -65,7 +65,15 @@ class PlatformProvider extends OrchidServiceProvider
             Menu::make('Внешние учреждения')
                 ->icon('bs.bank')
                 ->route('platform.external-departaments')
-                ->permission('platform.external-departaments.list'),
+                ->permission('platform.external-departaments.list')
+                ->divider(),
+
+            Menu::make('Типы кастомных отчетов')
+                ->icon('bs.pencil-square')
+                ->route('platform.custom-report-types')
+                ->permission('platform.custom-reports.base')
+                ->canSee(config('app.custom_reports'))
+                ->divider(),
 
             Menu::make('Пользователи')
                 ->icon('bs.people')
@@ -135,6 +143,9 @@ class PlatformProvider extends OrchidServiceProvider
             ItemPermission::group('Внешние учреждения')
                 ->addPermission('platform.external-departaments.list', 'Список')
                 ->addPermission('platform.external-departaments.edit', 'Редактирование'),
+
+            ItemPermission::group('Кастомные отчеты')
+                ->addPermission('platform.custom-reports.base', 'Основные'),
         ];
     }
 }

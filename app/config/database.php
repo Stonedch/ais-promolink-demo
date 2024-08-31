@@ -109,6 +109,21 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'custom-reports' => [
+            'driver' => 'pgsql',
+            'url' => env('CUSTOM_REPORTS_DB_URL'),
+            'host' => env('CUSTOM_REPORTS_DB_HOST', '127.0.0.1'),
+            'port' => env('CUSTOM_REPORTS_DB_PORT', '5432'),
+            'database' => env('CUSTOM_REPORTS_DB_DATABASE', 'laravel'),
+            'username' => env('CUSTOM_REPORTS_DB_USERNAME', 'root'),
+            'password' => env('CUSTOM_REPORTS_DB_PASSWORD', ''),
+            'charset' => env('CUSTOM_REPORTS_DB_CHARSET', 'utf8'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
     ],
 
     /*
@@ -144,7 +159,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [
