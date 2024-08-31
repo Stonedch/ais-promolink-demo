@@ -70,7 +70,7 @@ class DepartamentListScreen extends Screen
                     ->align(TD::ALIGN_CENTER)
                     ->width(100)
                     ->canSee(Auth::user()->hasAccess('platform.departaments.edit'))
-                    ->render(fn (Departament $departament) => DropDown::make()
+                    ->render(fn(Departament $departament) => DropDown::make()
                         ->icon('bs.three-dots-vertical')
                         ->list([
                             Link::make(__('Edit'))
@@ -92,6 +92,11 @@ class DepartamentListScreen extends Screen
                     ->width(100),
 
                 TD::make('name', 'Название')
+                    ->filter(TD::FILTER_TEXT)
+                    ->sort()
+                    ->width(200),
+
+                TD::make('inn', 'ИНН')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),

@@ -60,6 +60,10 @@ class DepartamentEditScreen extends Screen
                     ->required()
                     ->title('Название'),
 
+                Input::make('departament.inn')
+                    ->type('number')
+                    ->title('ИНН'),
+
                 Input::make('departament.sort')
                     ->type('number')
                     ->title('Сортировка'),

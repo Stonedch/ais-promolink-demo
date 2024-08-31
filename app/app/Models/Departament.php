@@ -22,6 +22,7 @@ class Departament extends Model
         'district_id',
         'sort',
         'rating',
+        'inn',
     ];
 
     protected $allowedFilters = [
@@ -30,6 +31,7 @@ class Departament extends Model
         'departament_type_id' => Where::class,
         'sort' => Where::class,
         'rating' => Where::class,
+        'inn' => Where::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
     ];
@@ -40,6 +42,7 @@ class Departament extends Model
         'departament_type_id',
         'sort',
         'rating',
+        'inn',
         'updated_at',
         'created_at',
     ];
