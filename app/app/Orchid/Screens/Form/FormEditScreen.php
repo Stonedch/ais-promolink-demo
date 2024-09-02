@@ -141,6 +141,7 @@ class FormEditScreen extends Screen
                         '#' => 'id',
                         'Родительская группа' => 'parent',
                         'Заголовок' => 'name',
+                        'Множественный' => 'is_multiple',
                         'Сортировка' => 'sort',
                         '' => 'slug',
                     ])
@@ -148,6 +149,7 @@ class FormEditScreen extends Screen
                         'id' => Input::make()->hidden(),
                         'parent' => SimpleSelect::make()->empty('-')->class('form-control _group-select'),
                         'name' => Input::make(),
+                        'is_multiple' => CheckBox::make()->sendTrueOrFalse(),
                         'sort' => Input::make()->type('number')->class("form-control _sortable"),
                         'slug' => Input::make()->class("form-control _sluggable")->hidden(),
                     ])
@@ -214,6 +216,7 @@ class FormEditScreen extends Screen
                     $formGroup->fill([
                         'name' => $group['name'],
                         'slug' => $group['slug'],
+                        'is_multiple' => $group['is_multiple'],
                         'sort' => $group['sort'],
                         'form_id' => $form->id,
                         'parent_id' => $parent,

@@ -22,6 +22,7 @@ class FormGroup extends Model
         'sort',
         'form_id',
         'parent_id',
+        'is_multiple',
     ];
 
     protected $allowedFilters = [
@@ -32,6 +33,7 @@ class FormGroup extends Model
         'sort' => Where::class,
         'form_id' => Where::class,
         'parent_id' => Where::class,
+        'is_multiple' => Where::class,
 
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
@@ -45,6 +47,7 @@ class FormGroup extends Model
         'sort',
         'form_id',
         'parent_id',
+        'is_multiple',
 
         'updated_at',
         'created_at',

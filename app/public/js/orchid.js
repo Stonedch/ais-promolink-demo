@@ -42,7 +42,9 @@ function renderGroupSelect() {
 
     if (0 < $("._group-select").length) {
         render(true);
-        $("select._group-select").on("focus", () => render());
+        $("a[data-action=\"matrix#addRow\"]").click(function (event) {
+            $("select._group-select").on("click", () => render());
+        });
     }
 }
 
