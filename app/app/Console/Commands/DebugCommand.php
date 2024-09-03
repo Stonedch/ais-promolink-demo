@@ -56,7 +56,6 @@ class DebugCommand extends Command
                     'middle_name' => $line[4],
                     'phone' => $phone,
                     'password' => Hash::make($password),
-                    // 'email' => $line[7] ?: self::genEmail($phone),
                 ];
 
                 $user = User::where('phone', $phone)->first() ?: new User();
