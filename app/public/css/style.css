@@ -558,3 +558,12 @@ select:disabled {
 .report__status-icon {
     width: 32px;
 }
+
+.report__content .tables__accordion .accordion-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.button._multiple-group {
+    border-radius: unset;
+}

@@ -198,7 +198,7 @@ class FormHelper
         $event->save();
     }
 
-    public static function writeResults(Event $event, array $requestedFields, User $user): void
+    public static function writeResults(Event $event, array $requestedFields, User $user, string $savedStructure = ''): void
     {
         FormResult::query()->where('event_id', $event->id)->delete();
         $structure = json_decode($event->form_structure);
@@ -218,6 +218,7 @@ class FormHelper
                     'field_id' => $field->id,
                     'index' => $index,
                     'value' => $value,
+                    'saved_structure' => $savedStructure,
                 ])->save();
             }
         }

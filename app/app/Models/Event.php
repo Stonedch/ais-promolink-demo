@@ -22,6 +22,7 @@ class Event extends Model
         'form_structure',
         'filled_at',
         'refilled_at',
+        'saved_structure',
     ];
 
     protected $allowedFilters = [

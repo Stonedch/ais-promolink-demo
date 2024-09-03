@@ -21,6 +21,7 @@ class FormResult extends Model
         'field_id',
         'value',
         'index',
+        'saved_structure',
     ];
 
     protected $allowedFilters = [

@@ -103,7 +103,7 @@ class FormController extends Controller
             throw_if($event->departament_id != $user->departament_id, new HumanException('602, Ошибка проверки пользователя!'));
             throw_if(empty($event->filled_at) == false, new HumanException('603, Ошибка проверки формы!'));
 
-            FormHelper::writeResults($event, $request->input('fields', []), $user);
+            FormHelper::writeResults($event, $request->input('fields', []), $user, $request->input('structure', ''));
 
             return Responser::returnSuccess($response);
         } catch (HumanException $e) {
