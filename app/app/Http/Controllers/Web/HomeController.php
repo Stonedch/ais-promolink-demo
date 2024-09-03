@@ -40,15 +40,17 @@ class HomeController extends Controller
             } elseif ($user->hasAnyAccess(['platform.supervisor.base'])) {
                 return $this->indexSupervisor();
             } else {
+                if (empty($user->departament_id)) {
+                    dd("У Вас отсутствует установленное ведомство!");
+                }
+
                 return $this->indexUser();
             }
         } catch (HumanException $e) {
-
             return redirect()
                 ->route('web.index.index')
                 ->withErrors([$e->getMessage()]);
         } catch (Throwable $e) {
-            dd($e);
             abort(500);
         }
     }
