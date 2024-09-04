@@ -9,7 +9,8 @@
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
         "orchid/platform": "^14.23",
-        "phpoffice/phpspreadsheet": "^2.1"
+        "phpoffice/phpspreadsheet": "^2.1",
+        "telegram-bot/api": "^2.5"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
