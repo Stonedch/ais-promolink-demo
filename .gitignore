@@ -8,3 +8,4 @@ docker/datalens/nginx/htpasswd
 docker/datalens/nginx/.htpasswd
 app/temp_*
 .idea
+app/public/.well-known

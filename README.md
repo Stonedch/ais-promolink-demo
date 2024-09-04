@@ -20,7 +20,8 @@ Repository of the "Form Filler" application from Promolink.
 ```console
 $ cp .env.example .env (and configurate)
 $ cp ./app/.env.example. env (and configurate)
-$ htpasswd -c ./docker/datalens/nginx/.htpasswd promolink
+$ cp ./docker/nginx/nginx.conf.example ./docker/nginx.conf (and configurate)
+$ htpasswd -c ./docker/datalens/nginx/htpasswd promolink
 $ docker-compose up -d --build
 $ docker-compose exec laravel composer install
 $ docker-compose exec laravel php artisan key:generate --ansi
