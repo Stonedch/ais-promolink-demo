@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Helpers\PhoneNormalizer;
+use App\Orchid\Screens\BotNotification\BotNotificationScreen;
 use App\Orchid\Screens\Collection\CollectionEditScreen;
 use App\Orchid\Screens\Collection\CollectionListScreen;
 use App\Orchid\Screens\CustomReportType\CustomReportTypeEditScreen;
@@ -275,3 +276,10 @@ Route::screen('custom-report-types/{customReportType}/edit', CustomReportTypeEdi
     ->breadcrumbs(fn(Trail $trail, $customReportType) => $trail
         ->parent('platform.custom-report-types')
         ->push('Редактирование', route('platform.custom-report-types.edit', $customReportType)));
+
+// Platform > BotNotification
+Route::screen('bot-notifications', BotNotificationScreen::class)
+    ->name('platform.bot-notifications')
+    ->breadcrumbs(fn(Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push('Бот-уведомления', route('platform.bot-notifications')));

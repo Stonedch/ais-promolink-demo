@@ -38,4 +38,8 @@ return [
     'yandex' => [
         'maps' => env('YANDEX_MAPS_API_TOKEN'),
     ],
+
+    'telegram' => [
+        'token' => env('TELEGRAM_BOT_API_TOKEN'),
+    ],
 ];

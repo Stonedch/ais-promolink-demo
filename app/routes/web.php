@@ -98,4 +98,9 @@ Route::name('api.')->prefix('/api')->withoutMiddleware([\Illuminate\Foundation\H
     Route::name('custom-reports.')->prefix('/custom-reports')->controller(\App\Http\Controllers\Api\CustomReportController::class)->group(function () {
         Route::post('/store', 'store')->name('store');
     });
+
+    // api.telegram
+    Route::name('telegram.')->prefix('/telegram')->controller(\App\Http\Controllers\Api\TelegramController::class)->group(function () {
+        Route::match(['GET', 'POST'], '/handle', 'handle')->name('handle');
+    });
 });

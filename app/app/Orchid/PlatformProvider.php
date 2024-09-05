@@ -75,6 +75,12 @@ class PlatformProvider extends OrchidServiceProvider
                 ->canSee(config('app.custom_reports'))
                 ->divider(),
 
+            Menu::make('Бод-уведомления')
+                ->icon('bs.chat-square-dots')
+                ->route('platform.bot-notifications')
+                ->permission('platform.bot_users.base')
+                ->divider(),
+
             Menu::make('Пользователи')
                 ->icon('bs.people')
                 ->route('platform.systems.users')
@@ -146,6 +152,9 @@ class PlatformProvider extends OrchidServiceProvider
 
             ItemPermission::group('Кастомные отчеты')
                 ->addPermission('platform.custom-reports.base', 'Основные'),
+
+            ItemPermission::group('Бот-рассылка')
+                ->addPermission('platform.bot_users.base', 'Основные'),
         ];
     }
 }
