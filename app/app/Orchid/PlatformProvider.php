@@ -75,7 +75,7 @@ class PlatformProvider extends OrchidServiceProvider
                 ->canSee(config('app.custom_reports'))
                 ->divider(),
 
-            Menu::make('Бод-уведомления')
+            Menu::make('Бот-уведомления')
                 ->icon('bs.chat-square-dots')
                 ->route('platform.bot-notifications')
                 ->permission('platform.bot_users.base')

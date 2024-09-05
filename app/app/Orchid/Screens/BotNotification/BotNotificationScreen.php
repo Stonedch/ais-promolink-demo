@@ -140,7 +140,11 @@ class BotNotificationScreen extends Screen
             $users = User::whereIn('departament_id', $departaments->pluck('id'))->get();
 
             foreach ($users as $user) {
-                TelegramBotHelper::notify($user, 'Уведомление', $message);
+                try {
+                    TelegramBotHelper::notify($user, 'Уведомление', $message);
+                } catch (Exception) {
+                    continue;
+                }
             }
 
             Toast::success('Успешно');
