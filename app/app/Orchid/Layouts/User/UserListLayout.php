@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\User;
 
+use App\Models\BotUser;
 use App\Models\Departament;
 use App\Orchid\Components\DateTimeRender;
 use App\Orchid\Components\HumanizePhone;
@@ -32,7 +33,7 @@ class UserListLayout extends Table
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
                 ->width('100px')
-                ->render(fn (User $user) => DropDown::make()
+                ->render(fn(User $user) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
                         Link::make(__('Edit'))
@@ -58,6 +59,7 @@ class UserListLayout extends Table
 
             TD::make('departament_id', 'Учреждение')
                 ->sort()
+                ->filter(TD::FILTER_SELECT, Departament::pluck('name', 'id'))
                 ->render(function (User $user) {
                     try {
                         return Departament::find($user->departament_id)->name;
@@ -67,12 +69,15 @@ class UserListLayout extends Table
                 }),
 
             TD::make('last_name', 'Фамилия')
+                ->filter(Input::make())
                 ->width(200),
 
             TD::make('first_name', 'Имя')
+                ->filter(Input::make())
                 ->width(200),
 
             TD::make('middle_name', 'Отчество')
+                ->filter(Input::make())
                 ->width(200),
 
             TD::make('', 'Установлен аватар?')
@@ -81,6 +86,18 @@ class UserListLayout extends Table
                     return empty($user->attachment_id)
                         ? '<b class="badge bg-danger col-auto ms-auto">Нет</b>'
                         : '<b class="badge bg-success col-auto ms-auto">Да</b>';
+                }),
+
+            TD::make('', 'Телеграм')
+                ->width(200)
+                ->render(function (User $user) {
+                    try {
+                        return empty(BotUser::where('user_id', $user->id)->count())
+                            ? '<b class="badge bg-danger col-auto ms-auto">Нет</b>'
+                            : '<b class="badge bg-success col-auto ms-auto">Есть</b>';
+                    } catch (Throwable) {
+                        return '-';
+                    }
                 }),
 
             TD::make('created_at', __('Created'))
