@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Middleware\LogRoute;
 use Illuminate\Support\Facades\Route;
 
 // web
-Route::name('web.')->group(function () {
+Route::middleware([LogRoute::class])->name('web.')->group(function () {
     // web.index
     Route::name('index.')->prefix('/')->controller(\App\Http\Controllers\Web\IndexController::class)->group(function () {
         Route::get('/', 'index')->name('index');
@@ -60,7 +61,7 @@ Route::name('web.')->group(function () {
 });
 
 // api
-Route::name('api.')->prefix('/api')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->group(function () {
+Route::middleware([LogRoute::class])->name('api.')->prefix('/api')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->group(function () {
     // api.auth
     Route::name('auth.')->prefix('/auth')->group(function () {
         //api.auth.login
