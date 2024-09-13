@@ -239,7 +239,8 @@ class MinisterController extends Controller
             ];
 
             if ($district->exists && $departament->exists) {
-                $responseCollection = FormHelper::byDepartaments(Departament::whereNotNull('departament_type_id')->get());
+                // $responseCollection = FormHelper::byDepartaments(Departament::whereNotNull('departament_type_id')->get());
+                $responseCollection = FormHelper::byDepartaments(Departament::where('id', $departament->id)->get());
 
                 $response = array_merge(
                     $responseCollection->toArray(),
@@ -317,7 +318,7 @@ class MinisterController extends Controller
             ];
 
             if ($departamentType->exists && $district->exists && $departament->exists) {
-                $responseCollection = FormHelper::byDepartaments(Departament::whereNotNull('departament_type_id')->get());
+                $responseCollection = FormHelper::byDepartaments(Departament::where('id', $departament->id)->get());
 
                 $response = array_merge(
                     $responseCollection->toArray(),

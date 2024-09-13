@@ -64,13 +64,22 @@ class FormHelper
             $collections = Collection::whereIn('id', $fields->pluck('collection_id'))->get();
             $collectionValues = CollectionValue::whereIn('collection_id', $collections->pluck('id'))->get();
 
+            // dd(FormResult::first());
+
             $formResults = FormResult::query()
+                // ->orderBy('form_results.id', 'DESC')
                 ->join('events', 'events.id', 'form_results.event_id')
                 ->whereIn('events.form_id', $forms->pluck('id'))
                 ->whereIn('events.departament_id', $departaments->pluck('id'))
-                ->select(['form_results.*', 'events.form_id'])
+                ->select(['form_results.id', 'form_results.user_id', 'form_results.event_id', 'form_results.field_id', 'form_results', 'value', 'events.form_id'])
+                // ->take(10)
                 ->get()
+                ->sort()
                 ->groupBy(['form_id', 'event_id']);
+
+            // foreach ($formResults as $form => $results) {
+            //     $formResults[$form] = $results->sortByDesc('id')->take(1);
+            // }
 
             $formDeadlines = $forms->pluck('deadline', 'id');
             $deadlines = new SupportCollection();
@@ -99,9 +108,16 @@ class FormHelper
                 ->keyBy('id');
 
             $results = FormResult::query()
+                // ->orderBy('id', 'DESC')
                 ->whereIn('event_id', $allEvents->pluck('id'))
+                // ->take(10)
                 ->get()
+                ->sort()
                 ->groupBy('event_id');
+
+            // foreach ($results as $event => $subresults) {
+            //     $results[$event] = $subresults->sortByDesc('id')->take(3);
+            // }
 
             $forms->map(function (Form $form) use ($allEvents, $results) {
                 try {
@@ -168,7 +184,7 @@ class FormHelper
         $formGroups = FormGroup::whereIn('form_id', $forms->pluck('id'))->orderBy('sort')->get()->groupBy('form_id', true);
 
         $response = [
-             'deadlines' => $deadlines,
+            'deadlines' => $deadlines,
             'difs' => $difs,
             'forms' => $forms->keyBy('id'),
             'formCategories' => $formCategories,

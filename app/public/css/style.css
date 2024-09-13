@@ -567,3 +567,7 @@ select:disabled {
 .button._multiple-group {
     border-radius: unset;
 }
+
+.button--light._multiple-group-delete {
+    background: #f9a0a3;
+}
