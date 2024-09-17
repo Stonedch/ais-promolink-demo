@@ -124,4 +124,6 @@ return [
     ],
 
     'custom_reports' => env('CUSTOM_REPORTS', false),
+
+    'custom_reports_command' => env('CUSTOM_REPORTS_COMMAND', null),
 ];

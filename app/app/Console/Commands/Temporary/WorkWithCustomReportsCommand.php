@@ -11,7 +11,7 @@ class WorkWithCustomReportsCommand extends Command
 {
     protected $name = 'work-custom-reports:run';
     protected $signature = 'work-custom-reports:run';
-    protected $description = 'Работа с касмотными отчетами';
+    protected $description = 'Работа с касмотными отчетами по типам';
 
     protected const TYPES = [
         'sk' => 2,
