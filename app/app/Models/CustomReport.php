@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Artisan;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
@@ -41,4 +42,13 @@ class CustomReport extends Model
         'updated_at',
         'created_at',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::created(function (CustomReport $customReport) {
+            Artisan::call('custom-reports:run');
+        });
+    }
 }

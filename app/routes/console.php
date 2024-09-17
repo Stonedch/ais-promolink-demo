@@ -17,7 +17,3 @@ Artisan::command(BotUserFindCommand::class, function () {
 Artisan::command(BotUserNotifyCommand::class, function () {
     $this->comment("Bot user notify");
 })->everyMinute();
-
-Artisan::command(WorkWithCustomReportsCommand::class, function () {
-    $this->comment("Work With Custom Reports Command");
-})->everyMinute();
