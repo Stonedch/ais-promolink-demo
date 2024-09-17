@@ -172,11 +172,99 @@ class FormController extends Controller
                 $event = $event->whereNotNull('filled_at')->orderBy('id', 'desc')->first();
             }
 
+            $allEvents = Event::where('id', $event->id)->get()->map(function (Event $event) {
+                $event->form_structure = json_decode($event->form_structure, true);
+                return $event;
+            });
+
+            $events = $allEvents->where('filled_at', null);
+            $writedEvents = $allEvents->where('filled_at', '!=', null)->keyBy('id')->groupBy('form_id', true);
+
+            $forms = Form::where('id', $event->form_id)->get()->keyBy('id');
+
+            $departaments = Departament::find($user->departament_id)->get();
+
+            $formCategories = FormCategory::whereIn('id', $forms->pluck('form_category_id'))->get()->keyBy('id');
+            $formGroups = FormGroup::whereIn('form_id', $forms->pluck('id'))->orderBy('sort')->get()->groupBy('form_id', true);
+
+            $fields = Field::whereIn('form_id', $forms->pluck('id'))->get();
+
+            $collections = Collection::whereIn('id', $fields->pluck('collection_id'))->get();
+            $collectionValues = CollectionValue::whereIn('collection_id', $collections->pluck('id'))->get();
+
+            $formResults = FormResult::query()
+                ->join('events', 'events.id', 'form_results.event_id')
+                ->whereIn('events.id', $allEvents->pluck('id'))
+                ->whereIn('events.form_id', $forms->pluck('id'))
+                ->whereIn('events.departament_id', $departaments->pluck('id'))
+                ->select(['form_results.id', 'form_results.user_id', 'form_results.event_id', 'form_results.field_id', 'form_results', 'value', 'events.form_id'])
+                ->orderByDesc('form_results.id')
+                ->take(1)
+                ->get()
+                ->map(function (FormResult $result) {
+                    $result->saved_structure = json_decode($result->saved_structure, true);
+                    $result->form_results = json_decode($result->form_results, true);
+                    return $result;
+                })
+                ->groupBy(['form_id', 'event_id']);
+
+            $results = FormResult::query()
+                ->whereIn('event_id', $allEvents->pluck('id'))
+                ->orderByDesc('form_results.id')
+                ->take(1)
+                ->get()
+                ->map(function (FormResult $result) {
+                    $result->saved_structure = json_decode($result->saved_structure, true);
+                    $result->form_results = json_decode($result->form_results, true);
+                    return $result;
+                })
+                ->groupBy('event_id');
+
+            $forms->map(function (Form $form) use ($allEvents, $results) {
+                try {
+                    $form->last_event = $allEvents->where('form_id', $form->id)->sortByDesc('id')->first();
+                } catch (Throwable) {
+                }
+
+                try {
+                    if ($form->type == 100 && empty($form->last_event->filled_at) == false) {
+                        $filled = $results[$form->last_event->id]->whereNotNull('value')->count();
+                        $needed = count($form->last_event->form_structure['fields']);
+                        $form->percent = intval($filled / $needed * 100);
+                    }
+                } catch (Throwable) {
+                }
+
+                try {
+                    $form->form_structure = json_decode($form->getStructure(), true);
+                } catch (Throwable) {
+                }
+
+                return $form;
+            });
+
             $response = [
                 'form' => $form,
                 'departament' => $departament,
                 'event' => $event,
                 'formCheckerResults' => FormCheckerResult::where('event_id', $event->id)->get(),
+                'data' => [
+                    'forms' => $forms->toArray(),
+                    'formCategories' => $formCategories->toArray(),
+                    'formGroups' => $formGroups->toArray(),
+
+                    'fields' => $fields->groupBy('form_id')->toArray(),
+
+                    'collections' => $collections->toArray(),
+                    'collectionValues' => $collectionValues->groupBy('collection_id')->toArray(),
+
+                    'events' => $events->keyBy('id')->toArray(),
+                    'writedEvents' => $writedEvents->toArray(),
+                    'allEvents' => $allEvents->keyBy('id')->groupBy('form_id', true)->toArray(),
+
+                    'formResults' => $formResults->toArray(),
+                    'results' => $results->toArray(),
+                ],
             ];
 
             return view($this->views['preview'], $response);
