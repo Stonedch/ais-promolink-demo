@@ -8,6 +8,7 @@ use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
+use Throwable;
 
 class CustomReport extends Model
 {
@@ -48,7 +49,7 @@ class CustomReport extends Model
         parent::boot();
 
         self::created(function (CustomReport $customReport) {
-            Artisan::call('custom-reports:run');
+            dispatch(fn() => Artisan::call('custom-reports:run'));
         });
     }
 }

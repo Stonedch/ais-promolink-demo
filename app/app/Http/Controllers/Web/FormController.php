@@ -199,7 +199,6 @@ class FormController extends Controller
                 ->whereIn('events.departament_id', $departaments->pluck('id'))
                 ->select(['form_results.id', 'form_results.user_id', 'form_results.event_id', 'form_results.field_id', 'form_results', 'value', 'events.form_id'])
                 ->orderByDesc('form_results.id')
-                ->take(1)
                 ->get()
                 ->map(function (FormResult $result) {
                     $result->saved_structure = json_decode($result->saved_structure, true);
@@ -211,7 +210,6 @@ class FormController extends Controller
             $results = FormResult::query()
                 ->whereIn('event_id', $allEvents->pluck('id'))
                 ->orderByDesc('form_results.id')
-                ->take(1)
                 ->get()
                 ->map(function (FormResult $result) {
                     $result->saved_structure = json_decode($result->saved_structure, true);

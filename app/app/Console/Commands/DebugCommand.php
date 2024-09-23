@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Models\CustomReport;
+use App\Models\Event;
+use App\Models\Field;
+use App\Models\FormResult;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 
 class DebugCommand extends Command
 {
@@ -15,5 +20,8 @@ class DebugCommand extends Command
     // Please clear me after debug
     public function handle(): void
     {
+        dd(
+            FormResult::where('event_id', 3012)->first()->saved_structure
+        );
     }
 }
