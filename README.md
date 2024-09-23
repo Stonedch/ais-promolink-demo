@@ -29,6 +29,14 @@ $ docker-compose exec laravel php artisan migrate
 $ docker-compose exec laravel php artisan orchid:admin
 ```
 
+## Cron settings
+
+```console
+$ crontab -e (and configurate)
+* * * * * cd /path/to/project && docker-compose exec -T laravel php artisan schedule:run >> /dev/null 2>&1
+0 6 * * * cd /path/to/project && ./backup.sh
+```
+
 ## Data base dump loading
 
 ```console

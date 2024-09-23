@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Models\BotUser;
+use App\Models\BotUserNotification;
 use App\Models\CustomReport;
 use App\Models\Event;
 use App\Models\Field;
@@ -20,8 +22,11 @@ class DebugCommand extends Command
     // Please clear me after debug
     public function handle(): void
     {
-        dd(
-            FormResult::where('event_id', 3012)->first()->saved_structure
-        );
+        $botUser = BotUser::where('user_id', 1)->first();
+        (new BotUserNotification())->fill([
+            'bot_user_id' => $botUser->id,
+            'data' => '{"time":"2024-09-05T06:54:01.510934Z","type":"default","title":"Уведомление!","message":"Тело сообщения!"}'
+        ])->save();
+        // dd(BotUserNotification::where('bot_user_id', $botUser->id)->first());
     }
 }
