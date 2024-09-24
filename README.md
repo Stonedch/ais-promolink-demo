@@ -5,7 +5,10 @@ Repository of the "Form Filler" application from Promolink.
 ## Table of content:
 
 - [General info](#general-info)
+- [Requirements](#requirements)
 - [Setup](#setup)
+- [Setup steps](#setup-steps)
+- [Cron settings](#cron-settings)
 - [Data base dump loading](#db-dump-loading)
 - [Make data base dump](#make-db-dump)
 - [Reload containers](#reload-containers)
@@ -14,6 +17,19 @@ Repository of the "Form Filler" application from Promolink.
 ## General info
 
 Repository of the "Form Filler" application from Promolink.
+
+## Requirements
+
+- docker (>=24.0.5)
+- docker-compose (>=1.29.2)
+- zip (>=3.0)
+- cron
+
+## Setup steps
+
+- [Install requirements](#requirements)
+- [Setup containers](#setup)
+- [Setup cron jobs](#cron-settings)
 
 ## Setup
 
@@ -35,6 +51,7 @@ $ docker-compose exec laravel php artisan orchid:admin
 $ crontab -e (and configurate)
 * * * * * cd /path/to/project && docker-compose exec -T laravel php artisan schedule:run >> /dev/null 2>&1
 0 6 * * * cd /path/to/project && ./backup.sh
+0 2 1 * * cd /path/to/project && ./backup-archive.sh
 ```
 
 ## Data base dump loading
