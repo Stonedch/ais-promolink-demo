@@ -24,6 +24,7 @@ Repository of the "Form Filler" application from Promolink.
 - docker-compose (>=1.29.2)
 - zip (>=3.0)
 - cron
+- apache2-utils
 
 ## Setup steps
 
