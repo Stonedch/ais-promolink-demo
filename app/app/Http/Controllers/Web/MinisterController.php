@@ -135,17 +135,29 @@ class MinisterController extends Controller
             if (empty($form) == false) {
                 throw_if($form->is_active == false, new HumanException('Ошибка обработки формы! Номер ошибки: #1000'));
 
+                $collectionIdentifiers = [];
+
                 $events = Event::query()
                     ->select(['events.*', 'departaments.name as departament_name'])
                     ->leftJoin('departaments', 'departaments.id', '=', 'events.departament_id')
                     ->whereNotNull('filled_at')
                     ->where('form_id', $form->id)
                     ->get()
-                    ->map(function (Event $event) {
+                    ->map(function (Event $event) use (&$collectionIdentifiers) {
                         $event->form_structure = json_decode($event->form_structure);
+                        $event->form_structure->fields = collect($event->form_structure->fields)->keyBy('id')->toArray();
+
+                        $collectionIdentifiers = array_merge(
+                            $collectionIdentifiers,
+                            collect($event->form_structure->fields)->pluck('collection_id')->whereNotNull()->toArray()
+                        );
+
                         return $event;
                     })
                     ->sortByDesc('created_at');
+
+                $collections = \App\Models\Collection::whereIn('id', $collectionIdentifiers)->get();
+                $collectionValues = \App\Models\CollectionValue::whereIn('collection_id', $collections->pluck('id'))->get()->keyBy('id');
 
                 $formResults = FormResult::query()
                     ->whereIn('event_id', $events->pluck('id'))
@@ -157,6 +169,8 @@ class MinisterController extends Controller
                     'formResults' => $formResults,
                     'form' => $form,
                     'headers' => collect(@$events->sortByDesc('created_at')->first()->form_structure->fields)->sortBy('sort'),
+                    'collections' => $collections,
+                    'collectionValues' => $collectionValues->groupBy('collection_id', true),
                 ];
             } else {
                 $forms = Form::query()

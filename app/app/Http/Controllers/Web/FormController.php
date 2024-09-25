@@ -67,9 +67,16 @@ class FormController extends Controller
                 ->whereIn('events.id', $allEvents->pluck('id'))
                 ->whereIn('events.form_id', $forms->pluck('id'))
                 ->whereIn('events.departament_id', $departaments->pluck('id'))
-                ->select(['form_results.id', 'form_results.user_id', 'form_results.event_id', 'form_results.field_id', 'form_results', 'value', 'events.form_id'])
+                ->select([
+                    'form_results.id',
+                    'form_results.user_id',
+                    'form_results.event_id',
+                    'form_results.field_id',
+                    'form_results.index',
+                    'form_results.value',
+                    'events.form_id'
+                ])
                 ->orderByDesc('form_results.id')
-                ->take(1)
                 ->get()
                 ->map(function (FormResult $result) {
                     $result->saved_structure = json_decode($result->saved_structure, true);
@@ -78,10 +85,18 @@ class FormController extends Controller
                 })
                 ->groupBy(['form_id', 'event_id']);
 
+            $allEvents->map(function (Event $event) use ($formResults) {
+                try {
+                    $event->maxIndex = $formResults->get($event->form_id)->get($event->id)->max('index');
+                } catch (Throwable) {
+                }
+
+                return $event;
+            });
+
             $results = FormResult::query()
                 ->whereIn('event_id', $allEvents->pluck('id'))
                 ->orderByDesc('form_results.id')
-                ->take(1)
                 ->get()
                 ->map(function (FormResult $result) {
                     $result->saved_structure = json_decode($result->saved_structure, true);
@@ -197,7 +212,15 @@ class FormController extends Controller
                 ->whereIn('events.id', $allEvents->pluck('id'))
                 ->whereIn('events.form_id', $forms->pluck('id'))
                 ->whereIn('events.departament_id', $departaments->pluck('id'))
-                ->select(['form_results.id', 'form_results.user_id', 'form_results.event_id', 'form_results.field_id', 'form_results', 'value', 'events.form_id'])
+                ->select([
+                    'form_results.id',
+                    'form_results.user_id',
+                    'form_results.event_id',
+                    'form_results.field_id',
+                    'form_results.index',
+                    'form_results.value',
+                    'events.form_id'
+                ])
                 ->orderByDesc('form_results.id')
                 ->get()
                 ->map(function (FormResult $result) {
@@ -206,6 +229,15 @@ class FormController extends Controller
                     return $result;
                 })
                 ->groupBy(['form_id', 'event_id']);
+
+            $allEvents->map(function (Event $event) use ($formResults) {
+                try {
+                    $event->maxIndex = $formResults->get($event->form_id)->get($event->id)->max('index');
+                } catch (Throwable) {
+                }
+
+                return $event;
+            });
 
             $results = FormResult::query()
                 ->whereIn('event_id', $allEvents->pluck('id'))
