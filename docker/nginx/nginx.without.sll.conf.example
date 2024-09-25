@@ -1,27 +1,11 @@
 server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-
-    server_name test.promo-link.ru 91.107.122.9;
-
-    return 301 https://$server_name$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name test.promo-link.ru 91.107.122.9;
-
-    ssl on;
-    ssl_certificate /certificates/certificate.crt;
-    ssl_certificate_key /certificates/certificate.key;
-
-    root /var/www/public;
+    listen 80;
     index index.php index.html;
-
     error_log  /var/log/nginx/error.log;
     access_log /var/log/nginx/access.log;
+    root /var/www/public;
 
-	client_max_body_size 200M;
+    client_max_body_size 200M;
 
     location ~ \.php$ {
         try_files $uri =404;
