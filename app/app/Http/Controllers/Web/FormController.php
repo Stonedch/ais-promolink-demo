@@ -86,10 +86,11 @@ class FormController extends Controller
                 ->groupBy(['form_id', 'event_id']);
 
             $allEvents->map(function (Event $event) use ($formResults) {
-                try {
-                    $event->maxIndex = $formResults->get($event->form_id)->get($event->id)->max('index');
-                } catch (Throwable) {
-                }
+                if (empty($formResults)) $event;
+                if ($formResults->has($event->form_id) == false) return $event;
+                if ($formResults->get($event->form_id)->has($event->id) == false) return $event;
+
+                $event->maxIndex = $formResults->get($event->form_id)->get($event->id)->max('index');
 
                 return $event;
             });
