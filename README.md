@@ -36,8 +36,11 @@ Repository of the "Form Filler" application from Promolink.
 
 ```console
 $ cp .env.example .env (and configurate)
+USER=user ($ whoami) - required
+UID=1000 ($ echo $UID) - required
+GID=1000 ($ echo $UID) - required
 $ cp ./app/.env.example. env (and configurate)
-$ cp ./docker/nginx/nginx.conf.example ./docker/nginx.conf (and configurate)
+$ cp ./docker/nginx/nginx.without.sll.conf.example ./docker/nginx.conf (and configurate)
 $ htpasswd -c ./docker/datalens/nginx/htpasswd promolink
 $ docker-compose up -d --build
 $ docker-compose exec laravel composer install
