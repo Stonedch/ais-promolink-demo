@@ -69,7 +69,7 @@ class CollectionEditScreen extends Screen
                         'Сортировка' => 'sort',
                     ])
                     ->fields([
-                        'id' => Input::make()->disabled()->hidden(),
+                        'id' => Input::make()->hidden(),
                         'value' => Input::make()->require(),
                         'sort' => Input::make()->type('number')->class("form-control _sortable"),
                     ])
@@ -83,18 +83,27 @@ class CollectionEditScreen extends Screen
         $collection->fill($request->input('collection', []));
         $collection->save();
 
+        $workedValueIdentifiers = [];
+
         if (empty($request->input('collection_values', [])) == false) {
-            $collection->values()->delete();
             foreach ($request->input('collection_values') as $row) {
-                if ($value = $row['value']) {
-                    CollectionValue::create([
-                        'value' => $value,
-                        'collection_id' => $collection->id,
-                        'sort' => $row['sort'],
-                    ]);
-                }
+                if (empty($row['value'])) continue;
+
+                $value = empty($row['id']) == false
+                    ? CollectionValue::find($row['id'])
+                    : new CollectionValue();
+
+                $value->fill([
+                    'value' => $row['value'],
+                    'collection_id' => $collection->id,
+                    'sort' => $row['sort'],
+                ])->save();
+
+                $workedValueIdentifiers[] = $value->id;
             }
         }
+
+        $collection->values()->whereNotIn('id', $workedValueIdentifiers)->delete();
 
         Toast::info('Успешно сохранено!');
         return redirect()->route('platform.collections.edit', $collection);
