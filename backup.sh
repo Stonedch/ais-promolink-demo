@@ -12,4 +12,4 @@ FILEPATH="${BACKUP_FOLDER}/${FILENAME}";
 mkdir ${BACKUP_ROOT_FOLDER}
 mkdir ${BACKUP_FOLDER};
 
-docker-compose exec db pg_dump -U ${DB_USERNAME} --data-only --column-inserts ${DB_DATABASE} > ${FILEPATH};
+${DOCKER_COMPOSE_COMMAND} exec db pg_dump -U ${DB_USERNAME} --data-only --column-inserts ${DB_DATABASE} > ${FILEPATH};
