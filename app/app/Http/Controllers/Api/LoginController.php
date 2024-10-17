@@ -36,6 +36,5 @@ class LoginController extends Controller
         } catch (Throwable $e) {
             return Responser::returnError();
         }
-        $credentials['phone'] = PhoneNormalizer::normalizePhone($credentials['phone']);
     }
 }
