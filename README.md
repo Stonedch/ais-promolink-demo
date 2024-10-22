@@ -25,6 +25,7 @@ Repository of the "Form Filler" application from Promolink.
 - zip (>=3.0)
 - cron
 - apache2-utils
+- curl
 
 ## Setup steps
 
