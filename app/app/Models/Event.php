@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -91,5 +93,10 @@ class Event extends Model
             'form_structure' => $formStructure ?: $form->getStructure(),
             'departament_id' => $departament->id,
         ])->save();
+    }
+
+    public function formResults(): HasMany
+    {
+        return $this->hasMany(FormResult::class);
     }
 }

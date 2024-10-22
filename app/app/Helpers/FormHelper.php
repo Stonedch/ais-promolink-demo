@@ -195,24 +195,6 @@ class FormHelper
         return $arrayReturn ? $response : collect($response);
     }
 
-    /*
-                $events = [];
-            $writedEvents = [];
-            $allEvents = DB::table('events')->whereIn('departament_id', $departaments->pluck('id'))->get();
-
-            foreach ($allEvents as $event) {
-                if (empty($event->filled_at)) {
-                    $events[$event->id] = $event;
-                } else {
-                    if (isset($writedEvents[$event->form_id]) == false) {
-                        $writedEvents[$event->form_id] = [];
-                    }
-
-                    $writedEvents[$event->form_id][$event->id] = $event;
-                }
-            }
-                */
-
     public static function byDepartamentsRaw(SupportCollection $departaments, bool $arrayReturn = false): array
     {
         try {
@@ -397,9 +379,12 @@ class FormHelper
                     'field_id' => $field->id,
                     'index' => $index,
                     'value' => $value,
-                    'saved_structure' => $savedStructure,
                 ])->save();
             }
+        }
+
+        if (empty($savedStructure) == false) {
+            $event->saved_structure = $savedStructure;
         }
     }
 
