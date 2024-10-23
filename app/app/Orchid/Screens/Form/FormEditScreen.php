@@ -11,23 +11,18 @@ use App\Models\DepartamentType;
 use App\Models\Field;
 use App\Models\Form;
 use App\Models\FormCategory;
-use App\Models\FormChecker;
 use App\Models\FormDepartamentType;
 use App\Models\FormGroup;
 use App\Models\User;
+use App\Orchid\Fields\Button;
 use App\Orchid\Fields\FormItemMatrix;
-use App\Orchid\Fields\SimpleSelect;
 use Exception;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection as SupportCollection;
-use Illuminate\Support\Facades\Cookie;
-use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
-use Orchid\Screen\Fields\Label;
-use Orchid\Screen\Fields\Matrix;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
 use Orchid\Support\Color;
@@ -239,7 +234,9 @@ class FormEditScreen extends Screen
                     Button::make('Превью')
                         ->turbo(false)
                         ->icon('back')
-                        ->turbo($this->form->id)
+                        ->data([
+                            'form-id' => $this->form->id
+                        ])
                         ->class('btn btn-dark _open-modal-structure'),
 
                     Button::make('Сохранить')

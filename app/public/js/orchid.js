@@ -11,7 +11,7 @@ function initModalStructure() {
     $("._open-modal-structure").click(function (event) {
         event.preventDefault();
 
-        const form = $(this).data("turbo");
+        const form = $(this).data("form-id");
 
         new Fancybox([
             {
