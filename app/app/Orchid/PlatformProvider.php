@@ -21,7 +21,11 @@ class PlatformProvider extends OrchidServiceProvider
         return [
             Menu::make('Главная')
                 ->icon('bs.house')
-                ->route(config('platform.index'))
+                ->route(config('platform.index')),
+
+            Menu::make('Сайт')
+                ->route('web.home.index')
+                ->icon('bs.globe')
                 ->divider(),
 
             Menu::make('Формы')
