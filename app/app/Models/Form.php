@@ -63,12 +63,12 @@ class Form extends Model
 
     public static $PERIODICITIES = [
         50 => 'Разовая',
-        100 => 'Ежедневно',
     ];
 
     public static $TYPES = [
         100 => 'Линейный вид',
         200 => 'Табличный вид',
+        300 => 'Сводный вид',
     ];
 
     public function getStructure()

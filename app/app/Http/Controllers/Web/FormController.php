@@ -23,6 +23,7 @@ class FormController extends Controller
     protected array $views = [
         'show' => 'web.form.show',
         'preview' => 'web.form.preview',
+        'preview-structure' => 'web.form.preview-structure',
     ];
 
     public function index(Request $request): View|RedirectResponse
@@ -308,5 +309,20 @@ class FormController extends Controller
                 ->route('web.index.index')
                 ->withErrors(['Внутренняя ошибка']);
         }
+    }
+
+    public function previewStructure(Request $request, Form $form): View
+    {
+        $user = $request->user();
+
+        throw_if(empty($user), new HumanException('Ошибка авторизации! Номер ошибки: #1003.'));
+
+        $response = [
+            'form' => $form,
+            'structure' => $form->getStructure(),
+            'groups' => FormGroup::where('form_id', $form->id)->get(),
+        ];
+
+        return view($this->views['preview-structure'], $response);
     }
 }

@@ -23,3 +23,24 @@
 .matrix .form-control {
     height: 80px !important;
 }
+
+.matrix[data-with-hidden-columns="1"] .text-capitalize.--hidden-column {
+    display: none;
+}
+
+.matrix[data-with-hidden-columns="1"] th:has([hidden="hidden"]) {
+    display: none;
+}
+
+._modal-inputs [hidden="hidden"] {
+    display: block !important;
+}
+
+._modal-inputs .form-group:has(.--modal-hidden) {
+    display: none;
+}
+
+._modal-inputs .form-group:has(.--select-field-type),
+._modal-inputs .form-group:has(.--select-group-type) {
+    display: none
+}

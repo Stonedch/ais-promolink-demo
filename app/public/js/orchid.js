@@ -4,7 +4,28 @@ $(document).ready(function () {
     initModalRow();
     initSluggableMatrix();
     renderGroupSelect();
+    initModalStructure();
 });
+
+function initModalStructure() {
+    $("._open-modal-structure").click(function (event) {
+        event.preventDefault();
+
+        const form = $(this).data("turbo");
+
+        new Fancybox([
+            {
+                src: `/forms/preview-structure/${form}`,
+                type: "iframe",
+            }],
+            {
+                dragToClose: false,
+                width: "90vw",
+                height: "90vh",
+            }
+        )
+    });
+}
 
 function renderGroupSelect() {
     const render = (withBackValues = false) => {
@@ -143,6 +164,26 @@ function showModalRow(event) {
 
                     Fancybox.close();
                 });
+
+                // Это нужно переписать на универсальность
+                const renderParentSelects = () => {
+                    const value = $("._modal-inputs select.--select-parent").val();
+
+                    console.log(value);
+
+                    $("._modal-inputs .form-group:has(.--select-field-type)").hide();
+                    $("._modal-inputs .form-group:has(.--select-group-type)").hide();
+
+                    if (value == 100) {
+                        $("._modal-inputs .form-group:has(.--select-field-type)").show();
+                    } else if (value == 200) {
+                        $("._modal-inputs .form-group:has(.--select-group-type)").show();
+                    }
+                };
+
+                $(".--select-parent").on("change", () => renderParentSelects());
+
+                renderParentSelects();
             },
         },
     });

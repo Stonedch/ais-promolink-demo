@@ -1,11 +1,11 @@
 @component($typeForm, get_defined_vars())
     <table class="matrix table table-bordered border-right-0 overflow-y-auto" data-controller="matrix"
         data-matrix-index="{{ $index }}" data-matrix-rows="{{ $maxRows }}"
-        data-matrix-key-value="{{ var_export($keyValue) }}">
+        data-matrix-key-value="{{ var_export($keyValue) }}" data-with-hidden-columns={{ @$withHiddenColumns ?: false}}>
         <thead>
             <tr>
                 @foreach ($columns as $key => $column)
-                    <th scope="col" class="text-capitalize">
+                    <th scope="col" class="text-capitalize {{ in_array($column, $hiddenColumns) ? '--hidden-column' : null }}">
                         {{ is_int($key) ? $column : $key }}
                     </th>
                 @endforeach

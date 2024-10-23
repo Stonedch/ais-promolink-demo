@@ -571,3 +571,8 @@ select:disabled {
 .button--light._multiple-group-delete {
     background: #f9a0a3;
 }
+
+td textarea.table__field {
+    width: 100%;
+    height: 128px;
+}

@@ -19,6 +19,7 @@ Route::middleware([LogRoute::class])->name('web.')->group(function () {
     Route::name('forms.')->prefix('/forms')->controller(\App\Http\Controllers\Web\FormController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/preview/{departament}/{form}', 'preview')->name('preview');
+        Route::get('/preview-structure/{form}', 'previewStructure')->name('preview-structure');
     });
 
     // web.auth
