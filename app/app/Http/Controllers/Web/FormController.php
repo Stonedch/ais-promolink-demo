@@ -316,6 +316,7 @@ class FormController extends Controller
         $user = $request->user();
 
         throw_if(empty($user), new HumanException('Ошибка авторизации! Номер ошибки: #1003.'));
+        throw_if($user->hasAccess('platform.forms.edit') == false, new HumanException('Ошибка авторизации! Номер ошибки: #1004.'));
 
         $response = [
             'form' => $form,
