@@ -88,6 +88,7 @@ class FormEditScreen extends Screen
             $options[$user->id] = '#' . $user->id . ', ' . $user->getFullname() . ', ' . PhoneNormalizer::humanizePhone($user->phone);
         });
 
+
         return [
             'form' => $form,
             'groups' => $groups,
@@ -164,8 +165,8 @@ class FormEditScreen extends Screen
                         ->title('Сортировка'),
                 ]),
 
-                Select::make('departament_types')
-                    ->options(fn() => DepartamentType::pluck('name', 'id'))
+                Select::make('form.departament_types')
+                    ->options(fn() => DepartamentType::pluck('name', 'id')->toArray())
                     ->multiple()
                     ->title('Учреждения'),
 
