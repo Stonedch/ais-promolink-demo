@@ -164,7 +164,7 @@ select.report__input {
 }
 
 .table__field {
-    border: none;
+    /* border: none; */
     background: none;
     resize: none;
     height: 75px;
