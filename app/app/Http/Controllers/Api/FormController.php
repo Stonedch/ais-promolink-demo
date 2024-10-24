@@ -8,6 +8,7 @@ use App\Helpers\Responser;
 use App\Http\Controllers\Controller;
 use App\Models\Departament;
 use App\Models\Event;
+use App\Models\Field;
 use App\Models\Form;
 use App\Models\FormFieldBlocked;
 use App\Orchid\Components\HumanizePhone;
@@ -164,5 +165,39 @@ class FormController extends Controller
         } catch (Throwable) {
             return Responser::returnError(['100, Ошибка сервера!']);
         }
+    }
+
+    public function saveFieldBlockeds(Request $request): JsonResponse
+    {
+        // try {
+            $fields = Field::query()
+                ->whereIn('id', array_keys($request->input('fields', [])))
+                ->get();
+
+            $form = Form::where('id', $fields->first()->form_id)->first();
+
+            FormFieldBlocked::where('form_id', $form->id)->get()->map(fn(FormFieldBlocked $fieldBlocked) => $fieldBlocked->delete());
+
+            foreach ($request->input('fields', []) as $fieldIdentifier => $fields) {
+                foreach ($fields as $index => $value) {
+                    if (empty(trim($value))) {
+                        continue;
+                    }
+
+                    (new FormFieldBlocked())->fill([
+                        'value' => $value,
+                        'form_id' => $form->id,
+                        'field_id' => $fieldIdentifier,
+                        'index' => $index,
+                    ])->save();
+                }
+            }
+
+            return Responser::returnSuccess();
+        // } catch (HumanException $e) {
+        //     return Responser::returnError([$e->getMessage()]);
+        // } catch (Throwable) {
+        //     return Responser::returnError(['100, Ошибка сервера!']);
+        // }
     }
 }

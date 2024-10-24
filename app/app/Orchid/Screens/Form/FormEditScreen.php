@@ -231,9 +231,18 @@ class FormEditScreen extends Screen
                 ->canSee($this->form->exists)
                 ->vertical(true)
                 ->commands([
+                    Button::make('Настроить сводную')
+                        ->turbo(false)
+                        ->icon('bs.code-square')
+                        ->data([
+                            'form-id' => $this->form->id
+                        ])
+                        ->canSee($this->form->type == 300)
+                        ->class('btn btn-dark _open-modal-structure'),
+
                     Button::make('Превью')
                         ->turbo(false)
-                        ->icon('back')
+                        ->icon('bs.back')
                         ->data([
                             'form-id' => $this->form->id
                         ])

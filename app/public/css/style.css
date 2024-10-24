@@ -582,6 +582,9 @@ td textarea.table__field {
 }
 
 .table__row tr td.--blocked>* {
-    pointer-events: none;
     font-weight: 700;
+}
+
+.report:not(.--edit-blockeds) .table__row tr td.--blocked>* {
+    pointer-events: none;
 }
