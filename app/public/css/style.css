@@ -576,3 +576,12 @@ td textarea.table__field {
     width: 100%;
     height: 128px;
 }
+
+.table__row tr td.--blocked {
+    background-color: #e5e5e5;
+}
+
+.table__row tr td.--blocked>* {
+    pointer-events: none;
+    font-weight: 700;
+}

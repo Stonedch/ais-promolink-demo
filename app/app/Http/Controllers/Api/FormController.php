@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Departament;
 use App\Models\Event;
 use App\Models\Form;
+use App\Models\FormFieldBlocked;
+use App\Orchid\Components\HumanizePhone;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Throwable;
@@ -136,6 +138,31 @@ class FormController extends Controller
             return Responser::returnError([$e->getMessage()]);
         } catch (Throwable $e) {
             return Responser::returnError([$e->getMessage()]);
+        }
+    }
+
+    public function formFieldBlockeds(Request $request): JsonResponse
+    {
+        try {
+            $response = [];
+
+            $user = $request->user();
+            throw_if(empty($user), new HumanException('101, Ошибка авторизации!'));
+
+            $form = Form::find($request->input('form', null));
+            throw_if(empty($form), new HumanException('102, Ошибка обработки формы!'));
+
+            $formFieldBlockeds = FormFieldBlocked::where('form_id', $form->id)->get();
+
+            $response = [
+                'blockeds' => $formFieldBlockeds,
+            ];
+
+            return Responser::returnSuccess($response);
+        } catch (HumanException $e) {
+            return Responser::returnError([$e->getMessage()]);
+        } catch (Throwable) {
+            return Responser::returnError(['100, Ошибка сервера!']);
         }
     }
 }

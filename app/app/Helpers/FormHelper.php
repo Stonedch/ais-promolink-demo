@@ -13,6 +13,7 @@ use App\Models\Field;
 use App\Models\Form;
 use App\Models\FormCategory;
 use App\Models\FormDepartamentType;
+use App\Models\FormFieldBlocked;
 use App\Models\FormGroup;
 use App\Models\FormResult;
 use App\Models\User;
@@ -364,6 +365,11 @@ class FormHelper
 
         $structure = json_decode($event->form_structure);
 
+        $blockeds = FormFieldBlocked::query()
+            ->where('form_id', $event->form_id)
+            ->get()
+            ->groupBy('field_id');
+
         foreach ($structure->fields as $field) {
             try {
                 $values = $requestedFields[$field->id];
@@ -372,14 +378,30 @@ class FormHelper
                 $values = [];
             }
 
+            $fieldBlockeds = $blockeds->get($field->id);
+
             foreach ($values as $index => $value) {
-                (new FormResult())->fill([
+                $blocked = null;
+
+                if (empty($fieldBlockeds) == false) {
+                    $blocked = $fieldBlockeds->where('index', $index)->first();
+                }
+
+                if (empty($value)) continue;
+
+                $formResultData = [
                     'user_id' => $user->id,
                     'event_id' => $event->id,
                     'field_id' => $field->id,
                     'index' => $index,
                     'value' => $value,
-                ])->save();
+                ];
+
+                if (empty($blocked) == false) {
+                    $formResultData['value'] = $blocked->value;
+                }
+
+                (new FormResult())->fill($formResultData)->save();
             }
         }
 

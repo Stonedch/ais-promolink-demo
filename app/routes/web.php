@@ -78,6 +78,7 @@ Route::middleware([LogRoute::class])->name('api.')->prefix('/api')->withoutMiddl
         Route::post('/edit', 'edit')->name('edit');
         Route::post('/save-draft', 'saveDraft')->name('save-draft');
         Route::post('/percent', 'percent')->name('percent');
+        Route::get('/form-field-blockeds', 'formFieldBlockeds')->name('form-field-blockeds');
     });
 
     // api.event-store
