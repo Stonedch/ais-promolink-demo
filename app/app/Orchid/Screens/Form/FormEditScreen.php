@@ -66,8 +66,6 @@ class FormEditScreen extends Screen
             : new SupportCollection();
 
         $fields->map(function (Field $field) {
-            $field->type = FormStructureType::FIELD->value;
-
             $field->general_id = $field->id;
             $field->general_name = $field->name;
             $field->general_group_id = $field->group_id;
