@@ -1,24 +1,28 @@
-# Form Filler
+# АИС
 
-Repository of the "Form Filler" application from Promolink.
+Репозиторий "АИС" от Promolink.
 
-## Table of content:
+## Страницы
 
-- [General info](#general-info)
-- [Requirements](#requirements)
-- [Setup](#setup)
-- [Setup steps](#setup-steps)
-- [Cron settings](#cron-settings)
-- [Data base dump loading](#db-dump-loading)
-- [Make data base dump](#make-db-dump)
-- [Reload containers](#reload-containers)
-- [Contacts](#contacts)
+- [Инструкция по созданию бота Telegram](/readmy/HOW_TO_CREATE_TG_BOT.md)
 
-## General info
+## Содержания:
 
-Repository of the "Form Filler" application from Promolink.
+- [Основная информация](#основная-информация)
+- [Требования](#требования)
+- [Шаги установки](#шаги-установки)
+- [Установка](#установка)
+- [Настройка cron-задач](#настройка-cron-задач)
+- [Импорт данных в базу](#импорт-данных-в-базу)
+- [Экспорт данных из базы](#экспорт-данных-из-базы)
+- [Перезагрузка контейнеров](#перезагрузка-контейнеров)
+- [Контакты](#контакты)
 
-## Requirements
+## Основная информация
+
+Репозиторий "АИС" от Promolink.
+
+## Требования
 
 - docker (>=24.0.5)
 - docker-compose (>=1.29.2)
@@ -27,13 +31,13 @@ Repository of the "Form Filler" application from Promolink.
 - apache2-utils
 - curl
 
-## Setup steps
+## Шаги установки
 
-- [Install requirements](#requirements)
-- [Setup containers](#setup)
-- [Setup cron jobs](#cron-settings)
+- [Установить требуемый софт](#требования)
+- [Настроить и поднять контейнеры](#установка)
+- [Настроить cron-задачи](#Настройка-cron-задач)
 
-## Setup
+## Установка
 
 ```console
 $ cp .env.example .env (and configurate)
@@ -51,7 +55,7 @@ $ docker-compose exec laravel php artisan migrate
 $ docker-compose exec laravel php artisan orchid:admin
 ```
 
-## Cron settings
+## Настройка cron-задач
 
 ```console
 $ crontab -e (and configurate)
@@ -60,24 +64,24 @@ $ crontab -e (and configurate)
 0 2 1 * * cd /path/to/project && ./backup-archive.sh
 ```
 
-## Data base dump loading
+## Импорт данных в базу
 
 ```console
 $ docker-compose exec -T db psql -U formfiller formfiller < dump.sql (dumping)
 ```
 
-## Make data base dump
+## Экспорт данных из базы
 
 ```console
 $ docker-compose exec db pg_dump -U formfiller --data-only --column-inserts formfiller > dump_`date +%Y-%m-%d"_"%H_%M_%S`.sql
 ```
 
-## Reload containers
+## Перезагрузка контейнеров
 
 ```console
 $ docker-compose down && docker-compose up -d --build
 ```
 
-## Contacts
+## Контакты
 
 Created by [@stonedch](https://github.com/stonedch) and [@promolinkru](https://github.com/promolinkru)
