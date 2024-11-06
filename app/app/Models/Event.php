@@ -127,6 +127,6 @@ class Event extends Model
 
         return isset($structure->blockeds)
             ? collect($structure->blockeds)->keyBy('id')
-            : [];
+            : new Collection();
     }
 }

@@ -78,7 +78,7 @@ class EventPreparedHelper
 
             Log::channel('event-prepare')->info("[event: {$event->id}] prepared");
         } catch (Throwable | Exception $e) {
-            Log::channel('event-prepare')->error("[event: {$event->id}] {$e->getMessage}");
+            Log::channel('event-prepare')->error("[event: {$event->id}] {$e->getMessage()}");
         }
 
         return $preparedEvent;
@@ -98,7 +98,7 @@ class EventPreparedHelper
             }
         }
 
-        return $value ?: $formResult->value;
+        return ($value ?: $formResult->value) ?: '';
     }
 
     protected static function getGroupKeyStructure(object $groups, object $field): object

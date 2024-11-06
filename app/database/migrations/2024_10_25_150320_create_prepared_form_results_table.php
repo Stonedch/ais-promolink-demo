@@ -16,11 +16,7 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignIdFor(Field::class)
-                ->nullable()
-                ->constrained()
-                ->nullOnDelete()
-                ->cascadeOnUpdate();
+            $table->unsignedBigInteger('field_id')->nullable();
             $table->text('row_key_structure')->nullable();
             $table->text('row_key_first')->nullable();
             $table->text('group_key_structure')->nullable();

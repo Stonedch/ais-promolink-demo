@@ -11,11 +11,7 @@ return new class extends Migration
     {
         Schema::create('prepared_events', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Event::class)
-                ->nullable()
-                ->constrained()
-                ->nullOnDelete()
-                ->cascadeOnUpdate();
+            $table->unsignedBigInteger('event_id')->nullable();
             $table->text('user_fullname');
             $table->text('departament_name');
             $table->text('form_name');
