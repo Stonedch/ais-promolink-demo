@@ -169,7 +169,7 @@ class FormController extends Controller
 
     public function saveFieldBlockeds(Request $request): JsonResponse
     {
-        // try {
+        try {
             $fields = Field::query()
                 ->whereIn('id', array_keys($request->input('fields', [])))
                 ->get();
@@ -194,10 +194,10 @@ class FormController extends Controller
             }
 
             return Responser::returnSuccess();
-        // } catch (HumanException $e) {
-        //     return Responser::returnError([$e->getMessage()]);
-        // } catch (Throwable) {
-        //     return Responser::returnError(['100, Ошибка сервера!']);
-        // }
+        } catch (HumanException $e) {
+            return Responser::returnError([$e->getMessage()]);
+        } catch (Throwable) {
+            return Responser::returnError(['100, Ошибка сервера!']);
+        }
     }
 }
