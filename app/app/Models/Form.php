@@ -76,6 +76,8 @@ class Form extends Model
         return json_encode([
             'form' => $this->toArray(),
             'fields' => Field::where('form_id', $this->id)->get()->toArray(),
+            'groups' => FormGroup::where('form_id', $this->id)->get()->toArray(),
+            'blockeds' => FormFieldBlocked::where('form_id', $this->id)->get()->toArray(),
         ], JSON_UNESCAPED_UNICODE);
     }
 

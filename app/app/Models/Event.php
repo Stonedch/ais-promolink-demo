@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -98,5 +99,34 @@ class Event extends Model
     public function formResults(): HasMany
     {
         return $this->hasMany(FormResult::class);
+    }
+
+    public function getStructure(object $structure = null): object
+    {
+        return empty($structure) == false ? $structure : json_decode($this->form_structure);
+    }
+
+    public function getStructureFields(object $structure = null): Collection
+    {
+        $structure = $this->getStructure($structure);
+        return collect($structure->fields)->keyBy('id');
+    }
+
+    public function getStructureGroups(object $structure = null): Collection
+    {
+        $structure = $this->getStructure($structure);
+
+        return isset($structure->groups)
+            ? collect($structure->groups)->keyBy('id')
+            : new Collection();
+    }
+
+    public function getStructureBlockeds(object $structure = null): Collection
+    {
+        $structure = $this->getStructure($structure);
+
+        return isset($structure->blockeds)
+            ? collect($structure->blockeds)->keyBy('id')
+            : [];
     }
 }

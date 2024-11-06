@@ -13,6 +13,8 @@ class PreparedEvent extends Model
 {
     use AsSource, Filterable;
 
+    public $timestamps = false;
+
     protected $table = 'prepared_events';
 
     protected $fillable = [
@@ -46,4 +48,9 @@ class PreparedEvent extends Model
         'event_filled_at',
         'event_refilled_at',
     ];
+
+    public static function findByEventOrCreate(Event $event): PreparedEvent
+    {
+        return PreparedEvent::where('event_id', $event->id)->first() ?: new PreparedEvent();
+    }
 }

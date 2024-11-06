@@ -405,9 +405,13 @@ class FormHelper
             }
         }
 
+        $event->user_id = $user->id;
+
         if (empty($savedStructure) == false) {
             $event->saved_structure = $savedStructure;
         }
+
+        $event->save();
     }
 
     public static function getPercent(Event $event): int

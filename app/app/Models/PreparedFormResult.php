@@ -12,6 +12,8 @@ class PreparedFormResult extends Model
 {
     use AsSource, Filterable;
 
+    public $timestamps = false;
+
     protected $table = 'prepared_form_results';
 
     protected $fillable = [
@@ -19,7 +21,7 @@ class PreparedFormResult extends Model
         'field_id',
         'row_key_structure',
         'row_key_first',
-        'gorup_key_structure',
+        'group_key_structure',
         'key',
         'value',
         'index',
@@ -48,4 +50,12 @@ class PreparedFormResult extends Model
         'value',
         'index',
     ];
+
+    public static function deleteByPreapredEvent(PreparedEvent $preparedEvent): void
+    {
+        self::query()
+            ->where('prepared_event_id', $preparedEvent->id)
+            ->get()
+            ->map(fn(self $preparedFormResult) => $preparedFormResult->delete());
+    }
 }
