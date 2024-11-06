@@ -5,6 +5,7 @@
 ## Страницы
 
 - [Инструкция по созданию бота Telegram](/readmy/HOW_TO_CREATE_TG_BOT.md)
+- [Как обновиться до последней стабильной версии](/readmy/HOW_UPDATE_TO_LATEST_STABILITY_VERSION.md)
 
 ## Содержания:
 
