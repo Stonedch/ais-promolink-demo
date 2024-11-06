@@ -86,19 +86,17 @@ class EventPreparedHelper
 
     protected static function getValueOrOption(FormResult $formResult, object $field): string
     {
-        $value = null;
+        $value = $formResult->value;
 
         if (empty($field->collection_id) == false) {
             $option = CollectionValue::query()
                 ->where('id', $value)
                 ->first();
 
-            if (empty($option) == false) {
-                $value = $option->value;
-            }
+            $value = empty($option) ? "option:{$value}" : $option->value;
         }
 
-        return ($value ?: $formResult->value) ?: '';
+        return $value ?: '';
     }
 
     protected static function getGroupKeyStructure(object $groups, object $field): object
