@@ -73,11 +73,20 @@ class Form extends Model
 
     public function getStructure()
     {
+        $form = $this;
+        $fields = Field::where('form_id', $this->id)->get();
+        $groups = FormGroup::where('form_id', $this->id)->get();
+        $blockeds = FormFieldBlocked::where('form_id', $this->id)->get();
+        $collections = Collection::whereIn('id', $fields->pluck('collection_id'))->get();
+        $collectionValues = CollectionValue::whereIn('collection_id', $collections->pluck('id'))->get();
+
         return json_encode([
-            'form' => $this->toArray(),
-            'fields' => Field::where('form_id', $this->id)->get()->toArray(),
-            'groups' => FormGroup::where('form_id', $this->id)->get()->toArray(),
-            'blockeds' => FormFieldBlocked::where('form_id', $this->id)->get()->toArray(),
+            'form' => $form->toArray(),
+            'fields' => $fields->toArray(),
+            'groups' => $groups->toArray(),
+            'blockeds' => $blockeds->toArray(),
+            'collections' => $collections->toArray(),
+            'collectionValues' => $collectionValues->toArray(),
         ], JSON_UNESCAPED_UNICODE);
     }
 
