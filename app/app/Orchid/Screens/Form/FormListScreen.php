@@ -10,6 +10,8 @@ use App\Models\DepartamentType;
 use App\Models\Field;
 use App\Models\Form;
 use App\Models\FormCategory;
+use App\Models\FormFieldBlocked;
+use App\Models\FormGroup;
 use App\Orchid\Components\DateTimeRender;
 use Exception;
 use Illuminate\Http\Request;
@@ -96,7 +98,7 @@ class FormListScreen extends Screen
         return [
             Layout::modal('copyFormModal', [Layout::rows([
                 Select::make('copyFormModal.form_id')
-                    ->options(fn () => Form::pluck('name', 'id'))
+                    ->options(fn() => Form::pluck('name', 'id'))
                     ->title('Форма')
                     ->required(),
                 Input::make('copyFormModal.name')
@@ -109,7 +111,7 @@ class FormListScreen extends Screen
                     ->align(TD::ALIGN_CENTER)
                     ->width(100)
                     ->canSee(Auth::user()->hasAccess('platform.forms.edit'))
-                    ->render(fn (Form $form) => DropDown::make()
+                    ->render(fn(Form $form) => DropDown::make()
                         ->icon('bs.three-dots-vertical')
                         ->list([
                             Button::make('Выгрузить')
@@ -159,22 +161,22 @@ class FormListScreen extends Screen
                 TD::make('periodicity', 'Периодичность')
                     ->sort()
                     ->width(200)
-                    ->render(fn (Form $form) => $form::$PERIODICITIES[$form->periodicity]),
+                    ->render(fn(Form $form) => $form::$PERIODICITIES[$form->periodicity]),
 
                 TD::make('type', 'Тип')
                     ->sort()
                     ->width(200)
-                    ->render(fn (Form $form) => $form::$TYPES[$form->type]),
+                    ->render(fn(Form $form) => $form::$TYPES[$form->type]),
 
                 TD::make('is_active', 'Активность')
                     ->sort()
                     ->width(150)
-                    ->render(fn (Form $form) => $form->is_active ? 'Да' : 'Нет'),
+                    ->render(fn(Form $form) => $form->is_active ? 'Да' : 'Нет'),
 
                 TD::make('is_editable', 'Возможность редактирования')
                     ->sort()
                     ->width(250)
-                    ->render(fn (Form $form) => $form->is_editable ? 'Да' : 'Нет'),
+                    ->render(fn(Form $form) => $form->is_editable ? 'Да' : 'Нет'),
 
                 TD::make('sort', 'Сортировка')
                     ->sort()
@@ -209,7 +211,7 @@ class FormListScreen extends Screen
                     ->align(TD::ALIGN_CENTER)
                     ->width(100)
                     ->canSee(Auth::user()->hasAccess('platform.forms.edit'))
-                    ->render(fn (Form $form) => DropDown::make()
+                    ->render(fn(Form $form) => DropDown::make()
                         ->icon('bs.three-dots-vertical')
                         ->list([
                             Button::make('Выгрузить')
@@ -259,22 +261,22 @@ class FormListScreen extends Screen
                 TD::make('periodicity', 'Периодичность')
                     ->sort()
                     ->width(200)
-                    ->render(fn (Form $form) => $form::$PERIODICITIES[$form->periodicity]),
+                    ->render(fn(Form $form) => $form::$PERIODICITIES[$form->periodicity]),
 
                 TD::make('type', 'Тип')
                     ->sort()
                     ->width(200)
-                    ->render(fn (Form $form) => $form::$TYPES[$form->type]),
+                    ->render(fn(Form $form) => $form::$TYPES[$form->type]),
 
                 TD::make('is_active', 'Активность')
                     ->sort()
                     ->width(150)
-                    ->render(fn (Form $form) => $form->is_active ? 'Да' : 'Нет'),
+                    ->render(fn(Form $form) => $form->is_active ? 'Да' : 'Нет'),
 
                 TD::make('is_editable', 'Возможность редактирования')
                     ->sort()
                     ->width(250)
-                    ->render(fn (Form $form) => $form->is_editable ? 'Да' : 'Нет'),
+                    ->render(fn(Form $form) => $form->is_editable ? 'Да' : 'Нет'),
 
                 TD::make('sort', 'Сортировка')
                     ->sort()
@@ -332,8 +334,59 @@ class FormListScreen extends Screen
             Field::query()
                 ->where('form_id', $form->id)
                 ->get()
+                ->map(function (Field $field) use ($copiedForm, $form) {
+                    $copiedField = $field->replicate();
+                    $copiedField->fill(['form_id' => $copiedForm->id])->save();
+
+                    FormFieldBlocked::query()
+                        ->where('form_id', $form->id)
+                        ->where('field_id', $field->id)
+                        ->get()
+                        ->map(function (FormFieldBlocked $formFieldBlocked) use ($copiedForm, $copiedField) {
+                            $formFieldBlocked->replicate()->fill([
+                                'form_id' => $copiedForm->id,
+                                'field_id' => $copiedField->id,
+                            ])->save();
+                        });
+                });
+
+            FormGroup::query()
+                ->where('form_id', $form->id)
+                ->get()
+                ->map(function (FormGroup $formGroup) use ($copiedForm) {
+                    $formGroup->replicate()->fill(['form_id' => $copiedForm->id])->save();
+                });
+
+            FormGroup::query()
+                ->where('form_id', $copiedForm->id)
+                ->get()
+                ->map(function (FormGroup $formGroup) use ($copiedForm) {
+                    if ($formGroup->parent_id) {
+                        $oldParentGroup = FormGroup::find($formGroup->parent_id);
+                        $newParentGroup = FormGroup::query()
+                            ->where('form_id', $copiedForm->id)
+                            ->where('slug', $oldParentGroup->slug)
+                            ->first();
+
+                        $formGroup->parent_id = $newParentGroup->id;
+                        $formGroup->save();
+                    }
+                });
+
+            Field::query()
+                ->where('form_id', $copiedForm->id)
+                ->get()
                 ->map(function (Field $field) use ($copiedForm) {
-                    $field->replicate()->fill(['form_id' => $copiedForm->id])->save();
+                    if ($field->group_id) {
+                        $oldParentGroup = FormGroup::find($field->group_id);
+                        $newParentGroup = FormGroup::query()
+                            ->where('form_id', $copiedForm->id)
+                            ->where('slug', $oldParentGroup->slug)
+                            ->first();
+
+                        $field->group_id = $newParentGroup->id;
+                        $field->save();
+                    }
                 });
 
             Toast::info('Успешно!');
