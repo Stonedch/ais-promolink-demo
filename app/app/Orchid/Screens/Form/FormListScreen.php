@@ -161,7 +161,13 @@ class FormListScreen extends Screen
                 TD::make('periodicity', 'Периодичность')
                     ->sort()
                     ->width(200)
-                    ->render(fn(Form $form) => $form::$PERIODICITIES[$form->periodicity]),
+                    ->render(function (Form $form) {
+                        try {
+                            return $form::$PERIODICITIES[$form->periodicity];
+                        } catch (Throwable | Exception) {
+                            return '-';
+                        }
+                    }),
 
                 TD::make('type', 'Тип')
                     ->sort()
