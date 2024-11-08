@@ -9,6 +9,7 @@ use App\Models\Departament;
 use App\Models\DepartamentType;
 use App\Models\District;
 use App\Models\Event;
+use App\Models\Field;
 use App\Models\Form;
 use App\Models\FormDepartamentType;
 use App\Models\FormResult;
@@ -164,11 +165,24 @@ class MinisterController extends Controller
                     ->get()
                     ->groupBy('event_id');
 
+                $headers = [];
+
+                foreach ($events as $event) {
+                    foreach ($event->form_structure->fields as $field) {
+                        $headers[$field->id] = (object) [
+                            'id' => $field->id,
+                            'name' => $field->name,
+                            'slug' => \Str::slug($field->name, '-'),
+                        ];
+                    }
+                }
+
                 $response = [
                     'events' => $events,
                     'formResults' => $formResults,
                     'form' => $form,
-                    'headers' => collect(@$events->sortByDesc('created_at')->first()->form_structure->fields)->sortBy('sort'),
+                    // 'headers' => collect(@$events->sortByDesc('created_at')->first()->form_structure->fields)->sortBy('sort'),
+                    'headers' => $headers,
                     'collections' => $collections,
                     'collectionValues' => $collectionValues->groupBy('collection_id', true),
                 ];
