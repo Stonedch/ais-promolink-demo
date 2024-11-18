@@ -598,7 +598,7 @@ td textarea.table__field {
     height: auto;
 }
 
-.report__input {
+.table tr .report__input {
     border-radius: unset;
     border: unset;
     height: auto;
