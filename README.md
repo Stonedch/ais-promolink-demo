@@ -78,6 +78,8 @@ $ docker-compose exec -T db psql -U formfiller formfiller < dump.sql (dumping)
             POSTGRES_USER: ${DB_USERNAME}
 ```console
 $ docker-compose exec db pg_dump -U <username> --data-only --column-inserts --exclude-table-data='public.migrations' <database> > dump_`date +%Y-%m-%d"_"%H_%M_%S`.sql
+$ docker-compose exec db pg_dump -U <username> <database> > dump_`date +%Y-%m-%d"_"%H_%M_%S`.sql
+
 ```
 
 ## Перезагрузка контейнеров
