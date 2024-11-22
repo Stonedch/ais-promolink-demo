@@ -12,7 +12,7 @@ FILEPATH="${BACKUP_FOLDER}/${FILENAME}";
 mkdir ${BACKUP_ROOT_FOLDER}
 mkdir ${BACKUP_FOLDER};
 
-${DOCKER_COMPOSE_COMMAND} exec db pg_dump -U ${DB_USERNAME} --data-only --column-inserts ${DB_DATABASE} > ${FILEPATH};
+${DOCKER_COMPOSE_COMMAND} exec db pg_dump -U ${DB_USERNAME} ${DB_DATABASE} > ${FILEPATH};
 
 if ${FTP_BACKUP_AVAILABLE}
     then curl -T ${FILEPATH} --ftp-create-dirs -u ${FTP_BACKUP_USERNAME}:${FTP_BACKUP_PASSWORD} ${FTP_BACKUP_HOST}
