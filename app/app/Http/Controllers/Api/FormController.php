@@ -104,7 +104,10 @@ class FormController extends Controller
             $event = Event::find($request->input('event_id', null));
             throw_if(empty($event), new HumanException('601, Ошибка проверки формы!'));
             throw_if($event->departament_id != $user->departament_id, new HumanException('602, Ошибка проверки пользователя!'));
-            throw_if(empty($event->filled_at) == false, new HumanException('603, Ошибка проверки формы!'));
+            throw_if(
+                $user->hasAccess('platform.forms.admin-edit') == false && empty($event->filled_at) == false,
+                new HumanException('603, Ошибка проверки формы!')
+            );
 
             throw_if($event->getCurrentStatus() == 200, new HumanException('604, Ошибка проверки формы, просрочено!'));
 
