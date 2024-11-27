@@ -11,7 +11,9 @@ use App\Models\Event;
 use App\Models\Field;
 use App\Models\Form;
 use App\Models\FormFieldBlocked;
+use App\Models\FormResult;
 use App\Orchid\Components\HumanizePhone;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Throwable;
@@ -118,6 +120,37 @@ class FormController extends Controller
             return Responser::returnError([$e->getMessage()]);
         } catch (Throwable $e) {
             return Responser::returnError();
+        }
+    }
+
+    public function getOldValues(Request $request): JsonResponse
+    {
+        try {
+            $response = [];
+
+            $user = $request->user();
+            throw_if(empty($user), new HumanException('Ошибка проверки пользователя', 100));
+            throw_if(empty($user->departament_id), new HumanException('Ошибка проверки учреждения', 110));
+
+            $event = Event::find($request->input('event_id', null));
+            throw_if(empty($event), new HumanException('Ошибка проверки формы', 120));
+            throw_if($event->departament_id != $user->departament_id, new HumanException('Ошибка проверки учреждения', 130));
+
+            $oldEvent = Event::query()
+                ->orderBy('id', 'desc')
+                ->whereNot('id', $event->id)
+                ->where('form_id', $event->form_id)
+                ->where('departament_id', $event->departament_id)
+                ->first();
+
+            $response['structure'] = $oldEvent->saved_structure;
+            $response['results'] = FormResult::where('event_id', $oldEvent->id)->get();
+
+            return Responser::returnSuccess($response);
+        } catch (HumanException $e) {
+            return Responser::returnError([$e->getMessage()]);
+        } catch (Throwable | Exception $e) {
+            return Responser::returnError([$e->getMessage()]);
         }
     }
 
