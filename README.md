@@ -86,6 +86,8 @@ $ ./init.sh
 $ docker-compose -f docker-compose.zitadel.yml down
 ```
 
+* Если в процессе ./init.sh получаешь ошибку docker-compose, попробуй в алиас прописать "альтернативный" docker compose (alias docker-compose='docker compose')
+
 прописать в .env ZITADEL_EXTERNALDOMAIN=form-filler.com
 
 ```console
