@@ -41,14 +41,35 @@
 
 ## Установка
 
+### Совмещенный с datalens
+
+```console
+$ cp .env.datalens.example .env (and configurate)
+USER=user ($ whoami) - required
+UID=1000 ($ echo $UID) - required
+GID=1000 ($ echo $UID) - required
+$ cp ./app/.env.example. env (and configurate)
+$ cp ./docker/nginx/nginx.without.sll.conf.example ./docker/nginx/nginx.conf (and configurate)
+$ htpasswd -c ./docker/datalens/nginx/htpasswd promolink
+$ docker-compose -f docker-compose.datalens.yml up -d --build
+$ docker-compose -f docker-compose.datalens.yml exec laravel composer install
+$ docker-compose -f docker-compose.datalens.yml exec laravel php artisan key:generate --ansi
+$ docker-compose -f docker-compose.datalens.yml exec laravel php artisan storage:link
+$ docker-compose -f docker-compose.datalens.yml exec laravel php artisan migrate
+$ docker-compose -f docker-compose.datalens.yml exec laravel php artisan orchid:admin
+```
+
+### Раздельный с datalens (+zitadel)
+
+#### Настройка и запуск АИС
+
 ```console
 $ cp .env.example .env (and configurate)
 USER=user ($ whoami) - required
 UID=1000 ($ echo $UID) - required
 GID=1000 ($ echo $UID) - required
 $ cp ./app/.env.example. env (and configurate)
-$ cp ./docker/nginx/nginx.without.sll.conf.example ./docker/nginx.conf (and configurate)
-$ htpasswd -c ./docker/datalens/nginx/htpasswd promolink
+$ cp ./docker/nginx/nginx.without.sll.conf.example ./docker/nginx/nginx.conf (and configurate)
 $ docker-compose up -d --build
 $ docker-compose exec laravel composer install
 $ docker-compose exec laravel php artisan key:generate --ansi
@@ -56,6 +77,40 @@ $ docker-compose exec laravel php artisan storage:link
 $ docker-compose exec laravel php artisan migrate
 $ docker-compose exec laravel php artisan orchid:admin
 ```
+
+#### Настройка и запуск Datalens/Zitadel
+
+```console
+$ cd ./datalens
+$ ./init.sh
+$ docker-compose -f docker-compose.zitadel.yml down
+```
+
+прописать в .env ZITADEL_EXTERNALDOMAIN=form-filler.com
+
+```console
+$ HC=1 docker-compose -f docker-compose.network.zitadel.yml up -d
+```
+
+Настраиваем ssh-туннель на 8085 (локально)
+
+```console
+$ ssh -L 8085:localhost:8085 user@form-filler.com
+```
+
+1. Переходим в панель zitadel (http://hostname:8085)
+1. Вводим дефолтные логин/пароль (zitadel-admin@zitadel.localhost/Password1!)
+1. Меняем пароль
+1. Переходим в "Projects"
+1. В блоке "Applications" находим "Charts" и переходим
+1. Переходим в "Redirect Settings"
+1. Добавляем новые URIs (http://80.87.199.97:8080/api/auth/callback, )
+
+```
+http://80.87.199.97:8080/api/auth/callback (Redirect URIs)
+http://80.87.199.97:8080/auth (Post Logout URIs)
+```
+
 
 ## Настройка cron-задач
 
