@@ -146,6 +146,29 @@ class FormController extends Controller
             $response['structure'] = $oldEvent->saved_structure;
             $response['results'] = FormResult::where('event_id', $oldEvent->id)->get();
 
+            $oldFields = collect(json_decode($oldEvent->form_structure)->fields)
+                ->keyBy('id')
+                ->map(function ($field) {
+                    $field->name = mb_strtolower($field->name);
+                    return $field;
+                });
+
+            foreach (json_decode($event->form_structure)->fields as $field) {
+                if (empty($response['results']->where('id', $field->id)->count())) {
+                    if (empty($oldFields->get($field->id))) {
+                        $finded = $oldFields->where('name', mb_strtolower($field->name))->first();
+
+                        if (empty($finded) == false) {
+                            $response['results']->where('field_id', $finded->id)
+                                ->map(function (FormResult $formResult) use ($field) {
+                                    $formResult->field_id = $field->id;
+                                    return $formResult;
+                                });
+                        }
+                    }
+                }
+            }
+
             return Responser::returnSuccess($response);
         } catch (HumanException $e) {
             return Responser::returnError([$e->getMessage()]);
