@@ -84,6 +84,7 @@ $ docker-compose exec laravel php artisan orchid:admin
 $ cd ./datalens
 $ ./init.fixed.sh (или оригинал ./init.sh)
 $ docker-compose -f docker-compose.zitadel.yml down
+$ sudo rm -rf metadata
 ```
 
 * Если в процессе ./init.sh получаешь ошибку docker-compose, попробуй в алиас прописать "альтернативный" docker compose (alias docker-compose='docker compose')
