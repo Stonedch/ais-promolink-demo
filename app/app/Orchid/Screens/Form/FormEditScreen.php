@@ -37,7 +37,7 @@ class FormEditScreen extends Screen
     public ?array $structure = null;
     public ?SupportCollection $groups = null;
 
-    protected static int $lastGeneralSort = -100;
+    protected static int $lastGeneralSort = -100000;
 
     public function query(Form $form): iterable
     {
@@ -104,7 +104,7 @@ class FormEditScreen extends Screen
     {
         if ($structure->where('sort', $sort)->count()) {
             $sort = self::$lastGeneralSort;
-            self::$lastGeneralSort -= 100;
+            self::$lastGeneralSort += 100;
         }
 
         return $sort;
