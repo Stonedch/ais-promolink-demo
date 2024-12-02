@@ -82,7 +82,7 @@ $ docker-compose exec laravel php artisan orchid:admin
 
 ```console
 $ cd ./datalens
-$ ./init.sh
+$ ./init.fixed.sh (или оригинал ./init.sh)
 $ docker-compose -f docker-compose.zitadel.yml down
 ```
 
