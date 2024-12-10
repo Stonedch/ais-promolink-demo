@@ -48,7 +48,7 @@ UID=1000 ($ echo $UID) - required
 GID=1000 ($ echo $UID) - required
 $ cp ./app/.env.example ./app/.env (and configurate)
 $ cp ./docker/nginx/nginx.without.sll.conf.example ./docker/nginx/nginx.conf (and configurate)
-$ htpasswd -c ./docker/datalens/nginx/htpasswd promolink
+$ htpasswd -c ./docker/datalens/nginx/.htpasswd promolink
 $ docker-compose up -d --build
 $ docker-compose exec laravel composer install
 $ docker-compose exec laravel php artisan key:generate --ansi
