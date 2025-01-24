@@ -120,7 +120,8 @@ class PlatformProvider extends OrchidServiceProvider
 
             ItemPermission::group('Формы')
                 ->addPermission('platform.forms.list', 'Список')
-                ->addPermission('platform.forms.edit', 'Редактирование'),
+                ->addPermission('platform.forms.edit', 'Редактирование')
+                ->addPermission('platform.forms.admin-edit', 'Доступ к административному исправлению'),
 
             ItemPermission::group('Категории форм')
                 ->addPermission('platform.form-categories.list', 'Список')

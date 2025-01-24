@@ -588,3 +588,19 @@ td textarea.table__field {
 .report:not(.--edit-blockeds) .table__row tr td.--blocked>* {
     pointer-events: none;
 }
+
+.table__row tr td {
+    height: auto;
+}
+
+.table tr {
+    min-height: 150px;
+    height: auto;
+}
+
+.table tr .report__input {
+    border-radius: unset;
+    border: unset;
+    height: auto;
+    min-height: 150px;
+}

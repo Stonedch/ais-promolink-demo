@@ -80,6 +80,7 @@ Route::middleware([ServiceUnavailable::class, LogRoute::class])->name('api.')->p
         Route::post('/save-draft', 'saveDraft')->name('save-draft');
         Route::post('/save-field-blockeds', 'saveFieldBlockeds')->name('save-field-blockeds');
         Route::post('/percent', 'percent')->name('percent');
+        Route::post('/old-values', 'getOldValues')->name('get-old-values');
         Route::get('/form-field-blockeds', 'formFieldBlockeds')->name('form-field-blockeds');
     });
 

@@ -387,7 +387,7 @@ class FormHelper
                     $blocked = $fieldBlockeds->where('index', $index)->first();
                 }
 
-                if (empty($value)) continue;
+                if ($value == null) continue;
 
                 $formResultData = [
                     'user_id' => $user->id,

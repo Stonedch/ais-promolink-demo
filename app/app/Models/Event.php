@@ -67,7 +67,7 @@ class Event extends Model
 
         if ($isFilled) {
             return 300;
-        } elseif ($diff < 0) {
+        } elseif (empty($deadline) == false && $diff < 0) {
             return 200;
         } else {
             return 100;

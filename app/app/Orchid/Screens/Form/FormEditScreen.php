@@ -37,6 +37,8 @@ class FormEditScreen extends Screen
     public ?array $structure = null;
     public ?SupportCollection $groups = null;
 
+    protected static int $lastGeneralSort = -100000;
+
     public function query(Form $form): iterable
     {
         $formDepartamentTypes = $form->exists
@@ -65,12 +67,14 @@ class FormEditScreen extends Screen
             ? Field::where('form_id', $form->id)->orderBy('sort')->get()
             : new SupportCollection();
 
-        $fields->map(function (Field $field) {
+        $fields->map(function (Field $field) use ($groups) {
             $field->general_id = $field->id;
             $field->general_name = $field->name;
             $field->general_group_id = $field->group_id;
             $field->general_type = FormStructureType::FIELD->value;
-            $field->general_sort = $field->sort;
+
+            $field->general_sort = self::fixGeneralSort($field->sort, $groups);
+
             $field->field_type = $field->type;
             $field->field_collection_id = $field->collection_id;
             $field->field_checker_user_id = $field->checker_user_id;
@@ -94,6 +98,16 @@ class FormEditScreen extends Screen
             'structure' => $structure,
             'checkers' => $checkers,
         ];
+    }
+
+    protected static function fixGeneralSort(int $sort, SupportCollection $structure): int
+    {
+        if ($structure->where('sort', $sort)->count()) {
+            $sort = self::$lastGeneralSort;
+            self::$lastGeneralSort += 100;
+        }
+
+        return $sort;
     }
 
     public function name(): ?string
