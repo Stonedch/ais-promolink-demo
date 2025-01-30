@@ -60,6 +60,11 @@ Route::middleware([ServiceUnavailable::class, LogRoute::class])->name('web.')->g
         Route::get('/accept', 'accept')->name('accept');
         Route::get('/reject', 'reject')->name('reject');
     });
+
+    // web.testing
+    Route::name('testing.')->prefix('/testing')->controller(\App\Http\Controllers\Web\TestingController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
 });
 
 // api
