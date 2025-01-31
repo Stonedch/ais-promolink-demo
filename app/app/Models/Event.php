@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\EventStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Orchid\Filters\Filterable;
@@ -50,12 +50,6 @@ class Event extends Model
         'created_at',
     ];
 
-    public static $STATUSES = [
-        100 => 'В процессе',
-        200 => 'Просрочен',
-        300 => 'Выполнен',
-    ];
-
     public function getCurrentStatus()
     {
         $formStructure = is_array($this->form_structure)
@@ -66,11 +60,11 @@ class Event extends Model
         $isFilled = empty($this->filled_at) == false;
 
         if ($isFilled) {
-            return 300;
+            return EventStatus::from(100);
         } elseif (empty($deadline) == false && $diff < 0) {
-            return 200;
+            return EventStatus::from(200);
         } else {
-            return 100;
+            return EventStatus::from(300);
         }
     }
 

@@ -19,7 +19,7 @@
                     {{ $form->deadline }} дней
                 </td>
                 <td class="align-middle">
-                    {{ Event::$STATUSES[$form->event->getCurrentStatus()] }}
+                    {!! $form->event->getCurrentStatus()->bootstrapme() !!}
                 </td>
                 <td class="align-middle">
                     <div class="btn-group" role="group">
