@@ -129,4 +129,13 @@ class Event extends Model
             ? collect($structure->blockeds)->keyBy('id')
             : new Collection();
     }
+
+    public static function lastByDepartament(int $formIdentifier, int $departamentIdentifier): ?self
+    {
+        return self::query()
+            ->where('form_id', $formIdentifier)
+            ->where('departament_id', $departamentIdentifier)
+            ->orderBy('id', 'DESC')
+            ->first();
+    }
 }

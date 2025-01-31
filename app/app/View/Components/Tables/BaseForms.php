@@ -1,0 +1,35 @@
+<?php
+
+namespace App\View\Components\Tables;
+
+use App\Models\Event;
+use App\Models\Form;
+use Closure;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection as SupportCollection;
+use Illuminate\View\Component;
+
+class BaseForms extends Component
+{
+    protected CONST VIEW = 'components.tables.base-forms';
+
+    protected array $data = [];
+
+    public function __construct(
+        SupportCollection $forms,
+    )
+    {
+        $this->data['user'] = request()->user();
+        $this->data['forms'] = $forms->sortBy('sort');
+
+        $this->data['forms']->map(function (Form $form) {
+            $form->event = Event::lastByDepartament($form->id, $this->data['user']->departament_id);
+            return $form;
+        });
+    }
+
+    public function render(): View|Closure|string
+    {
+        return view(self::VIEW, $this->data);
+    }
+}

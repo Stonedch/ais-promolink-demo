@@ -10,6 +10,7 @@ use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
+use Throwable;
 
 class Form extends Model
 {
@@ -93,5 +94,18 @@ class Form extends Model
     public function departamentTypes(): BelongsToMany
     {
         return $this->belongsToMany(DepartamentType::class, 'form_departament_types');
+    }
+
+    public function canUserEdit(): bool
+    {
+        try {
+            throw_if(empty(@$this->last_event));
+            throw_if(empty(@$this->last_event->filled_at) == false);
+            throw_if(request()->user()->hasAnyAccess(['platform.supervisor.base']));
+            throw_if(request()->user()->hasAnyAccess(['platform.departament-director.base']));
+            return true;
+        } catch (Throwable) {
+            return false;
+        }
     }
 }
