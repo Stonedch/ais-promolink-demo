@@ -22,7 +22,13 @@ class BaseForms extends Component
         $this->data['user'] = request()->user();
         $this->data['forms'] = $forms->sortBy('sort');
 
-        $this->data['forms']->map(function (Form $form) {
+        $this->data['forms'] = $this->data['forms']->map(function (array|Form $form) {
+            if (is_array($form)) {
+                $data = $form['id'];
+                $form = new Form($form);
+                $form->id = $data;
+            }
+
             $form->event = Event::lastByDepartament($form->id, $this->data['user']->departament_id);
             return $form;
         });
