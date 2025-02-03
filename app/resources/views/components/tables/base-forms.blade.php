@@ -33,7 +33,11 @@
                     <b>{{ $form->name }}</b>
                 </td>
                 <td class="align-middle" data-sort-field="deadline">
-                    {{ $form->deadline }} дней
+                    @if ($form->deadline)
+                        {{ $form->deadline }} дней
+                    @else
+                        бессрочно
+                    @endif
                 </td>
                 <td class="align-middle" data-sort-field="status">
                     {!! $form->event->getCurrentStatus()->bootstrapme() !!}
