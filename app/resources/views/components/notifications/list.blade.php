@@ -16,8 +16,10 @@
                         @php $type = 'primary'; @endphp
                         <div class="col-md-4 col-xl-3">
                             <button
-                                class="w-100 card bg-c-blue order-card p-3 {{ \App\Enums\NotificationBootstrapColor::find($notification->data['type'])->bootstrapme() }} text-white pb-5 h-100 d-block"
-                                data-id="{{ $notification->id }}">
+                                class="notification-card w-100 card bg-c-blue order-card p-3 {{ \App\Enums\NotificationBootstrapColor::find($notification->data['type'])->bootstrapme() }} text-white pb-5 h-100 d-block"
+                                data-id="{{ $notification->id }}"
+                                data-title="{{ $notification->data['title'] }}"
+                                data-message="{{ $notification->data['message'] }}">
                                 <div class="d-flex align-items-center justify-content-between mb-1">
                                     <h6 class="m-0">{{ $notification->data['title'] }}</h6>
                                     <p class="m-0">
@@ -29,7 +31,7 @@
                                 <small class="m-0">{{ $notification->data['message'] }}</small>
                                 @if (empty($notification->read_at))
                                     <span
-                                        class="position-absolute bottom-0 start-50 translate-middle badge rounded-pill bg-success">
+                                        class="notification-new position-absolute bottom-0 start-50 translate-middle badge rounded-pill bg-success">
                                         Новое
                                         <span class="visually-hidden">unread messages</span>
                                     </span>
