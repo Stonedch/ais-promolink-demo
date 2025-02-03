@@ -261,4 +261,23 @@ class FormController extends Controller
             return Responser::returnError(['100, Ошибка сервера!']);
         }
     }
+
+    public function archive(Request $request): JsonResponse
+    {
+        try {
+            $user = $request->user();
+            $departament = Departament::find($user->departament_id);
+            $event = Event::find($request->input('event'));
+            $events = Event::query()
+                ->where('form_id', $event->form_id)
+                ->where('departament_id', $departament->id)
+                ->whereNotNull('filled_at')
+                ->get();
+            return Responser::returnSuccess(['events' => $events]);
+        } catch (HumanException $e) {
+            return Responser::returnError([$e->getMessage()]);
+        } catch (Throwable) {
+            return Responser::returnError(['100, Ошибка сервера!']);
+        }
+    }
 }

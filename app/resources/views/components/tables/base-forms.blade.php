@@ -47,10 +47,10 @@
                                 <small>редактировать</small>
                             </a>
                         @endif
-                        {{-- <button type="button" class="btn btn-secondary py-1 px-3">
+                        <button type="button" class="archive-open btn btn-secondary py-1 px-3" data-event="{{ $form->event->id }}">
                             <img width="16px" src="/img/files.svg" />
                             <small>архив</small>
-                        </button> --}}
+                        </button>
                         <a href="/forms/preview/{{ $form->event->departament_id }}/{{ $form->id }}?event={{ $form->event->id }}"
                             type="button" class="btn btn-secondary py-1 px-3">
                             <img width="16px" src="/img/search.svg" />

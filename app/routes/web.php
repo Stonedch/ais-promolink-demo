@@ -87,6 +87,7 @@ Route::middleware([ServiceUnavailable::class, LogRoute::class])->name('api.')->p
         Route::post('/percent', 'percent')->name('percent');
         Route::post('/old-values', 'getOldValues')->name('get-old-values');
         Route::get('/form-field-blockeds', 'formFieldBlockeds')->name('form-field-blockeds');
+        Route::get('/archive', 'archive')->name('archive');
     });
 
     // api.event-store
