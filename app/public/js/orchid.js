@@ -169,8 +169,6 @@ function showModalRow(event) {
                 const renderParentSelects = () => {
                     const value = $("._modal-inputs select.--select-parent").val();
 
-                    console.log(value);
-
                     $("._modal-inputs .form-group:has(.--select-field-type)").hide();
                     $("._modal-inputs .form-group:has(.--select-group-type)").hide();
 

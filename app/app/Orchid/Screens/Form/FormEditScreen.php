@@ -236,7 +236,8 @@ class FormEditScreen extends Screen
                         'field_type' => Select::make()->empty('-')->options(Field::$TYPES)->hidden()->class('form-control --select-field-type'),
                         'field_collection_id' => Select::make()->options(fn() => Collection::pluck('name', 'id'))->empty('-')->hidden()->class('form-control --select-field-type'),
                         'field_checker_user_id' => Select::make()->options($this->checkers)->empty('-')->hidden()->class('form-control --select-field-type'),
-                        'group_is_multiple' => CheckBox::make()->sendTrueOrFalse()->hidden()->class('form-check-input --select-group-type'),
+                        // 'group_is_multiple' => CheckBox::make()->sendTrueOrFalse()->hidden()->class('form-check-input --select-group-type'),
+                        'group_is_multiple' => Select::make()->options([1 => 'Да'])->empty('Нет')->hidden()->class('form-control --select-group-type'),
                         'general_slug' => Input::make()->class("form-control _sluggable --modal-hidden")->hidden(),
                     ]),
             ]))
@@ -338,7 +339,7 @@ class FormEditScreen extends Screen
                     'parent_id' => @$requestedGroup['general_group_id'],
                     'slug' => @$requestedGroup['general_slug'],
                     'sort' => @$requestedGroup['general_sort'] ?: null,
-                    'is_multiple' => @$requestedGroup['group_is_multiple'],
+                    'is_multiple' => @$requestedGroup['group_is_multiple'] ?: false,
                 ])->save();
 
                 $requestedGroups[$group->id] = $requestedGroup;
