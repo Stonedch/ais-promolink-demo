@@ -13,7 +13,7 @@ export class PLUserEdit {
                 PLModal.show(/* HTML */ `
                     <div class="bg-light">
                         <div class="container mb-4 bg-light p-3 rounded">
-                            <h3>Загрузка кастомного отчета</h3>
+                            <h3>Редактирование профиля</h3>
                             <form id="userEditForm" class="custom-report-form">
                                 <div class="row mb-3">
                                     <div class="mb-3">
