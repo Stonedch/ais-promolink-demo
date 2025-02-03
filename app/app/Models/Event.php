@@ -62,11 +62,11 @@ class Event extends Model
         $isFilled = empty($this->filled_at) == false;
 
         if ($isFilled) {
-            return EventStatus::from(100);
+            return EventStatus::from(300);
         } elseif (empty($deadline) == false && $diff < 0) {
             return EventStatus::from(200);
         } else {
-            return EventStatus::from(300);
+            return EventStatus::from(100);
         }
     }
 
