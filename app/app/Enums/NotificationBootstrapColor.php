@@ -18,12 +18,30 @@ enum NotificationBootstrapColor: string
         return self::tryFrom($query) ?: self::PRIMARY;
     }
 
+    public function title(): string
+    {
+        return match ($this) {
+            self::DANGER => 'Критичные',
+            self::PRIMARY => 'Информирование',
+            self::DARK => 'Системные уведомления',
+        };
+    }
+
     public function bootstrapme(): string
     {
         return match ($this) {
             self::DANGER => 'bg-danger',
-            self::PRIMARY => 'bg-primary',
+            self::PRIMARY => 'bg-light',
             self::DARK => 'bg-dark',
+        };
+    }
+
+    public function bootstrapmeColor(): string
+    {
+        return match ($this) {
+            self::DANGER => 'text-light',
+            self::PRIMARY => 'text-dark',
+            self::DARK => 'text-light',
         };
     }
 }

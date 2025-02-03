@@ -2,9 +2,11 @@
     <div class="d-flex gap-2 align-items-center mb-3 justify-content-between">
         <h3 class="m-0">Уведомления</h3>
         <div class="d-flex gap-2 lign-items-center">
-            <span class="badge bg-danger">Критичные</span>
-            <span class="badge bg-primary">Информирование</span>
-            <span class="badge bg-dark">Системные уведомления</span>
+            @foreach (\App\Enums\NotificationBootstrapColor::cases() as $case)
+                <span class="badge {{ $case->bootstrapme() }} {{ $case->bootstrapmeColor() }}">Критичные</span>
+            @endforeach
+            {{-- <span class="badge bg-primary">Информирование</span>
+            <span class="badge bg-dark">Системные уведомления</span> --}}
         </div>
     </div>
     <div class="carousel-inner">
@@ -13,22 +15,25 @@
                 data-bs-interval="60000">
                 <div class="row d-flex align-items-stretch">
                     @foreach ($notifications as $notification)
-                        @php $type = 'primary'; @endphp
+                        @php
+                            $type = 'primary';
+                            $status = \App\Enums\NotificationBootstrapColor::find($notification->data['type']);
+                        @endphp
+
                         <div class="col-md-4 col-xl-3">
                             <button
-                                class="notification-card w-100 card bg-c-blue order-card p-3 {{ \App\Enums\NotificationBootstrapColor::find($notification->data['type'])->bootstrapme() }} text-white pb-5 h-100 d-block"
-                                data-id="{{ $notification->id }}"
-                                data-title="{{ $notification->data['title'] }}"
+                                class="notification-card w-100 card bg-c-blue order-card p-3 {{ $status->bootstrapme() }} text-white pb-5 h-100 d-block"
+                                data-id="{{ $notification->id }}" data-title="{{ $notification->data['title'] }}"
                                 data-message="{{ $notification->data['message'] }}">
                                 <div class="d-flex align-items-center justify-content-between mb-1">
-                                    <h6 class="m-0">{{ $notification->data['title'] }}</h6>
+                                    <h6 class="m-0 {{ $status->bootstrapmeColor() }}">{{ $notification->data['title'] }}</h6>
                                     <p class="m-0">
-                                        <small>
+                                        <small class="{{ $status->bootstrapmeColor() }}">
                                             {{ \Carbon\Carbon::parse($notification->data['time'])->format('d.m') }}
                                         </small>
                                     </p>
                                 </div>
-                                <small class="m-0">{{ $notification->data['message'] }}</small>
+                                <small class="m-0 {{ $status->bootstrapmeColor() }}">{{ $notification->data['message'] }}</small>
                                 @if (empty($notification->read_at))
                                     <span
                                         class="notification-new position-absolute bottom-0 start-50 translate-middle badge rounded-pill bg-success">
