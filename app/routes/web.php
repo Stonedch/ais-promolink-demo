@@ -65,6 +65,11 @@ Route::middleware([ServiceUnavailable::class, LogRoute::class])->name('web.')->g
     Route::name('testing.')->prefix('/testing')->controller(\App\Http\Controllers\Web\TestingController::class)->group(function () {
         Route::get('/', 'index')->name('index');
     });
+
+    // web.custom-reports
+    Route::name('custom-reports.')->prefix('/custom-reports')->controller(\App\Http\Controllers\Web\CustomReportController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
 });
 
 // api

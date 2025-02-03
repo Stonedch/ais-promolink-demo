@@ -25,8 +25,12 @@
                         <x-layout.nav-link href="{{ route('platform.index') }}" label="Конфигуратор" />
                     @endif
                     @if (auth()->user()->hasAccess('form-checker'))
-                        <x-layout.nav-link activeis="{{ request()->is('web.form-checker') }}"
+                        <x-layout.nav-link activeis="{{ request()->is('form-checker') }}"
                             href="{{ route('web.form-checker.index') }}" label="Проверка" />
+                    @endif
+                    @if (config('app.custom_reports'))
+                        <x-layout.nav-link activeis="{{ request()->is('custom-reports') }}"
+                            href="{{ route('web.custom-reports.index') }}" label="Кастомные отчеты" />
                     @endif
                 @endif
             </ul>
