@@ -318,10 +318,16 @@ class FormController extends Controller
         throw_if(empty($user), new HumanException('Ошибка авторизации! Номер ошибки: #1003.'));
         throw_if($user->hasAccess('platform.forms.edit') == false, new HumanException('Ошибка авторизации! Номер ошибки: #1004.'));
 
+        $structure = json_decode($form->getStructure());
+        $collections = Collection::whereIn('id', collect($structure->fields)->pluck('collection_id'))->get();
+        $collectionValues = CollectionValue::whereIn('collection_id', $collections->pluck('id'))->get();
+
         $response = [
             'form' => $form,
-            'structure' => $form->getStructure(),
+            'structure' => json_encode($structure, JSON_UNESCAPED_UNICODE),
             'groups' => FormGroup::where('form_id', $form->id)->get(),
+            'collections' => $collections->toArray(),
+            'collectionValues' => $collectionValues->groupBy('collection_id')->toArray(),
         ];
 
         return view($this->views['preview-structure'], $response);
