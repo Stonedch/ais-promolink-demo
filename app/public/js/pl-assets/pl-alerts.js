@@ -1,12 +1,11 @@
 export class PLAlert {
-    static TYPE_DANGER = "alert-danger";
-    static TYPE_PRIMARY = "alert-primary";
-    static TYPE_SUCCESS = "alert-success";
+    static TYPE_DANGER = "#dc3545";
+    static TYPE_PRIMARY = "#007aff";
+    static TYPE_SUCCESS = "#198754";
 
     #selector;
-    #alerts;
 
-    constructor(alertSelector = ".alert") {
+    constructor(alertSelector = ".toast") {
         this.#selector = alertSelector;
     }
 
@@ -32,15 +31,22 @@ export class PLAlert {
     show(title, body = "", type = PLAlert.TYPE_PRIMARY) {
         const position = "beforeend";
 
-        const text = `
-            <div class="alert ${type} w-25 opacity-75 position-fixed bottom-0 start-50 translate-middle-x" role="alert">
-                <h4 class="alert-heading">${title}</h4>
-                <div>${body}</div>
-                <button class="close-button position-absolute top-0 start-100 translate-middle badge border border-light rounded-circle bg-danger p-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
+        const text = /* HTML */`
+            <div class="toast d-block position-fixed bottom-0 start-50 translate-middle-x m-1" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <svg class="bd-placeholder-img rounded me-2"
+                        width="20" height="20"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                        preserveAspectRatio="xMidYMid slice" focusable="false">
+                        <rect width="100%" height="100%" fill="${type}"></rect>
                     </svg>
-                </button>
+                    <strong class="me-auto">${title}</strong>
+                    <button type="button" class="btn-close close-button" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    ${body}
+                </div>
             </div>
         `;
 
