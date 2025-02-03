@@ -14,9 +14,11 @@ use App\Models\FormCategory;
 use App\Models\FormCheckerResult;
 use App\Models\FormGroup;
 use App\Models\FormResult;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Throwable;
 
 class FormController extends Controller
 {
@@ -234,8 +236,13 @@ class FormController extends Controller
 
             $allEvents->map(function (Event $event) use ($formResults) {
                 try {
-                    $event->maxIndex = $formResults->get($event->form_id)->get($event->id)->max('index');
-                } catch (Throwable) {
+                    $event->maxIndex = $formResults
+                        ->get($event->form_id)
+                        ->get($event->id)
+                        ->max('index');
+                } catch (Throwable | Exception) {
+                    $event->maxIndex = 0;
+                    return $event;
                 }
 
                 return $event;
