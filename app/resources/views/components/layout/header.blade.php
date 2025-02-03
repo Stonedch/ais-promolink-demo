@@ -55,7 +55,7 @@
                     </a>
                     <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
                         <li>
-                            <a class="dropdown-item" href="#">Редактировать</a>
+                            <button class="user-edit dropdown-item">Редактировать</button>
                         </li>
                         <li>
                             <hr class="dropdown-divider">

@@ -1,5 +1,5 @@
 export class PLModal {
-    static show(src = "") {
+    static show(src = "", onDone = () => {}) {
         Fancybox.close();
 
         new Fancybox([
@@ -7,7 +7,11 @@ export class PLModal {
                 src: src,
                 type: "html",
             },
-        ]);
+        ], {
+            on: {
+                done: onDone,
+            },
+        });
     }
 
     static close() {
