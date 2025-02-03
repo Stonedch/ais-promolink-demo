@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\EventStatus;
+use App\Notifications\BaseNotification;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,6 +13,7 @@ use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
+use Orchid\Support\Color;
 
 class Event extends Model
 {
@@ -88,6 +90,18 @@ class Event extends Model
             'form_structure' => $formStructure ?: $form->getStructure(),
             'departament_id' => $departament->id,
         ])->save();
+
+        User::where('departament_id', $departament->id)->get()->map(function (User $user) use ($form) {
+            $notification = new BaseNotification(
+                'Новый отчет',
+                "Добавлен новый отчет на заполнение \"{$form->name}\"",
+                Color::BASIC
+            );
+
+            $user->notify($notification);
+
+            return $user;
+        });
     }
 
     public function formResults(): HasMany
