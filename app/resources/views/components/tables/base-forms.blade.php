@@ -3,22 +3,39 @@
 <table class="table m-0">
     <thead>
         <tr>
-            <th scope="col">Название отчета</th>
-            <th scope="col">Срок исполнения</th>
-            <th scope="col">Статус</th>
-            <th scope="col">Взаимодействия</th>
+            <th scope="col" data-sort-field="name">
+                <span>Название отчета</span>
+                <button class="table__sort bg-transparent border-0" data-sort-field="name">
+                    <img src="/img/sort.svg" width="14px">
+                </button>
+            </th>
+            <th scope="col" data-sort-field="deadline">
+                <span>Срок исполнения</span>
+                <button class="table__sort bg-transparent border-0" data-sort-field="sort">
+                    <img src="/img/sort.svg" width="14px">
+                </button>
+            </th>
+            <th scope="col" data-sort-field="status">
+                <span>Статус</span>
+                <button class="table__sort bg-transparent border-0" data-sort-field="status">
+                    <img src="/img/sort.svg" width="14px">
+                </button>
+            </th>
+            <th scope="col">
+                <span>Взаимодействия</span>
+            </th>
         </tr>
     </thead>
     <tbody>
         @foreach ($forms as $form)
             <tr>
-                <td class="align-middle">
+                <td class="align-middle" data-sort-field="name">
                     <b>{{ $form->name }}</b>
                 </td>
-                <td class="align-middle">
+                <td class="align-middle" data-sort-field="deadline">
                     {{ $form->deadline }} дней
                 </td>
-                <td class="align-middle">
+                <td class="align-middle" data-sort-field="status">
                     {!! $form->event->getCurrentStatus()->bootstrapme() !!}
                 </td>
                 <td class="align-middle">
