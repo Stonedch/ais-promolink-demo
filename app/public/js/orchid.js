@@ -150,7 +150,10 @@ function showModalRow(event) {
                             var value = $(this).val();
 
                             if ($(this).is("select")) {
-                                $(event.target).closest("tr").find(`[name="${name}"]`).val(parseInt(value)).change();
+                                $(event.target).closest("tr").find(`[name="${name}"] option:selected`).prop('selected', false);
+                                $(event.target).closest("tr").find(`[name="${name}"] option[value="${value}"]`).prop('selected', true);
+                                $(event.target).closest("tr").find(`[name="${name}"] option[value="${value}"]`).attr('selected', true);
+                                $(event.target).closest("tr").find(`[name="${name}"]`).val(value).change();
                                 $(event.target).closest("tr").find(".ts-control .item").data("value", value);
                                 $(event.target).closest("tr").find(`[name="${name}"]`).closest("th").find(".ts-control .item").data("value", value);
                                 $(event.target).closest("tr").find(`[name="${name}"]`).closest("th").find(".ts-control .item").text(
@@ -204,10 +207,35 @@ function updateSortableMatrix(input = ".matrix ._sortable") {
 }
 
 function initSortableMatrix(input = ".matrix ._sortable") {
+    // $("select").change(function () {
+    //     console.log($(this).val());
+    //     // $(this).val($(this).find(":selected").val());
+    // })
+
     const init = () => {
         $(input).closest("tbody").sortable({
-            out: function () {
-                updateSortableMatrix(input);
+            axis: "y",
+            start: function (event, ui) {
+                window.plSortableOptions = {};
+                $.each($(ui.item[0]).find("select"), function () {
+                    window.plSortableOptions[$(this).attr("name")] = $(this).find("option:selected").val();
+                });
+            },
+            stop: function (event, ui) {
+                setTimeout(function () {
+                    updateSortableMatrix(input);
+                    $.each(window.plSortableOptions, function (key, value) {
+                        $(`[name="${key}"]`).closest("tr").find(`[name="${key}"] option:selected`).prop('selected', false);
+                        $(`[name="${key}"]`).closest("tr").find(`[name="${key}"] option[value="${value}"]`).prop('selected', true);
+                        $(`[name="${key}"]`).closest("tr").find(`[name="${key}"] option[value="${value}"]`).attr('selected', true);
+                        $(`[name="${key}"]`).closest("tr").find(`[name="${key}"]`).val(value).change();
+                        $(`[name="${key}"]`).closest("tr").find(".ts-control .item").data("value", value);
+                        $(`[name="${key}"]`).closest("tr").find(`[name="${key}"]`).closest("th").find(".ts-control .item").data("value", value);
+                        $(`[name="${key}"]`).closest("tr").find(`[name="${key}"]`).closest("th").find(".ts-control .item").text(
+                            $(`[name="${key}"]`).closest("tr").find(`[name="${key}"] option[value="${value}"]`).text()
+                        );
+                    })
+                }, 200);
             },
         });
     }
