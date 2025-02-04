@@ -11,9 +11,12 @@ use App\Orchid\Layouts\Role\RolePermissionLayout;
 use App\Orchid\Layouts\User\UserEditLayout;
 use App\Orchid\Layouts\User\UserPasswordLayout;
 use App\Orchid\Layouts\User\UserRoleLayout;
+use Exception;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Orchid\Access\Impersonation;
 use Orchid\Screen\Action;
@@ -23,6 +26,7 @@ use Orchid\Screen\Screen;
 use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
+use Throwable;
 
 class UserEditScreen extends Screen
 {
@@ -169,15 +173,22 @@ class UserEditScreen extends Screen
      */
     public function save(User $user, Request $request)
     {
-        $request->validate([
-            'user.phone' => [
-                'required',
-                Rule::unique(User::class, 'phone')->ignore($user),
+        $request->merge([
+            'user' => [
+                ...$request->input('user'),
+                'phone' => PhoneNormalizer::normalizePhone($request->input('user.phone')),
             ],
+        ])->validate([
+            'user.phone' => 'required|unique:users,phone',
+            'user.password' => 'required',
+        ], [
+            'user.phone.required' => 'Поле "Номер телефона" обязательно к заполнению',
+            'user.phone.unique' => 'Поле "Номер телефона" должно быть уникальным',
+            'user.password.required' => 'Поле "Пароль" обязательно к заполнению',
         ]);
 
         $permissions = collect($request->get('permissions'))
-            ->map(fn ($value, $key) => [base64_decode($key) => $value])
+            ->map(fn($value, $key) => [base64_decode($key) => $value])
             ->collapse()
             ->toArray();
 
@@ -187,12 +198,12 @@ class UserEditScreen extends Screen
 
         $user
             ->fill($request->collect('user')->except(['password', 'permissions', 'roles'])->toArray())
-            ->forceFill(['permissions' => $permissions, 'phone' => PhoneNormalizer::normalizePhone($request->input('user.phone'))])
+            ->forceFill(['permissions' => $permissions])
             ->save();
 
         $user->replaceRoles($request->input('user.roles'));
 
-        Toast::info(__('User was saved.'));
+        Toast::info('Пользователь сохранен');
 
         return redirect()->route('platform.systems.users');
     }
