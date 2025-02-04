@@ -33,8 +33,9 @@
                                             </small>
                                         </p>
                                     </div>
-                                    <small
-                                        class="m-0 {{ $status->bootstrapmeColor() }}">{{ $notification->data['message'] }}</small>
+                                    <p class="m-0 fs-10 lh-sm {{ $status->bootstrapmeColor() }}">
+                                        {{ $notification->data['message'] }}
+                                    </p>
                                     @if (empty($notification->read_at))
                                         <span
                                             class="notification-new position-absolute bottom-0 start-50 translate-middle badge rounded-pill bg-success">
