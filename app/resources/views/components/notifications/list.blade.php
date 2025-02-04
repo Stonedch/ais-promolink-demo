@@ -4,7 +4,7 @@
             <h3 class="m-0">Уведомления</h3>
             <div class="d-flex gap-2 lign-items-center">
                 @foreach (\App\Enums\NotificationBootstrapColor::cases() as $case)
-                    <span class="badge {{ $case->bootstrapme() }} {{ $case->bootstrapmeColor() }}">Критичные</span>
+                    <span class="badge {{ $case->bootstrapme() }} {{ $case->bootstrapmeColor() }}">{{ $case->title() }}</span>
                 @endforeach
             </div>
         </div>
