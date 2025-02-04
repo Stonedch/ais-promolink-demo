@@ -11,7 +11,7 @@
             </th>
             <th scope="col" data-sort-field="deadline">
                 <span>Срок исполнения</span>
-                <button class="table__sort bg-transparent border-0" data-sort-field="sort">
+                <button class="table__sort bg-transparent border-0" data-sort-field="deadline">
                     <img src="/img/sort.svg" width="14px">
                 </button>
             </th>
@@ -51,15 +51,15 @@
                                 <small>редактировать</small>
                             </a>
                         @endif
-                        <button type="button" class="archive-open btn btn-secondary py-1 px-3" data-event="{{ $form->event->id }}">
-                            <img width="16px" src="/img/files.svg" />
-                            <small>архив</small>
-                        </button>
                         <a href="/forms/preview/{{ $form->event->departament_id }}/{{ $form->id }}?event={{ $form->event->id }}"
                             type="button" class="btn btn-secondary py-1 px-3">
                             <img width="16px" src="/img/search.svg" />
                             <small>просмотр</small>
                         </a>
+                        <button type="button" class="archive-open btn btn-secondary py-1 px-3" data-event="{{ $form->event->id }}">
+                            <img width="16px" src="/img/files.svg" />
+                            <small>архив</small>
+                        </button>
                     </div>
                 </td>
             </tr>
