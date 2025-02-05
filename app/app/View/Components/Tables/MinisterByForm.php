@@ -17,7 +17,6 @@ class MinisterByForm extends Component
 
     public function __construct(Collection $forms)
     {
-        $this->data['user'] = request()->user();
         $this->data['forms'] = $forms->sortBy('sort');
 
         $this->data['forms'] = $this->data['forms']->map(function (array|Form $form) {
@@ -27,9 +26,9 @@ class MinisterByForm extends Component
                 $form->id = $data;
             }
 
-            $form->event = Event::lastByDepartament($form->id, $this->data['user']->departament_id);
             return $form;
         });
+
     }
 
     public function render(): View|Closure|string

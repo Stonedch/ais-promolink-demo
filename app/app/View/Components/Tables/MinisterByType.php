@@ -29,7 +29,7 @@ class MinisterByType extends Component
             return $type;
         });
 
-        $this->data['types'] = $types->sort('sort');
+        $this->data['types'] = $types->sortBy('sort');
     }
 
     public function render(): View|Closure|string

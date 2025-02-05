@@ -56,15 +56,15 @@
                                 <small>редактировать</small>
                             </a>
                         @endif
-                        <a href="/forms/preview/{{ $form->event->departament_id }}/{{ $form->id }}?event={{ $form->event->id }}"
+                        <a href="{{ route('web.minister.by-form', ['form' => $form->id]) }}"
                             type="button" class="btn btn-secondary py-1 px-3">
                             <img width="16px" src="/img/search.svg" />
                             <small>просмотр</small>
                         </a>
-                        <button type="button" class="archive-open btn btn-secondary py-1 px-3" data-event="{{ $form->event->id }}">
+                        {{-- <button type="button" class="archive-open btn btn-secondary py-1 px-3" data-event="{{ $form->event->id }}">
                             <img width="16px" src="/img/files.svg" />
                             <small>архив</small>
-                        </button>
+                        </button> --}}
                     </div>
                 </td>
             </tr>

@@ -202,7 +202,7 @@ class FormController extends Controller
 
             $forms = Form::where('id', $event->form_id)->get()->keyBy('id');
 
-            $departaments = Departament::find($user->departament_id)->get();
+            $departaments = Departament::find($event->departament_id)->get();
 
             $formCategories = FormCategory::whereIn('id', $forms->pluck('form_category_id'))->get()->keyBy('id');
             $formGroups = FormGroup::whereIn('form_id', $forms->pluck('id'))->orderBy('sort')->get()->groupBy('form_id', true);
@@ -309,10 +309,12 @@ class FormController extends Controller
 
             return view($this->views['preview'], $response);
         } catch (HumanException $e) {
+            dd($e);
             return redirect()
                 ->route('web.index.index')
                 ->withErrors([$e->getMessage()]);
         } catch (Throwable $e) {
+            dd($e);
             return redirect()
                 ->route('web.index.index')
                 ->withErrors(['Внутренняя ошибка']);
