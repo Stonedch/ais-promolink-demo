@@ -90,7 +90,9 @@ class FormEditScreen extends Screen
             $options[$user->id] = '#' . $user->id . ', ' . $user->getFullname() . ', ' . PhoneNormalizer::humanizePhone($user->phone);
         });
 
-        $form->departament_types = $formDepartamentTypes;
+        if ($form->exists) {
+            $form->departament_types = $formDepartamentTypes;
+        }
 
         return [
             'form' => $form,
