@@ -28,6 +28,7 @@ class Event extends Model
         'filled_at',
         'refilled_at',
         'saved_structure',
+        'changing_filled_at',
     ];
 
     protected $allowedFilters = [
@@ -39,6 +40,7 @@ class Event extends Model
         'refilled_at' => WhereDateStartEnd::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
+        'changing_filled_at' => WhereDateStartEnd::class,
     ];
 
     protected $allowedSorts = [
@@ -50,6 +52,7 @@ class Event extends Model
         'refilled_at',
         'updated_at',
         'created_at',
+        'changing_filled_at',
     ];
 
     public function getCurrentStatus()

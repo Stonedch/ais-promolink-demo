@@ -197,6 +197,10 @@ class FormEditScreen extends Screen
                         ->help('Показатель отвечающий за возможность редактирования уже подтвержденного события формы')
                         ->title('Возможность редактировать'),
                 ]),
+
+                CheckBox::make('form.by_initiative')
+                    ->sendTrueOrFalse()
+                    ->title('По инициативе'),
             ]))
                 ->title('Базовые настройки')
                 ->vertical(true)

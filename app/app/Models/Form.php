@@ -28,6 +28,7 @@ class Form extends Model
         'is_editable',
         'form_category_id',
         'sort',
+        'by_initiative',
     ];
 
     protected $allowedFilters = [
@@ -41,6 +42,7 @@ class Form extends Model
         'is_active' => Where::class,
         'is_editable' => Where::class,
         'form_category_id' => Where::class,
+        'by_initiative' => Where::class,
 
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
@@ -57,6 +59,7 @@ class Form extends Model
         'is_active',
         'is_editable',
         'form_category_id',
+        'by_initiative',
 
         'updated_at',
         'created_at',
@@ -64,6 +67,8 @@ class Form extends Model
 
     public static $PERIODICITIES = [
         50 => 'Разовая',
+        100 => 'Ежедневная',
+        200 => 'Ежемесячная',
     ];
 
     public static $TYPES = [

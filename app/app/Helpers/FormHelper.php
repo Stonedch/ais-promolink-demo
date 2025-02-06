@@ -354,8 +354,15 @@ class FormHelper
     public static function reinitResults(Event $event, array $requestedFields, User $user, string $savedStructure = ''): void
     {
         self::writeResults($event, $requestedFields, $user, $savedStructure);
+
         $event->filled_at = $event->filled_at ?: now();
         $event->refilled_at = now();
+
+        if (empty($event->changing_filled_at) == false) {
+            $event->filled_at = $event->changing_filled_at;
+            $event->refilled_at = $event->changing_filled_at;
+        }
+
         $event->save();
     }
 
