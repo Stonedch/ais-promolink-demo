@@ -178,14 +178,28 @@ class UserEditScreen extends Screen
                 ...$request->input('user'),
                 'phone' => PhoneNormalizer::normalizePhone($request->input('user.phone')),
             ],
-        ])->validate([
-            'user.phone' => 'required|unique:users,phone',
-            'user.password' => 'required',
-        ], [
-            'user.phone.required' => 'Поле "Номер телефона" обязательно к заполнению',
-            'user.phone.unique' => 'Поле "Номер телефона" должно быть уникальным',
-            'user.password.required' => 'Поле "Пароль" обязательно к заполнению',
         ]);
+
+        if ($user->exists) {
+            $request->validate([
+                'user.phone' => 'required',
+                'user' => [
+                    Rule::unique('users', 'phone')->ignore($user->id)
+                ],
+            ], [
+                'user.phone.required' => 'Поле "Номер телефона" обязательно к заполнению',
+                'user.unique' => 'Поле "Номер телефона" должно быть уникальным',
+            ]);
+        } else {
+            $request->validate([
+                'user.phone' => 'required|unique:users,phone',
+                'user.password' => 'required',
+            ], [
+                'user.phone.required' => 'Поле "Номер телефона" обязательно к заполнению',
+                'user.phone.unique' => 'Поле "Номер телефона" должно быть уникальным',
+                'user.password.required' => 'Поле "Пароль" обязательно к заполнению',
+            ]);
+        }
 
         $permissions = collect($request->get('permissions'))
             ->map(fn($value, $key) => [base64_decode($key) => $value])
@@ -205,7 +219,7 @@ class UserEditScreen extends Screen
 
         Toast::info('Пользователь сохранен');
 
-        return redirect()->route('platform.systems.users');
+        return redirect()->route('platform.systems.users.edit', [$user->id]);
     }
 
     /**
