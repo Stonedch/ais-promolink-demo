@@ -31,3 +31,11 @@ Artisan::command(FindEventAuthors::class, function () {
 Artisan::command(EventPrepare::class, function () {
     $this->comment('Prepare events and results');
 })->everyMinute();
+
+Artisan::command(ReinitEvents::class, function () {
+    $this->comment('Пересоздание переодичных отчетов');
+})->hourly();
+
+Artisan::command(CustomReportController::class, function () {
+    $this->command('Обработка кастомных отчетов');
+});
