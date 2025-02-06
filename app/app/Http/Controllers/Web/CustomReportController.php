@@ -18,15 +18,22 @@ class CustomReportController extends Controller
     {
         try {
             $user = $request->user();
+
             throw_if(
                 empty($user),
                 new HumanException('Ошибка авторизации! Номер ошибки: #1000')
             );
+
+            throw_if(
+                $user->hasAnyAccess(['platform.custom-reports.loading']) == false,
+                new HumanException('Ошибка доступа к функционалу кастомного отчета!')
+            );
+
             return view($this->views['index']);
         } catch (HumanException $e) {
             return redirect()
                 ->route('web.index.index')
-                ->withErrors([$e->getMessage()]);
+                ->withErrors(['msg' => $e->getMessage()]);
         } catch (Throwable $e) {
             return redirect()
                 ->route('web.index.index')

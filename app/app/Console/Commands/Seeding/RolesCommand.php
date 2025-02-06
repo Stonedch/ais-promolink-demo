@@ -21,7 +21,7 @@ class RolesCommand extends Command
         ]);
 
         self::createRole('Сотрудник учреждения (кастомные отчеты)', 'departament-worker-cr', [
-            'platform.custom-reports.base' => 1,
+            'platform.custom-reports.loading' => 1,
             'platform.systems.attachment' => 1,
         ]);
 

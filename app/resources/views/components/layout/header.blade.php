@@ -29,8 +29,10 @@
                             href="{{ route('web.form-checker.index') }}" label="Проверка" />
                     @endif
                     @if (config('app.custom_reports'))
-                        <x-layout.nav-link activeis="{{ request()->is('custom-reports') }}"
-                            href="{{ route('web.custom-reports.index') }}" label="Кастомные отчеты" />
+                        @if (empty(request()->user()) == false && request()->user()->hasAnyAccess(['platform.custom-reports.loading']))
+                            <x-layout.nav-link activeis="{{ request()->is('custom-reports') }}"
+                                href="{{ route('web.custom-reports.index') }}" label="Кастомные отчеты" />
+                        @endif
                     @endif
                 @endif
             </ul>

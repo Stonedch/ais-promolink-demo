@@ -7,7 +7,6 @@ use App\Helpers\Responser;
 use App\Http\Controllers\Controller;
 use App\Models\CustomReport;
 use App\Models\CustomReportType;
-use App\Models\CustomReportTypeUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Orchid\Attachment\File;
@@ -20,6 +19,11 @@ class CustomReportController extends Controller
             throw_if(config('app.custom_reports') != true, new HumanException('Доступ закрыт!'));
 
             $user = $request->user();
+
+            throw_if(
+                $user->hasAnyAccess(['platform.custom-reports.loading']) == false,
+                new HumanException('Ошибка доступа к функционалу кастомного отчета!')
+            );
 
             $customReportTypes = CustomReportType::byUser($user);
 

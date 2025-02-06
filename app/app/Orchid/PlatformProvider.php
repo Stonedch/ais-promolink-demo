@@ -156,7 +156,8 @@ class PlatformProvider extends OrchidServiceProvider
                 ->addPermission('platform.external-departaments.edit', 'Редактирование'),
 
             ItemPermission::group('Кастомные отчеты')
-                ->addPermission('platform.custom-reports.base', 'Основные'),
+                ->addPermission('platform.custom-reports.base', 'Модерация')
+                ->addPermission('platform.custom-reports.loading', 'Загрузка'),
 
             ItemPermission::group('Бот-рассылка')
                 ->addPermission('platform.bot_users.base', 'Основные'),
