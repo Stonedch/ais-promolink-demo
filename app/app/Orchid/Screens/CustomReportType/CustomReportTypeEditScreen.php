@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
@@ -84,6 +85,10 @@ class CustomReportTypeEditScreen extends Screen
                     ->title('Пользователи')
                     ->multiple()
                     ->canSee($this->customReportType->exists),
+
+                CheckBox::make('customReportType.is_general')
+                    ->sendTrueOrFalse()
+                    ->title('Является общим'),
             ]),
         ];
     }

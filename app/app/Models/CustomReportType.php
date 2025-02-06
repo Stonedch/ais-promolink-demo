@@ -19,11 +19,13 @@ class CustomReportType extends Model
 
     protected $fillable = [
         'title',
+        'is_general',
     ];
 
     protected $allowedFilters = [
         'id' => Where::class,
         'title' => Like::class,
+        'is_general' => Where::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
     ];
@@ -47,7 +49,9 @@ class CustomReportType extends Model
     public static function byUser(User $user): Collection
     {
         $typeIdentifiers = CustomReportTypeUser::query()
-            ->where('user_id', $user->id)
+            ->where(function (Builder $query) use ($user) {
+                $query->where('user_id', $user->id)->orWhere('is_general', true);
+            })
             ->select('custom_report_type_id');
 
         $customReportTypes = self::whereIn('id', $typeIdentifiers)->get();

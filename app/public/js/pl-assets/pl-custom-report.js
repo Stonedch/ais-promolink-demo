@@ -35,9 +35,9 @@ export class PLCustomReport {
 
                 form.reset();
 
-                (new PLAlert()).show("Успешно!", "", PLAlert.TYPE_SUCCESS);
+                (new PLAlert()).show("Успешно!", "Загружено", PLAlert.TYPE_SUCCESS);
 
-                return repsonse;
+                return response;
             })
             .catch(error => {
                 (new PLAlert()).show("Ошибка!", error.message, PLAlert.TYPE_DANGER);

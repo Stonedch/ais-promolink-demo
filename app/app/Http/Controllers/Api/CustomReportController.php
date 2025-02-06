@@ -21,9 +21,7 @@ class CustomReportController extends Controller
 
             $user = $request->user();
 
-            $customReportTypes = CustomReportType::query()
-                ->whereIn('id', CustomReportTypeUser::where('user_id', $user->id)->select(['custom_report_type_id']))
-                ->get();
+            $customReportTypes = CustomReportType::byUser($user);
 
             throw_if(
                 empty($customReportTypes->where('id', $request->input('custom_report_type_id'))->count()),
@@ -42,7 +40,7 @@ class CustomReportController extends Controller
                 'worked' => false,
             ])->save();
 
-            return Responser::returnSuccess();
+            return Responser::returnSuccess([]);
         } catch (HumanException $e) {
             return Responser::returnError([$e->getMessage()]);
         } catch (Throwable $e) {
