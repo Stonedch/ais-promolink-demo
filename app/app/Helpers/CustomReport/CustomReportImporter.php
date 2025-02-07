@@ -148,35 +148,16 @@ class CustomReportImporter
 
     private function update(CustomReport $report, array $document): void
     {
-        foreach ($document as $doc) {
-            $reportData = CustomReportData::query()
-                ->where('user_id', $report->user_id)
-                ->where('custom_report_type_id', $report->custom_report_type_id)
-                ->where('row', $doc['row'])
-                ->where('column', $doc['col'])
-                ->first();
+        $reportData = CustomReportData::query()
+            ->where('user_id', $report->user_id)
+            ->where('custom_report_type_id', $report->custom_report_type_id)
+            ->get();
 
-            if (empty($reportData)) {
-                (new CustomReportData())->fill([
-                    "departament_id" => $departament_id,
-                    "created_at" => $report->created_at,
-                    "user_id" => $report->user_id,
-                    "custom_report_type_id" => $report->custom_report_type_id,
-                    "page" => $doc['page'],
-                    "row" => $doc['row'],
-                    "column" => $doc['col'],
-                    "value" => $doc['val'],
-                    "type" => $doc['type'],
-                    "loaded_at" => date("Y-m-d H:i:s", $this->timestamp),
-                ])->save();
+        $reportData->map(function (CustomReportData $reportData) {
+            $reportData->delete();
+        });
 
-                continue;
-            }
-
-            $reportData->fill([
-                "value" => $doc['val'],
-            ])->save();
-        }
+        $this->insert($report, $document);
     }
 
     private function get_xls_reader_by_filepath($filepath)
