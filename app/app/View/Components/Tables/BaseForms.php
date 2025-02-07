@@ -30,8 +30,11 @@ class BaseForms extends Component
             }
 
             $form->event = Event::lastByDepartament($form->id, $this->data['user']->departament_id);
+
             return $form;
         });
+
+        $this->data['forms'] = $this->data['forms']->whereNotNull('event');
     }
 
     public function render(): View|Closure|string
