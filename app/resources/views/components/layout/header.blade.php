@@ -31,7 +31,7 @@
                     @if (config('app.custom_reports'))
                         @if (empty(request()->user()) == false && request()->user()->hasAnyAccess(['platform.custom-reports.loading']))
                             <x-layout.nav-link activeis="{{ request()->is('custom-reports') }}"
-                                href="{{ route('web.custom-reports.index') }}" label="Кастомные отчеты" />
+                                href="{{ route('web.custom-reports.index') }}" label="Загрузить документ" />
                         @endif
                     @endif
                 @endif

@@ -38,7 +38,7 @@ class CustomReportTypeEditScreen extends Screen
 
     public function name(): ?string
     {
-        return 'Управление Типом кастомных отчетов';
+        return 'Управление Типом загружаемых документов';
     }
 
     public function permission(): ?iterable

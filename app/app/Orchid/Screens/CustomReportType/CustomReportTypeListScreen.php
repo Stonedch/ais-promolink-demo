@@ -30,7 +30,7 @@ class CustomReportTypeListScreen extends Screen
 
     public function name(): ?string
     {
-        return 'Типы кастомных отчетов';
+        return 'Типы загружаемых документов';
     }
 
     public function permission(): ?iterable

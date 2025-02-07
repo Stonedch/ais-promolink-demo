@@ -2,7 +2,7 @@
     @if (empty($types) == false)
         <div class="container">
             <div class="mb-4 bg-light p-3 rounded">
-                <h3>Загрузка кастомного отчета</h3>
+                <h3>Загрузка документа</h3>
                 <form id="customReportForm" class="custom-report-form">
                     <div class="row mb-3">
                         <div class="col-5">
