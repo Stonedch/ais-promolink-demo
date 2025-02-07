@@ -7,9 +7,9 @@ namespace App\Orchid\Screens\CustomReportType;
 use App\Models\CustomReportType;
 use App\Models\CustomReportTypeUser;
 use App\Models\User;
+use App\Orchid\Fields\SingleUpload;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Input;
@@ -89,13 +89,25 @@ class CustomReportTypeEditScreen extends Screen
                 CheckBox::make('customReportType.is_general')
                     ->sendTrueOrFalse()
                     ->title('Является общим'),
+
+                SingleUpload::make('customReportType.attachment_id')
+                    ->storage('private')
+                    ->title('Шаблон'),
             ]),
         ];
     }
 
     public function save(Request $request, CustomReportType $customReportType)
     {
+        $request->merge([
+            'customReportType' => [
+                ...$request->input('customReportType'),
+                'attachment_id' => collect($request->input('customReportType.attachment_id', []))->first(),
+            ]
+            ]);
+
         $customReportType->fill($request->input('customReportType', []));
+
         $customReportType->save();
 
         CustomReportTypeUser::query()
