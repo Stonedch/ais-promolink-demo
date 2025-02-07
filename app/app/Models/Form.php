@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -101,13 +102,28 @@ class Form extends Model
         return $this->belongsToMany(DepartamentType::class, 'form_departament_types');
     }
 
-    public function canUserEdit(): bool
+    public function canUserEdit(?User $user = null, ?Departament $departament = null): bool
     {
         try {
-            throw_if(empty(@$this->last_event));
-            throw_if(empty(@$this->last_event->filled_at) == false);
+            if (empty($user)) {
+                $user = request()->user();
+            }
+
             throw_if(request()->user()->hasAnyAccess(['platform.supervisor.base']));
             throw_if(request()->user()->hasAnyAccess(['platform.departament-director.base']));
+
+            if (empty($departament)) {
+                $departament = Cache::remember(
+                    "Form.canUserEdit.departament.v0.[{$user->departament_id}]",
+                    now()->addDays(7),
+                    fn() => Departament::find($user->departament_id)
+                );
+            }
+
+            $lastEvent = Event::lastByDepartament($this->id, $departament->id);
+
+            throw_if(empty(@$lastEvent->filled_at) == false);
+
             return true;
         } catch (Throwable) {
             return false;

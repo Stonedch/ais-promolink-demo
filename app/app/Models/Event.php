@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -141,12 +142,22 @@ class Event extends Model
             : new Collection();
     }
 
-    public static function lastByDepartament(int $formIdentifier, null|int $departamentIdentifier): ?self
+    public static function lastByDepartament(int $formIdentifier, int $departamentIdentifier): ?self
     {
-        return self::query()
+        $query = self::query()
             ->where('form_id', $formIdentifier)
-            ->where('departament_id', $departamentIdentifier)
-            ->orderBy('id', 'DESC')
-            ->first();
+            ->where('departament_id', $departamentIdentifier);
+
+        $count = $query->clone()->count();
+
+        $lastEventIdentifier = Cache::remember(
+            "Event.lastByDepartament.lastEvent.v0.[{$formIdentifier}:{$departamentIdentifier}:{$count}]",
+            now()->addDays(7),
+            fn() => $query->orderBy('id', 'DESC')->select('id')->pluck('id')->first()
+        );
+
+        $lastEvent = Event::find($lastEventIdentifier);
+
+        return $lastEvent;
     }
 }
