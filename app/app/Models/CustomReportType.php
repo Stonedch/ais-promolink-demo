@@ -6,6 +6,7 @@ use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Orchid\Filters\Filterable;
+use Orchid\Filters\Types\Ilike;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
@@ -21,13 +22,17 @@ class CustomReportType extends Model
         'title',
         'is_general',
         'attachment_id',
+        'is_freelance',
+        'command',
     ];
 
     protected $allowedFilters = [
         'id' => Where::class,
-        'title' => Like::class,
+        'title' => Ilike::class,
         'is_general' => Where::class,
         'attachment_id' => Where::class,
+        'is_freelance' => Where::class,
+        'command' => Ilike::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
     ];
@@ -37,6 +42,8 @@ class CustomReportType extends Model
         'title',
         'is_general',
         'attachment_id',
+        'is_freelance',
+        'command',
         'updated_at',
         'created_at',
     ];

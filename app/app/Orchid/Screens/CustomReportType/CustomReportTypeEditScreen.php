@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\CheckBox;
+use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
@@ -93,6 +94,15 @@ class CustomReportTypeEditScreen extends Screen
                 SingleUpload::make('customReportType.attachment_id')
                     ->storage('private')
                     ->title('Шаблон'),
+
+                Group::make([
+                    Input::make('customReportType.command')
+                        ->title('Внештатная команда'),
+
+                    CheckBox::make('customReportType.is_freelance')
+                        ->sendTrueOrFalse()
+                        ->title('Внештатный функционал'),
+                ]),
             ]),
         ];
     }
@@ -104,7 +114,7 @@ class CustomReportTypeEditScreen extends Screen
                 ...$request->input('customReportType'),
                 'attachment_id' => collect($request->input('customReportType.attachment_id', []))->first(),
             ]
-            ]);
+        ]);
 
         $customReportType->fill($request->input('customReportType', []));
 

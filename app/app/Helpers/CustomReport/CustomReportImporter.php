@@ -12,6 +12,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Symfony\Component\Console\Command\Command;
 use Throwable;
 use App\Models\CustomReportData;
+use Illuminate\Support\Facades\Artisan;
 
 setlocale(LC_ALL, 'ru_RU.UTF-8');
 
@@ -71,17 +72,22 @@ class CustomReportImporter
                 $reportType = $reportTypes->get($report->custom_report_type_id);
                 $template = $attachments->get($reportType->attachment_id);
 
-                throw_if(empty($template), new Exception('Ошибка поиска шаблона'));
+                if ($reportType->is_freelace) {
+                    throw_if(empty($reportType->command), new Exception('Внештатная команда не распосзнана'));
+                    Artisan::call($reportType->command);
+                } else {
+                    throw_if(empty($template), new Exception('Ошибка поиска шаблона'));
 
-                throw_if(
-                    in_array($template->extension, self::AVAILABLE_EXTENSIONS) == false,
-                    new Exception("Ошибка формата шаблона (.$template->extension)")
-                );
+                    throw_if(
+                        in_array($template->extension, self::AVAILABLE_EXTENSIONS) == false,
+                        new Exception("Ошибка формата шаблона (.$template->extension)")
+                    );
 
-                $templateFilepath = "app/{$template->disk}/{$template->path}{$template->name}.{$template->extension}";
-                $templateFilepath = storage_path($templateFilepath);
+                    $templateFilepath = "app/{$template->disk}/{$template->path}{$template->name}.{$template->extension}";
+                    $templateFilepath = storage_path($templateFilepath);
 
-                $this->load_report($report, $templateFilepath);
+                    $this->load_report($report, $templateFilepath);
+                }
 
                 if ($this->console) {
                     $this->console->comment("report:{$report->id} is ready");
