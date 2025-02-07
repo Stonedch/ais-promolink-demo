@@ -112,7 +112,9 @@ class CustomReportImporter
 
     private function insert_data_into_bd($report, $arDocument)
     {
-        if ($report->is_updatable) {
+        $type = CustomReportType::find($report->custom_report_type_id);
+
+        if ($type->is_updatable) {
             $this->update($report, $arDocument);
         } else {
             $this->insert($report, $arDocument);
@@ -155,7 +157,7 @@ class CustomReportImporter
                 ->first();
 
             if (empty($reportData)) {
-                (new CustomReport())->fill([
+                (new CustomReportData())->fill([
                     "departament_id" => $departament_id,
                     "created_at" => $report->created_at,
                     "user_id" => $report->user_id,
