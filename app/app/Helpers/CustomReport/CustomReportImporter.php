@@ -73,7 +73,7 @@ class CustomReportImporter
                 $template = $attachments->get($reportType->attachment_id);
 
                 if ($reportType->is_freelace) {
-                    throw_if(empty($reportType->command), new Exception('Внештатная команда не распосзнана'));
+                    throw_if(empty($reportType->command), new Exception('Внештатная команда не распознана'));
                     Artisan::call($reportType->command);
                 } else {
                     throw_if(empty($template), new Exception('Ошибка поиска шаблона'));
