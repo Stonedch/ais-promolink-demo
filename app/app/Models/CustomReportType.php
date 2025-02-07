@@ -23,6 +23,7 @@ class CustomReportType extends Model
         'is_general',
         'attachment_id',
         'is_freelance',
+        'is_updatable',
         'command',
     ];
 
@@ -33,6 +34,7 @@ class CustomReportType extends Model
         'attachment_id' => Where::class,
         'is_freelance' => Where::class,
         'command' => Ilike::class,
+        'is_updatable' => Where::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
     ];
@@ -44,6 +46,7 @@ class CustomReportType extends Model
         'attachment_id',
         'is_freelance',
         'command',
+        'is_updatable',
         'updated_at',
         'created_at',
     ];

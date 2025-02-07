@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Models\CustomReport;
 use Illuminate\Console\Command;
 
 class DebugCommand extends Command
@@ -15,5 +16,8 @@ class DebugCommand extends Command
     // Please clear me after debug
     public function handle(): void
     {
+        dd(
+            CustomReport::count()
+        );
     }
 }

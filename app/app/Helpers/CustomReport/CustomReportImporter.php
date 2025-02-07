@@ -112,9 +112,21 @@ class CustomReportImporter
 
     private function insert_data_into_bd($report, $arDocument)
     {
+        if ($report->is_updatable) {
+            $this->update($report, $arDocument);
+        } else {
+            $this->insert($report, $arDocument);
+        }
+
+        echo "loaded #" . $report->id . "\r\n";
+    }
+
+    private function insert(CustomReport $report, array $document): void
+    {
         $arInsert = [];
         $departament_id = $this->obUsers->find($report->user_id)->departament_id;
-        foreach ($arDocument as $doc) {
+
+        foreach ($document as $doc) {
             $arInsert[] = [
                 "departament_id" => $departament_id,
                 "created_at" => $report->created_at,
@@ -128,8 +140,41 @@ class CustomReportImporter
                 "loaded_at" => date("Y-m-d H:i:s", $this->timestamp),
             ];
         }
+
         CustomReportData::insert($arInsert);
-        echo "loaded #" . $report->id . "\r\n";
+    }
+
+    private function update(CustomReport $report, array $document): void
+    {
+        foreach ($document as $doc) {
+            $reportData = CustomReportData::query()
+                ->where('user_id', $report->user_id)
+                ->where('custom_report_type_id', $report->custom_report_type_id)
+                ->where('row', $doc['row'])
+                ->where('column', $doc['col'])
+                ->first();
+
+            if (empty($reportData)) {
+                (new CustomReport())->fill([
+                    "departament_id" => $departament_id,
+                    "created_at" => $report->created_at,
+                    "user_id" => $report->user_id,
+                    "custom_report_type_id" => $report->custom_report_type_id,
+                    "page" => $doc['page'],
+                    "row" => $doc['row'],
+                    "column" => $doc['col'],
+                    "value" => $doc['val'],
+                    "type" => $doc['type'],
+                    "loaded_at" => date("Y-m-d H:i:s", $this->timestamp),
+                ])->save();
+
+                continue;
+            }
+
+            $reportData->fill([
+                "value" => $doc['val'],
+            ])->save();
+        }
     }
 
     private function get_xls_reader_by_filepath($filepath)

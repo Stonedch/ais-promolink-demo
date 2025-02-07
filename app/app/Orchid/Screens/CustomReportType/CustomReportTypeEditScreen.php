@@ -103,6 +103,10 @@ class CustomReportTypeEditScreen extends Screen
                         ->sendTrueOrFalse()
                         ->title('Внештатный функционал'),
                 ]),
+
+                CheckBox::make('customReportType.is_updatable')
+                    ->sendTrueOrFalse()
+                    ->title('Обновляемый'),
             ]),
         ];
     }
