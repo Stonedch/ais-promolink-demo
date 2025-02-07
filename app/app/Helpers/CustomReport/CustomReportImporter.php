@@ -2,6 +2,7 @@
 
 namespace App\Helpers\CustomReport;
 
+use App\Helpers\BotHelpers\TelegramBotHelper;
 use App\Models\CustomReport;
 use App\Models\CustomReportType;
 use App\Models\User;
@@ -154,6 +155,12 @@ class CustomReportImporter
     private function error_handler(string $error)
     {
         echo $error . "\r\n";
+
+        try {
+            TelegramBotHelper::notify($user, $title, $body);
+        } catch (Throwable | Exception) {
+            echo "Telegram пользователь не найден" . "\r\n";
+        }
     }
 
     private function read_xls_into_array($xls)
