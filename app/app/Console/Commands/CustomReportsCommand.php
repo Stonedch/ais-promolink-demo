@@ -19,6 +19,6 @@ class CustomReportsCommand extends Command
         $importer = new CustomReportImporter();
         $importer->setConsole($this);
         $importer->setDebug(true);
-        $importer->handle(take: 10);
+        $importer->handle();
     }
 }

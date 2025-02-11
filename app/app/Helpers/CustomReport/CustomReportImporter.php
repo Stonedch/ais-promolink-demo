@@ -9,6 +9,7 @@ use App\Models\User;
 use Exception;
 use Orchid\Attachment\Models\Attachment;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use Symfony\Component\Console\Command\Command;
 use Throwable;
 use App\Models\CustomReportData;
@@ -41,21 +42,18 @@ class CustomReportImporter
         $this->obUsers = User::query()->select(["id", 'departament_id'])->get();
     }
 
-    public function handle(int $take = 10): void
+    public function handle(?int $take = null): void
     {
         $reports = CustomReport::query()
             ->orderBy('id', 'desc')
             ->where('worked', false)
-            ->whereNotNull('user_id')
-            ->take($take)
-            ->get();
+            ->whereNotNull('user_id');
 
-        if ($this->debug == false) {
-            $reports->map(function (CustomReport $report) {
-                $report->worked = true;
-                $report->save();
-            });
+        if (empty($take) == false) {
+            $reports = $reports->take($take);
         }
+
+        $reports = $reports->get();
 
         $reportTypes = CustomReportType::query()
             ->whereIn('id', $reports->pluck('custom_report_type_id'))
@@ -92,6 +90,9 @@ class CustomReportImporter
                 if ($this->console) {
                     $this->console->comment("report:{$report->id} is ready");
                 }
+
+                $report->worked = true;
+                $report->save();
             } catch (Throwable | Exception $e) {
                 if ($this->console) {
                     $this->console->error($e->getMessage());
@@ -163,11 +164,17 @@ class CustomReportImporter
     private function get_xls_reader_by_filepath($filepath)
     {
         $reader = new Xlsx();
+
         try {
             $xls = $reader->load($filepath);
         } catch (Throwable $e) {
-            return (string)$e;
+            try {
+                $xls = (new Xls())->load($filepath);
+            } catch (Throwable $e) {
+                return (string)$e;
+            }
         }
+
         return $xls;
     }
 
@@ -182,6 +189,8 @@ class CustomReportImporter
             return "Некорректный формат (.$file->extension)";
         }
         $filepath = storage_path("app/{$file->disk}/{$file->path}{$file->name}.{$file->extension}");
+
+        var_dump($filepath);
 
         return $this->get_xls_reader_by_filepath($filepath);
     }
@@ -215,16 +224,13 @@ class CustomReportImporter
                 'row' => 1,
             ];
 
-
-            $arResult = [];
-
             // $arKnownValues = ["s", "n", "f", "null"];
             while ($read_now['row'] < $page_end_coord['row']) {
                 $read_now['col'] = 1;
                 while ($read_now['col'] < $page_end_coord['col']) {
                     $type = $sheet->getCell([$read_now['col'], $read_now['row']])->getDataType();
                     $read_now['col']++;
-                    if ($type == 'null') continue;
+                    // if ($type == 'null') continue;
 
                     /*if(!in_array($type,$arKnownValues)) {
                         echo "tick ".$page_number."|".$read_now['col'].":".$read_now['row']."\r\n";
@@ -232,9 +238,15 @@ class CustomReportImporter
                     }*/
 
 
-                    $value = $sheet->getCell([$read_now['col'], $read_now['row']])->getFormattedValue();
+                    try {
+                        $value = $sheet->getCell([$read_now['col'], $read_now['row']])->getFormattedValue();
+                    } catch (Throwable $e) {
+                        $value = '';
+                    }
 
                     if ($value == '') continue;
+                    if ($value == 'null') continue;
+
 
                     switch ($type) {
                         case "f":
@@ -260,6 +272,7 @@ class CustomReportImporter
             }
             $page_number++;
         }
+
         return $arResult;
     }
 
@@ -291,6 +304,10 @@ class CustomReportImporter
             }
         }
 
+
+        var_dump($arOriginal[$origPath]);
+        die();
+
         $error = false;
         foreach ($arOriginal[$origPath] as $data) {
             if ($data['type'] != 's') continue;
@@ -310,19 +327,28 @@ class CustomReportImporter
                 $error = true;
                 break;
             }
-            if (
-                $arTemp[$data['page']][$data['row']][$data['col']]['val'] != $data['val'] or
-                $arTemp[$data['page']][$data['row']][$data['col']]['type'] != $data['type']
-            ) {
 
-                // var_dump([
-                //     $arTemp[$data['page']][$data['row']][$data['col']],
-                //     $data['val']
-                // ]);
+            $coord = $data['page'] . "|" . $data['row'] . ":" . $data['col'];
+            if ($data['type'] != 'null') {
+                if (
+                    $arTemp[$data['page']][$data['row']][$data['col']]['val'] != $data['val'] or
+                    $arTemp[$data['page']][$data['row']][$data['col']]['type'] != $data['type']
+                ) {
 
-                echo "\r\nerror block is D\r\n";
-                $error = true;
-                break;
+
+                    echo "\r\nerror block is D-a [" . $coord . "], type " . $data['type'] . "|" . $arTemp[$data['page']][$data['row']][$data['col']]['type'] . " («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)\r\n";
+                    $error = true;
+                    break;
+                }
+            } else {
+                if (
+                    $arTemp[$data['page']][$data['row']][$data['col']]['val'] != $data['val'] or
+                    $arTemp[$data['page']][$data['row']][$data['col']]['type'] != $data['type']
+                ) {
+                    echo "\r\nerror block is D-b [" . $coord . "] («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)\r\n";
+                    $error = true;
+                    break;
+                }
             }
         }
 
@@ -345,8 +371,21 @@ class CustomReportImporter
         $res = $this->verify_document_with_original($arDocument, $exampleDoc);
 
         if ($res === false) {
-            $this->error_handler("Некорректный формат документа!");
+            die("DDD");
+            new Exception('Структура загруженного документа не соответствует образцу!');
+            // $this->error_handler("Некорректный формат документа!");
         } else {
+
+            if ($report->user_id != 257) {
+                var_dump([
+                    $report->user_id,
+                    $report->custom_report_type_id,
+                    count($arDocument)
+                ]);
+                die();
+            }
+
+
             $this->insert_data_into_bd($report, $arDocument);
             $this->mark_report_as_worked($report);
         }
@@ -362,7 +401,9 @@ class CustomReportImporter
     private function detect_type($report_id)
     {
         if (is_null($this->report_types)) {
-            $this->report_types = CustomReportType::getList();
+            $this->report_types = CustomReportType::query()
+                ->select(['id', 'title'])
+                ->get();
         }
 
         $report_type = $this->report_types->firstWhere("id", "=", $report_id);
