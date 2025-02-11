@@ -40,4 +40,4 @@ Artisan::command(ReinitEvents::class, function () {
 
 Artisan::command(CustomReportsCommand::class, function () {
     $this->command('Обработка кастомных отчетов');
-});
+})->daily();
