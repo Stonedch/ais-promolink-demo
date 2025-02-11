@@ -7,10 +7,12 @@ namespace App\Orchid\Screens\CustomReportType;
 use App\Models\CustomReportType;
 use App\Models\CustomReportTypeUser;
 use App\Models\User;
+use App\Orchid\Fields\SingleUpload;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Fields\CheckBox;
+use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
@@ -36,7 +38,7 @@ class CustomReportTypeEditScreen extends Screen
 
     public function name(): ?string
     {
-        return 'Управление Типом кастомных отчетов';
+        return 'Управление Типом загружаемых документов';
     }
 
     public function permission(): ?iterable
@@ -84,13 +86,42 @@ class CustomReportTypeEditScreen extends Screen
                     ->title('Пользователи')
                     ->multiple()
                     ->canSee($this->customReportType->exists),
+
+                CheckBox::make('customReportType.is_general')
+                    ->sendTrueOrFalse()
+                    ->title('Является общим'),
+
+                SingleUpload::make('customReportType.attachment_id')
+                    ->storage('private')
+                    ->title('Шаблон'),
+
+                Group::make([
+                    Input::make('customReportType.command')
+                        ->title('Внештатная команда'),
+
+                    CheckBox::make('customReportType.is_freelance')
+                        ->sendTrueOrFalse()
+                        ->title('Внештатный функционал'),
+                ]),
+
+                CheckBox::make('customReportType.is_updatable')
+                    ->sendTrueOrFalse()
+                    ->title('Обновляемый'),
             ]),
         ];
     }
 
     public function save(Request $request, CustomReportType $customReportType)
     {
+        $request->merge([
+            'customReportType' => [
+                ...$request->input('customReportType'),
+                'attachment_id' => collect($request->input('customReportType.attachment_id', []))->first(),
+            ]
+        ]);
+
         $customReportType->fill($request->input('customReportType', []));
+
         $customReportType->save();
 
         CustomReportTypeUser::query()

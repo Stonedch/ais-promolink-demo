@@ -76,6 +76,7 @@ $ docker-compose exec laravel php artisan key:generate --ansi
 $ docker-compose exec laravel php artisan storage:link
 $ docker-compose exec laravel php artisan migrate
 $ docker-compose exec laravel php artisan orchid:admin
+$ docker-compose exec laravel php artisan seeding:roles
 ```
 
 #### Настройка и запуск Datalens/Zitadel

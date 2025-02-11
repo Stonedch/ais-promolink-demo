@@ -261,7 +261,7 @@ Route::screen('custom-report-types', CustomReportTypeListScreen::class)
     ->name('platform.custom-report-types')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
-        ->push('Типы кастомных отчетов', route('platform.custom-report-types')));
+        ->push('Типы загружаемых документов', route('platform.custom-report-types')));
 
 // Platform > CustomReportTypes > Create
 Route::screen('custom-report-types/create', CustomReportTypeEditScreen::class)

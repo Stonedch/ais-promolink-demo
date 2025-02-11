@@ -27,7 +27,7 @@ class DepartamentListScreen extends Screen
 
     public function query(): iterable
     {
-        $departaments = Departament::filters()->defaultSort('id', 'desc')->paginate();
+        $departaments = Departament::filters()->defaultSort('id', 'desc')->paginate(50);
 
         return [
             'departaments' => $departaments,

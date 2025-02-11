@@ -5,6 +5,8 @@ use App\Console\Commands\BotUserNotifyCommand;
 use App\Console\Commands\Converters\EventPrepare;
 use App\Console\Commands\Converters\FindEventAuthors;
 use App\Console\Commands\Converters\SavedStructureConverter;
+use App\Console\Commands\CustomReportsCommand;
+use App\Console\Commands\ReinitEvents;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -31,3 +33,11 @@ Artisan::command(FindEventAuthors::class, function () {
 Artisan::command(EventPrepare::class, function () {
     $this->comment('Prepare events and results');
 })->everyMinute();
+
+Artisan::command(ReinitEvents::class, function () {
+    $this->comment('Пересоздание переодичных отчетов');
+})->hourly();
+
+Artisan::command(CustomReportsCommand::class, function () {
+    $this->command('Обработка кастомных отчетов');
+});

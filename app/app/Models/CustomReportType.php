@@ -6,6 +6,7 @@ use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Orchid\Filters\Filterable;
+use Orchid\Filters\Types\Ilike;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
@@ -19,11 +20,21 @@ class CustomReportType extends Model
 
     protected $fillable = [
         'title',
+        'is_general',
+        'attachment_id',
+        'is_freelance',
+        'is_updatable',
+        'command',
     ];
 
     protected $allowedFilters = [
         'id' => Where::class,
-        'title' => Like::class,
+        'title' => Ilike::class,
+        'is_general' => Where::class,
+        'attachment_id' => Where::class,
+        'is_freelance' => Where::class,
+        'command' => Ilike::class,
+        'is_updatable' => Where::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
     ];
@@ -31,6 +42,11 @@ class CustomReportType extends Model
     protected $allowedSorts = [
         'id',
         'title',
+        'is_general',
+        'attachment_id',
+        'is_freelance',
+        'command',
+        'is_updatable',
         'updated_at',
         'created_at',
     ];
@@ -50,7 +66,10 @@ class CustomReportType extends Model
             ->where('user_id', $user->id)
             ->select('custom_report_type_id');
 
-        $customReportTypes = self::whereIn('id', $typeIdentifiers)->get();
+        $customReportTypes = self::query()
+            ->whereIn('id', $typeIdentifiers)
+            ->orWhere('is_general', true)
+            ->get();
 
         return $customReportTypes;
     }

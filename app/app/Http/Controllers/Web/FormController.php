@@ -14,9 +14,12 @@ use App\Models\FormCategory;
 use App\Models\FormCheckerResult;
 use App\Models\FormGroup;
 use App\Models\FormResult;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Orchid\Attachment\Models\Attachment;
+use Throwable;
 
 class FormController extends Controller
 {
@@ -199,7 +202,7 @@ class FormController extends Controller
 
             $forms = Form::where('id', $event->form_id)->get()->keyBy('id');
 
-            $departaments = Departament::find($user->departament_id)->get();
+            $departaments = Departament::find($event->departament_id)->get();
 
             $formCategories = FormCategory::whereIn('id', $forms->pluck('form_category_id'))->get()->keyBy('id');
             $formGroups = FormGroup::whereIn('form_id', $forms->pluck('id'))->orderBy('sort')->get()->groupBy('form_id', true);
@@ -234,8 +237,13 @@ class FormController extends Controller
 
             $allEvents->map(function (Event $event) use ($formResults) {
                 try {
-                    $event->maxIndex = $formResults->get($event->form_id)->get($event->id)->max('index');
-                } catch (Throwable) {
+                    $event->maxIndex = $formResults
+                        ->get($event->form_id)
+                        ->get($event->id)
+                        ->max('index');
+                } catch (Throwable | Exception) {
+                    $event->maxIndex = 0;
+                    return $event;
                 }
 
                 return $event;
@@ -301,10 +309,12 @@ class FormController extends Controller
 
             return view($this->views['preview'], $response);
         } catch (HumanException $e) {
+            dd($e);
             return redirect()
                 ->route('web.index.index')
                 ->withErrors([$e->getMessage()]);
         } catch (Throwable $e) {
+            dd($e);
             return redirect()
                 ->route('web.index.index')
                 ->withErrors(['Внутренняя ошибка']);
@@ -318,10 +328,16 @@ class FormController extends Controller
         throw_if(empty($user), new HumanException('Ошибка авторизации! Номер ошибки: #1003.'));
         throw_if($user->hasAccess('platform.forms.edit') == false, new HumanException('Ошибка авторизации! Номер ошибки: #1004.'));
 
+        $structure = json_decode($form->getStructure());
+        $collections = Collection::whereIn('id', collect($structure->fields)->pluck('collection_id'))->get();
+        $collectionValues = CollectionValue::whereIn('collection_id', $collections->pluck('id'))->get();
+
         $response = [
             'form' => $form,
-            'structure' => $form->getStructure(),
+            'structure' => json_encode($structure, JSON_UNESCAPED_UNICODE),
             'groups' => FormGroup::where('form_id', $form->id)->get(),
+            'collections' => $collections->toArray(),
+            'collectionValues' => $collectionValues->groupBy('collection_id')->toArray(),
         ];
 
         return view($this->views['preview-structure'], $response);

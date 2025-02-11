@@ -7,7 +7,6 @@ use App\Helpers\Responser;
 use App\Http\Controllers\Controller;
 use App\Models\CustomReport;
 use App\Models\CustomReportType;
-use App\Models\CustomReportTypeUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Orchid\Attachment\File;
@@ -21,9 +20,12 @@ class CustomReportController extends Controller
 
             $user = $request->user();
 
-            $customReportTypes = CustomReportType::query()
-                ->whereIn('id', CustomReportTypeUser::where('user_id', $user->id)->select(['custom_report_type_id']))
-                ->get();
+            throw_if(
+                $user->hasAnyAccess(['platform.custom-reports.loading']) == false,
+                new HumanException('Ошибка доступа к функционалу кастомного отчета!')
+            );
+
+            $customReportTypes = CustomReportType::byUser($user);
 
             throw_if(
                 empty($customReportTypes->where('id', $request->input('custom_report_type_id'))->count()),
@@ -42,7 +44,7 @@ class CustomReportController extends Controller
                 'worked' => false,
             ])->save();
 
-            return Responser::returnSuccess();
+            return Responser::returnSuccess([]);
         } catch (HumanException $e) {
             return Responser::returnError([$e->getMessage()]);
         } catch (Throwable $e) {

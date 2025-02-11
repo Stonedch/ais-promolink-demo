@@ -2,38 +2,40 @@
 
 namespace App\Helpers;
 
+use Illuminate\Http\JsonResponse;
+
 class Responser
 {
-    public static function returnJson(array $data = [], array $errors = [], bool $state = false)
-    {
-        $response = [
-            'state' => $state,
-        ];
 
-        if (empty($data) == false) {
-            $response['data'] = $data;
-        }
+    public static function returnJson(
+        ?array $data = null,
+        ?array $errors = null,
+        bool $state = false,
+        int $status = 200
+    ): JsonResponse {
+        $response = ['state' => $state];
 
-        if (empty($errors) == false) {
-            $response['error'] = implode(', ', $errors);
-        }
+        if (empty($data) == false) $response['data'] = $data;
+        if (empty($errors) == false) $response['error'] = implode(', ', $errors);
 
-        return response()->json($response);
+        return response()->json($response, $status);
     }
 
-    public static function returnSuccess(array $data = [])
+    public static function returnSuccess(?array $data = null, int $status = 200): JsonResponse
     {
-        $state = true;
-        $errors = [];
-
-        return Responser::returnJson($data, $errors, $state);
+        return Responser::returnJson(
+            state: true,
+            data: $data,
+            status: $status
+        );
     }
 
-    public static function returnError(array $errors = [])
+    public static function returnError(?array $errors = null, int $status = 200): JsonResponse
     {
-        $state = false;
-        $data = [];
-
-        return Responser::returnJson($data, $errors, $state);
+        return Responser::returnJson(
+            state: false,
+            errors: $errors,
+            status: $status
+        );
     }
 }

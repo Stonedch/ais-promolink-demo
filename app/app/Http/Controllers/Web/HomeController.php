@@ -41,7 +41,7 @@ class HomeController extends Controller
                 return $this->indexSupervisor();
             } else {
                 if (empty($user->departament_id)) {
-                    dd("У Вас отсутствует установленное ведомство!");
+                    abort(403, 'У Вас отсутствует установленное ведомство!');
                 }
 
                 return $this->indexUser();
@@ -50,8 +50,6 @@ class HomeController extends Controller
             return redirect()
                 ->route('web.index.index')
                 ->withErrors([$e->getMessage()]);
-        } catch (Throwable $e) {
-            abort(500);
         }
     }
 
@@ -72,157 +70,35 @@ class HomeController extends Controller
 
     private function indexUser(User $user = null): View
     {
-        if (empty($user))
+        if (empty($user)) {
             $user = Auth::user();
+        }
 
-        $response = [];
+        $departaments = Departament::filters()->defaultSort('id', 'desc')->get();
+        $departament = $departaments->where('id', $user->departament_id);
 
-        $response['user'] = $user;
-        $response['notification'] = $user->notifications()->get();
-        $response['departament'] = $user->getDepartament();
+        throw_if(
+            empty($departament),
+            new HumanException('Ошибка проверки пользователя!')
+        );
 
-        throw_if(empty($response['departament']), new HumanException('Ошибка проверки пользователя!'));
-        throw_if(empty($response['departament']), new HumanException('Ошибка проверки ведомства!'));
-
-        $response['allEvents'] = Event::where('departament_id', $response['departament']->id)->get();
-        $response['events'] = $response['allEvents']->where('filled_at', null);
-
-        $response['departaments'] = Departament::filters()->defaultSort('id', 'desc')->get();
-
-        $results = FormResult::query()
-            ->whereIn('event_id', $response['allEvents']->pluck('id'))
-            ->get()
-            ->groupBy('event_id');
-
-        $response['forms'] = Form::query()
-            ->whereIn('id', $response['allEvents']->pluck('form_id'))
+        $forms = Form::query()
             ->where('is_active', true)
-            ->where(function (Builder $query) use ($response) {
-                $formIdentifiers = FormDepartamentType::query()
-                    ->where('departament_type_id', $response['departament']->departament_type_id)
-                    ->pluck('form_id')
-                    ->toArray();
+            ->whereIn('id', Event::where('departament_id', $user->departament_id)->select('form_id'))
+            ->get();
 
-                $formIdentifiers = array_merge($formIdentifiers, $response['allEvents']->pluck('form_id')->toArray());
-                $formIdentifiers = collect($formIdentifiers)->unique();
-
-                $query->whereIn('id', $formIdentifiers);
-            })
-            ->get()
-            ->map(function (Form $form) use ($response, $results) {
-                try {
-                    $form->last_event = $response['allEvents']->where('form_id', $form->id)->sortByDesc('id')->first();
-                    $form->last_event->form_structure = json_decode($form->last_event->form_structure, true);
-                } catch (Throwable) {
-                }
-
-                try {
-                    if ($form->type == 100 && empty($form->last_event->filled_at) == false) {
-                        $filled = $results[$form->last_event->id]->whereNotNull('value')->count();
-                        $needed = count($form->last_event->form_structure['fields']);
-                        $form->percent = intval($filled / $needed * 100);
-                    }
-                } catch (Throwable) {
-                }
-
-                return $form;
-            });
-        // dd($response['forms']);
-        // ->map(function () {
-        // //     try {
-        // //         if ($form->type == 100 && empty($form->last_event->filled_at) == false) {
-        // //             $filled = $results[$form->last_event->id]->whereNotNull('value')->count();
-        // //             $needed = count($form->last_event->form_structure['fields']);
-        // //             $form->percent = intval($filled / $needed * 100);
-        // //         }
-        // //     } catch (Throwable) {
-        // //     }
-        // });
-
-        $response['writedEvents'] = Event::query()
-            ->where('departament_id', $response['departament']->id)
-            ->whereNot('filled_at', null)
-            ->get()
-            ->keyBy('id')
-            ->map(function (Event $event) use ($response, $results) {
-                try {
-                    $form = $response['forms']->where('id', $event->form_id)->first();
-                    if ($form->type == 100 && empty($event->filled_at) == false) {
-                        $structure = json_decode($event->form_structure, true);
-                        $filled = $results[$event->id]->whereNotNull('value')->unique('field_id')->count();
-                        $needed = count($structure['fields']);
-                        $event->percent = intval($filled / $needed * 100);
-                    }
-                } catch (Throwable) {
-                }
-
-                return $event;
-            })
-            ->groupBy('form_id', true);
-        // $response['writedEvents'] = $response['allEvents']->where('filled_at', '!=', null)->keyBy('id')->groupBy('form_id', true);
-
-        // dd($response);
-
-        $response['deadlines'] = new Collection();
-        $response['difs'] = new Collection();
-
-        $response['events']->map(function (Event $event) use (&$response) {
-            // $deadline = $response['forms']->where('id', $event->form_id)->first()->deadline;
-            $deadline = null;
-            $deadline = empty($deadline) == false
-                ? intval(now()->diff((new Carbon($event->created_at))->addDays($deadline))->format('%d'))
-                : null;
-            $response['deadlines']->put($event->id, $deadline);
-            $response['difs']->put($event->id, now()->diffInSeconds((new Carbon($event->created_at))->addDays($deadline)));
-        });
-
-        //
-        $response['forms']->map(function (Form $form) use ($response) {
-            try {
-                $form->last_event = $response['allEvents']->where('form_id', $form->id)->sortByDesc('id')->first();
-                $form->last_event->form_structure = json_decode($form->last_event->form_structure, true);
-            } catch (Throwable) {
-            }
-
-            return $form;
-        });
-
-        //
-        // dd($response['forms']);
-        $response['formCategories'] = FormCategory::query()
-            ->whereIn('id', $response['forms']->pluck('form_category_id'))
+        $categories = FormCategory::query()
+            ->whereIn('id', $forms->pluck('form_category_id'))
             ->get()
             ->keyBy('id');
 
-        $response['formCategoryCounters'] = [];
-
-        // dd($response);
-
-        $response['allEvents']->map(function (Event $event) use (&$response) {
-            try {
-                $formCategoryIdentifier = $response['forms']->where('id', $event->form_id)->first()->form_category_id;
-                $currentEventStatus = $event->getCurrentStatus();
-
-                if (isset($response['formCategoryCounters'][$formCategoryIdentifier]) == false) {
-                    $response['formCategoryCounters'][$formCategoryIdentifier] = [];
-
-                    foreach (Event::$STATUSES as $key => $status) {
-                        $response['formCategoryCounters'][$formCategoryIdentifier][$key] = 0;
-                    }
-                }
-
-                if (isset($response['formCategoryCounters'][$formCategoryIdentifier][$currentEventStatus]) == false) {
-                    $response['formCategoryCounters'][$formCategoryIdentifier][$currentEventStatus] = 0;
-                }
-
-                $response['formCategoryCounters'][$formCategoryIdentifier][$currentEventStatus] += 1;
-            } catch (Throwable) {
-            }
-
-            return $event;
-        });
-
-        return view(self::$views['index'], $response);
+        return view(self::$views['index'], [
+            'user' => $user,
+            'departament' => $departament,
+            'departaments' => $departaments,
+            'forms' => $forms,
+            'formCategories' => $categories,
+        ]);
     }
 
     private function checkAccess(User $user = null): void

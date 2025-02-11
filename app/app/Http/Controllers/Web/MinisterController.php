@@ -202,17 +202,12 @@ class MinisterController extends Controller
 
                 $formDepartamentTypes = FormDepartamentType::query()
                     ->select(['form_departament_types.form_id', 'departament_types.name'])
-                    ->whereIn('form_id', $forms->pluck('id'))
+                    ->whereIn('form_departament_types.form_id', $forms->pluck('id'))
                     ->leftJoin('departament_types', 'departament_types.id', '=', 'form_departament_types.departament_type_id')
                     ->get();
 
                 $forms->map(function (Form $form) use ($formDepartamentTypes) {
-                    try {
-                        $form->departament_types = $formDepartamentTypes->where('form_id', $form->id);
-                    } catch (Throwable) {
-                    } finally {
-                        return $form;
-                    }
+                    $form->departament_types = $formDepartamentTypes->where('form_id', $form->id);
                 });
 
                 $formResults = FormResult::query()

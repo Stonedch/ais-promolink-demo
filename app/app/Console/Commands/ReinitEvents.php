@@ -8,8 +8,8 @@ use App\Models\DepartamentType;
 use App\Models\Event;
 use App\Models\Form;
 use App\Models\FormDepartamentType;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Database\Query\Builder;
 
 class ReinitEvents extends Command
 {
@@ -19,17 +19,24 @@ class ReinitEvents extends Command
 
     public function handle(): void
     {
+        $this->createByPeriodicity(100, now()->today());
+        $this->createByPeriodicity(200, now()->subMonth());
+    }
+
+    protected function createByPeriodicity(int $type, Carbon $periodicity): void
+    {
         Form::query()
-            ->leftJoin('events', 'events.form_id', 'forms.id')
             ->where('is_active', true)
-            ->where('periodicity', '100')
-            ->where(function (Builder $query) {
-                $query->where('events', null)
-                    ->orWhere('events.created_at', '<', now()->today());
-            })
-            ->select('forms.*')
-            ->get()
-            ->map(function (Form $form) {
+            ->where('periodicity', $type)
+            ->get()->map(function (Form $form) use ($periodicity) {
+                $lastEvent = Event::query()
+                    ->where('form_id', $form->id)
+                    ->orderBy('created_at', 'desc')
+                    ->select(['created_at'])
+                    ->first();
+
+                if ($periodicity < $lastEvent->created_at) return;
+
                 DepartamentType::query()
                     ->whereIn('id', FormDepartamentType::where('form_id', $form->id)->pluck('departament_type_id'))
                     ->get()

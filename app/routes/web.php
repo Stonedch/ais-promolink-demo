@@ -60,6 +60,16 @@ Route::middleware([ServiceUnavailable::class, LogRoute::class])->name('web.')->g
         Route::get('/accept', 'accept')->name('accept');
         Route::get('/reject', 'reject')->name('reject');
     });
+
+    // web.testing
+    Route::name('testing.')->prefix('/testing')->controller(\App\Http\Controllers\Web\TestingController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
+
+    // web.custom-reports
+    Route::name('custom-reports.')->prefix('/custom-reports')->controller(\App\Http\Controllers\Web\CustomReportController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
 });
 
 // api
@@ -82,6 +92,8 @@ Route::middleware([ServiceUnavailable::class, LogRoute::class])->name('api.')->p
         Route::post('/percent', 'percent')->name('percent');
         Route::post('/old-values', 'getOldValues')->name('get-old-values');
         Route::get('/form-field-blockeds', 'formFieldBlockeds')->name('form-field-blockeds');
+        Route::get('/archive', 'archive')->name('archive');
+        Route::post('/by-initiative', 'byInitiative')->name('by-initiative');
     });
 
     // api.event-store

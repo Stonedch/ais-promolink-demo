@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Helpers\CustomReport\CustomReportImporter;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
@@ -15,6 +16,9 @@ class CustomReportsCommand extends Command
 
     public function handle(): void
     {
-        Artisan::call(config('app.custom_reports_command'));
+        $importer = new CustomReportImporter();
+        $importer->setConsole($this);
+        $importer->setDebug(true);
+        $importer->handle(take: 10);
     }
 }

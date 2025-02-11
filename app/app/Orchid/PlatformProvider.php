@@ -72,7 +72,7 @@ class PlatformProvider extends OrchidServiceProvider
                 ->permission('platform.external-departaments.list')
                 ->divider(),
 
-            Menu::make('Типы кастомных отчетов')
+            Menu::make('Типы загружаемых документов')
                 ->icon('bs.pencil-square')
                 ->route('platform.custom-report-types')
                 ->permission('platform.custom-reports.base')
@@ -155,8 +155,9 @@ class PlatformProvider extends OrchidServiceProvider
                 ->addPermission('platform.external-departaments.list', 'Список')
                 ->addPermission('platform.external-departaments.edit', 'Редактирование'),
 
-            ItemPermission::group('Кастомные отчеты')
-                ->addPermission('platform.custom-reports.base', 'Основные'),
+            ItemPermission::group('Загружаемые документы')
+                ->addPermission('platform.custom-reports.base', 'Модерация')
+                ->addPermission('platform.custom-reports.loading', 'Загрузка'),
 
             ItemPermission::group('Бот-рассылка')
                 ->addPermission('platform.bot_users.base', 'Основные'),

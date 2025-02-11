@@ -21,7 +21,7 @@ class DistrictListScreen extends Screen
     public function query(): iterable
     {
         return [
-            'districts' => District::filters()->defaultSort('id', 'desc')->paginate(),
+            'districts' => District::filters()->defaultSort('id', 'desc')->paginate(50),
         ];
     }
 

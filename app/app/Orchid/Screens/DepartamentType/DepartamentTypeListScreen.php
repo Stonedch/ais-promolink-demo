@@ -21,7 +21,7 @@ class DepartamentTypeListScreen extends Screen
     public function query(): iterable
     {
         return [
-            'departament_types' => DepartamentType::filters()->defaultSort('id', 'desc')->paginate(),
+            'departament_types' => DepartamentType::filters()->defaultSort('id', 'desc')->paginate(50),
         ];
     }
 

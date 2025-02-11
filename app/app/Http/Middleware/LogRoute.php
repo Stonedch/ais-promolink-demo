@@ -13,18 +13,15 @@ class LogRoute
     {
         $response = $next($request);
 
-        try {
-            $log = [
-                'status' => $response->status(),
-                'user' => $request->user() ?: null,
-                'uri' => $request->getUri(),
-                'method' => $request->getMethod(),
-                'request_body' => $request->all(),
-            ];
+        $log = [
+            'status' => $response->status(),
+            'user' => $request->user() ?: null,
+            'uri' => $request->getUri(),
+            'method' => $request->getMethod(),
+            'request_body' => $request->all(),
+        ];
 
-            Log::info(json_encode($log, JSON_UNESCAPED_UNICODE));
-        } catch (Throwable) {
-        }
+        Log::info(json_encode($log, JSON_UNESCAPED_UNICODE));
 
         return $response;
     }

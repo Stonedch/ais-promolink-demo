@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
+use App\Enums\EventStatus;
+use App\Notifications\BaseNotification;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
+use Orchid\Support\Color;
 
 class Event extends Model
 {
@@ -26,6 +29,7 @@ class Event extends Model
         'filled_at',
         'refilled_at',
         'saved_structure',
+        'changing_filled_at',
     ];
 
     protected $allowedFilters = [
@@ -37,6 +41,7 @@ class Event extends Model
         'refilled_at' => WhereDateStartEnd::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
+        'changing_filled_at' => WhereDateStartEnd::class,
     ];
 
     protected $allowedSorts = [
@@ -48,12 +53,7 @@ class Event extends Model
         'refilled_at',
         'updated_at',
         'created_at',
-    ];
-
-    public static $STATUSES = [
-        100 => 'В процессе',
-        200 => 'Просрочен',
-        300 => 'Выполнен',
+        'changing_filled_at',
     ];
 
     public function getCurrentStatus()
@@ -66,11 +66,11 @@ class Event extends Model
         $isFilled = empty($this->filled_at) == false;
 
         if ($isFilled) {
-            return 300;
+            return EventStatus::from(300);
         } elseif (empty($deadline) == false && $diff < 0) {
-            return 200;
+            return EventStatus::from(200);
         } else {
-            return 100;
+            return EventStatus::from(100);
         }
     }
 
@@ -94,6 +94,18 @@ class Event extends Model
             'form_structure' => $formStructure ?: $form->getStructure(),
             'departament_id' => $departament->id,
         ])->save();
+
+        User::where('departament_id', $departament->id)->get()->map(function (User $user) use ($form) {
+            $notification = new BaseNotification(
+                'Новый отчет',
+                "Добавлен новый отчет на заполнение \"{$form->name}\"",
+                Color::BASIC
+            );
+
+            $user->notify($notification);
+
+            return $user;
+        });
     }
 
     public function formResults(): HasMany
@@ -128,5 +140,24 @@ class Event extends Model
         return isset($structure->blockeds)
             ? collect($structure->blockeds)->keyBy('id')
             : new Collection();
+    }
+
+    public static function lastByDepartament(int $formIdentifier, int $departamentIdentifier): ?self
+    {
+        $query = self::query()
+            ->where('form_id', $formIdentifier)
+            ->where('departament_id', $departamentIdentifier);
+
+        $count = $query->clone()->count();
+
+        $lastEventIdentifier = Cache::remember(
+            "Event.lastByDepartament.lastEvent.v0.[{$formIdentifier}:{$departamentIdentifier}:{$count}]",
+            now()->addDays(7),
+            fn() => $query->orderBy('id', 'DESC')->select('id')->pluck('id')->first()
+        );
+
+        $lastEvent = Event::find($lastEventIdentifier);
+
+        return $lastEvent;
     }
 }

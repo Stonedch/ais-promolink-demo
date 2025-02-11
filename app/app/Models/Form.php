@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
+use Throwable;
 
 class Form extends Model
 {
@@ -27,6 +29,7 @@ class Form extends Model
         'is_editable',
         'form_category_id',
         'sort',
+        'by_initiative',
     ];
 
     protected $allowedFilters = [
@@ -40,6 +43,7 @@ class Form extends Model
         'is_active' => Where::class,
         'is_editable' => Where::class,
         'form_category_id' => Where::class,
+        'by_initiative' => Where::class,
 
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
@@ -56,6 +60,7 @@ class Form extends Model
         'is_active',
         'is_editable',
         'form_category_id',
+        'by_initiative',
 
         'updated_at',
         'created_at',
@@ -63,6 +68,8 @@ class Form extends Model
 
     public static $PERIODICITIES = [
         50 => 'Разовая',
+        100 => 'Ежедневная',
+        200 => 'Ежемесячная',
     ];
 
     public static $TYPES = [
@@ -93,5 +100,33 @@ class Form extends Model
     public function departamentTypes(): BelongsToMany
     {
         return $this->belongsToMany(DepartamentType::class, 'form_departament_types');
+    }
+
+    public function canUserEdit(?User $user = null, ?Departament $departament = null): bool
+    {
+        try {
+            if (empty($user)) {
+                $user = request()->user();
+            }
+
+            throw_if(request()->user()->hasAnyAccess(['platform.supervisor.base']));
+            throw_if(request()->user()->hasAnyAccess(['platform.departament-director.base']));
+
+            if (empty($departament)) {
+                $departament = Cache::remember(
+                    "Form.canUserEdit.departament.v0.[{$user->departament_id}]",
+                    now()->addDays(7),
+                    fn() => Departament::find($user->departament_id)
+                );
+            }
+
+            $lastEvent = Event::lastByDepartament($this->id, $departament->id);
+
+            throw_if(empty(@$lastEvent->filled_at) == false);
+
+            return true;
+        } catch (Throwable) {
+            return false;
+        }
     }
 }

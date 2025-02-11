@@ -13,6 +13,7 @@ use App\Models\Form;
 use App\Models\FormFieldBlocked;
 use App\Models\FormResult;
 use App\Orchid\Components\HumanizePhone;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -255,6 +256,53 @@ class FormController extends Controller
             }
 
             return Responser::returnSuccess();
+        } catch (HumanException $e) {
+            return Responser::returnError([$e->getMessage()]);
+        } catch (Throwable) {
+            return Responser::returnError(['100, Ошибка сервера!']);
+        }
+    }
+
+    public function archive(Request $request): JsonResponse
+    {
+        try {
+            $user = $request->user();
+            $departament = Departament::find($user->departament_id);
+            $event = Event::find($request->input('event'));
+            $events = Event::query()
+                ->where('form_id', $event->form_id)
+                ->where('departament_id', $departament->id)
+                ->whereNotNull('filled_at')
+                ->get();
+            return Responser::returnSuccess(['events' => $events]);
+        } catch (HumanException $e) {
+            return Responser::returnError([$e->getMessage()]);
+        } catch (Throwable) {
+            return Responser::returnError(['100, Ошибка сервера!']);
+        }
+    }
+
+    public function byInitiative(Request $request): JsonResponse
+    {
+        try {
+            $user = $request->user();
+            $filledAt = Carbon::createFromTimestamp(strtotime($request->input('filled_at')));
+            $departamentIdentifier = $user->departament_id;
+            $departament = Departament::find($departamentIdentifier);
+            $form = Form::find($request->input('identifier'));
+
+            $event = new Event();
+
+            $event->fill([
+                'form_id' => $form->id,
+                'form_structure' => $form->getStructure(),
+                'departament_id' => $departament->id,
+                'changing_filled_at' => $filledAt,
+            ]);
+
+            $event->save();
+
+            return Responser::returnSuccess(['url' => "/forms?id={$event->id}"]);
         } catch (HumanException $e) {
             return Responser::returnError([$e->getMessage()]);
         } catch (Throwable) {

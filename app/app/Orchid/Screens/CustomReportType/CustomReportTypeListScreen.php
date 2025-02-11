@@ -30,7 +30,7 @@ class CustomReportTypeListScreen extends Screen
 
     public function name(): ?string
     {
-        return 'Типы кастомных отчетов';
+        return 'Типы загружаемых документов';
     }
 
     public function permission(): ?iterable
@@ -56,7 +56,7 @@ class CustomReportTypeListScreen extends Screen
                 TD::make(__('Actions'))
                     ->align(TD::ALIGN_CENTER)
                     ->width(100)
-                    ->render(fn (CustomReportType $customReportType) => DropDown::make()
+                    ->render(fn(CustomReportType $customReportType) => DropDown::make()
                         ->icon('bs.three-dots-vertical')
                         ->list([
                             Link::make(__('Edit'))
@@ -81,6 +81,11 @@ class CustomReportTypeListScreen extends Screen
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
                     ->width(200),
+
+                TD::make('is_general', 'Общий тип')
+                    ->sort()
+                    ->width(100)
+                    ->render(fn(CustomReportType $type) => $type->is_general ? 'Да' : 'Нет'),
 
                 TD::make('created_at', 'Создано')
                     ->usingComponent(DateTimeRender::class)
