@@ -6,6 +6,7 @@ use App\Helpers\PhoneNormalizer;
 use App\Orchid\Screens\BotNotification\BotNotificationScreen;
 use App\Orchid\Screens\Collection\CollectionEditScreen;
 use App\Orchid\Screens\Collection\CollectionListScreen;
+use App\Orchid\Screens\CustomReportLog\CustomReportLogListScreen;
 use App\Orchid\Screens\CustomReportType\CustomReportTypeEditScreen;
 use App\Orchid\Screens\CustomReportType\CustomReportTypeListScreen;
 use App\Orchid\Screens\Departament\DepartamentListScreen;
@@ -277,9 +278,16 @@ Route::screen('custom-report-types/{customReportType}/edit', CustomReportTypeEdi
         ->parent('platform.custom-report-types')
         ->push('Редактирование', route('platform.custom-report-types.edit', $customReportType)));
 
-// Platform > BotNotification
+// Platform > BotNotifications
 Route::screen('bot-notifications', BotNotificationScreen::class)
     ->name('platform.bot-notifications')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
         ->push('Бот-уведомления', route('platform.bot-notifications')));
+
+// Platform > CustomReportLogs
+Route::screen('custom-report-logs', CustomReportLogListScreen::class)
+    ->name('platform.custom-report-logs')
+    ->breadcrumbs(fn(Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push('Лог загружаемых документов', route('platform.custom-report-logs')));

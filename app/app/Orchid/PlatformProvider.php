@@ -76,6 +76,12 @@ class PlatformProvider extends OrchidServiceProvider
                 ->icon('bs.pencil-square')
                 ->route('platform.custom-report-types')
                 ->permission('platform.custom-reports.base')
+                ->canSee(config('app.custom_reports')),
+
+            Menu::make('Лог загружаемых документов')
+                ->icon('bs.database')
+                ->route('platform.custom-report-types')
+                ->permission('platform.custom-reports.base')
                 ->canSee(config('app.custom_reports'))
                 ->divider(),
 
