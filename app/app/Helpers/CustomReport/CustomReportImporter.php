@@ -2,6 +2,8 @@
 
 namespace App\Helpers\CustomReport;
 
+use App\Enums\CustomReportLogType;
+use App\Exceptions\UnStoringException;
 use App\Helpers\BotHelpers\TelegramBotHelper;
 use App\Models\CustomReport;
 use App\Models\CustomReportType;
@@ -13,6 +15,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use Symfony\Component\Console\Command\Command;
 use Throwable;
 use App\Models\CustomReportData;
+use App\Models\CustomReportLog;
 use Illuminate\Support\Facades\Artisan;
 
 setlocale(LC_ALL, 'ru_RU.UTF-8');
@@ -66,15 +69,23 @@ class CustomReportImporter
             ->keyBy('id');
 
         $reports->map(function (CustomReport $report) use ($reportTypes, $attachments) {
+            $reportType = $reportTypes->get($report->custom_report_type_id);
+
             try {
-                $reportType = $reportTypes->get($report->custom_report_type_id);
                 $template = $attachments->get($reportType->attachment_id);
 
                 if ($reportType->is_freelace) {
-                    throw_if(empty($reportType->command), new Exception('Внештатная команда не распознана'));
+                    throw_if(
+                        empty($reportType->command),
+                        new UnStoringException('Внештатная команда не распознана')
+                    );
+
                     Artisan::call($reportType->command);
                 } else {
-                    throw_if(empty($template), new Exception('Ошибка поиска шаблона'));
+                    throw_if(
+                        empty($template),
+                        new UnStoringException('Ошибка поиска шаблона')
+                    );
 
                     throw_if(
                         in_array($template->extension, self::AVAILABLE_EXTENSIONS) == false,
@@ -87,16 +98,31 @@ class CustomReportImporter
                     $this->load_report($report, $templateFilepath);
                 }
 
-                if ($this->console) {
-                    $this->console->comment("report:{$report->id} is ready");
-                }
+                $this->log(
+                    message: 'is ready',
+                    type: CustomReportLogType::LOG,
+                    customReport: $report,
+                    customReportType: $reportType,
+                    templateFilepath: $templateFilepath
+                );
 
                 $report->worked = true;
                 $report->save();
+            } catch (UnStoringException $e) {
+                $this->log(
+                    message: $e->getMessage(),
+                    type: CustomReportLogType::ERROR,
+                    customReport: $report,
+                    customReportType: $reportType,
+                    storing: false,
+                );
             } catch (Throwable | Exception $e) {
-                if ($this->console) {
-                    $this->console->error($e->getMessage());
-                }
+                $this->log(
+                    message: $e->getMessage(),
+                    type: CustomReportLogType::ERROR,
+                    customReport: $report,
+                    customReportType: $reportType,
+                );
             }
         });
     }
@@ -121,7 +147,12 @@ class CustomReportImporter
             $this->insert($report, $arDocument);
         }
 
-        echo "loaded #" . $report->id . "\r\n";
+        $this->log(
+            message: 'loaded',
+            type: CustomReportLogType::LOG,
+            customReport: $report,
+            customReportType: $type,
+        );
     }
 
     private function insert(CustomReport $report, array $document): void
@@ -190,19 +221,23 @@ class CustomReportImporter
         }
         $filepath = storage_path("app/{$file->disk}/{$file->path}{$file->name}.{$file->extension}");
 
-        var_dump($filepath);
-
         return $this->get_xls_reader_by_filepath($filepath);
     }
 
     private function error_handler(string $error)
     {
-        echo $error . "\r\n";
+        $this->log(
+            message: $error,
+            type: CustomReportLogType::ERROR,
+        );
 
         try {
             TelegramBotHelper::notify($user, $title, $body);
         } catch (Throwable | Exception) {
-            echo "Telegram пользователь не найден" . "\r\n";
+            $this->log(
+                message: 'Telegram пользователь не найден',
+                type: CustomReportLogType::WARNING,
+            );
         }
     }
 
@@ -305,20 +340,32 @@ class CustomReportImporter
         }
 
 
-        var_dump($arOriginal[$origPath]);
-        die();
+        // var_dump($arOriginal[$origPath]);
+        // die();
 
         $error = false;
         foreach ($arOriginal[$origPath] as $data) {
             if ($data['type'] != 's') continue;
 
             if (!array_key_exists($data['page'], $arTemp)) {
-                echo "\r\nerror block is A\r\n";
+                // echo "\r\nerror block is A\r\n";
+
+                $this->log(
+                    message: 'error block is A',
+                    type: CustomReportLogType::WARNING,
+                );
+
                 $error = true;
                 break;
             }
             if (!array_key_exists($data['row'], $arTemp[$data['page']])) {
-                echo "\r\nerror block is B\r\n";
+                // echo "\r\nerror block is B\r\n";
+
+                $this->log(
+                    message: 'error block is B',
+                    type: CustomReportLogType::WARNING,
+                );
+
                 $error = true;
                 break;
             }
@@ -336,7 +383,13 @@ class CustomReportImporter
                 ) {
 
 
-                    echo "\r\nerror block is D-a [" . $coord . "], type " . $data['type'] . "|" . $arTemp[$data['page']][$data['row']][$data['col']]['type'] . " («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)\r\n";
+                    // echo "\r\nerror block is D-a [" . $coord . "], type " . $data['type'] . "|" . $arTemp[$data['page']][$data['row']][$data['col']]['type'] . " («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)\r\n";
+
+                    $this->log(
+                        message: "error block is D-a [" . $coord . "], type " . $data['type'] . "|" . $arTemp[$data['page']][$data['row']][$data['col']]['type'] . " («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)",
+                        type: CustomReportLogType::WARNING,
+                    );
+
                     $error = true;
                     break;
                 }
@@ -345,7 +398,13 @@ class CustomReportImporter
                     $arTemp[$data['page']][$data['row']][$data['col']]['val'] != $data['val'] or
                     $arTemp[$data['page']][$data['row']][$data['col']]['type'] != $data['type']
                 ) {
-                    echo "\r\nerror block is D-b [" . $coord . "] («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)\r\n";
+                    // echo "\r\nerror block is D-b [" . $coord . "] («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)\r\n";
+
+                    $this->log(
+                        message: "error block is D-b [" . $coord . "] («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)",
+                        type: CustomReportLogType::WARNING,
+                    );
+
                     $error = true;
                     break;
                 }
@@ -371,17 +430,16 @@ class CustomReportImporter
         $res = $this->verify_document_with_original($arDocument, $exampleDoc);
 
         if ($res === false) {
-            die("DDD");
-            new Exception('Структура загруженного документа не соответствует образцу!');
+            throw new Exception('Структура загруженного документа не соответствует образцу!');
             // $this->error_handler("Некорректный формат документа!");
         } else {
 
             if ($report->user_id != 257) {
-                var_dump([
-                    $report->user_id,
-                    $report->custom_report_type_id,
-                    count($arDocument)
-                ]);
+                $this->log(
+                    message: implode(' ', [$report->user_id, $report->custom_report_type_id, count($arDocument)]),
+                    type: CustomReportLogType::DEBUG,
+                );
+
                 die();
             }
 
@@ -411,6 +469,44 @@ class CustomReportImporter
             return false;
         } else {
             return $report_type->title;
+        }
+    }
+
+    private function log(
+        string $message,
+        CustomReportLogType $type,
+        bool $storing = true,
+        ?CustomReport $customReport = null,
+        ?CustomReportType $customReportType = null,
+        ?User $user = null,
+        ?string $filepath = null,
+        ?stirng $templateFilepath = null,
+    ): void {
+        if ($this->console) {
+            $comment = [
+                "message: {$message}",
+            ];
+
+            if ($customReport) $comment[] = "customReport: {$customReport->id}";
+            if ($customReportType) $comment[] = "customReportType: {$customReportType->title}";
+            if ($user) $comment[] = "user: {@$user->id}";
+            if ($filepath) $comment[] = "filepath: {@$filepath}";
+            if ($templateFilepath) $comment[] = "template_filepath: {@$templateFilepath}";
+
+            $type->print($this->console, $type->name() . ': [' . implode('; ', $comment) . ']');
+            // $this->console->comment($type->name() . ': [' . implode('; ', $comment) . ']');
+        }
+
+        if ($storing) {
+            (new CustomReportLog())->fill([
+                'message' => $message,
+                'type' => $type->value,
+                'custom_report_id' => @$customReport->id,
+                'custom_report_type_id' => @$customReportType->id,
+                'user_id' => @$user->id,
+                'filepath' => @$filepath,
+                'template_filepath' => @$templateFilepath,
+            ])->save();
         }
     }
 }
