@@ -122,3 +122,8 @@ Route::middleware([ServiceUnavailable::class, LogRoute::class])->name('api.')->p
         Route::match(['GET', 'POST'], '/handle', 'handle')->name('handle');
     });
 });
+
+// owns
+if (is_file(base_path('routes/owns.php'))) {
+    Route::name('owns.')->group(base_path('routes/owns.php'));
+}
