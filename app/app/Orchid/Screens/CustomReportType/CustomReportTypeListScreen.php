@@ -87,6 +87,9 @@ class CustomReportTypeListScreen extends Screen
                     ->width(100)
                     ->render(fn(CustomReportType $type) => $type->is_general ? 'Да' : 'Нет'),
 
+                TD::make('Загружен шаблон')
+                    ->render(fn(CustomReportType $type) => $type->attachment_id ? 'Да' : 'Нет'),
+
                 TD::make('created_at', 'Создано')
                     ->usingComponent(DateTimeRender::class)
                     ->filter(TD::FILTER_DATE_RANGE)
