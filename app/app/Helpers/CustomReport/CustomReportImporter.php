@@ -346,6 +346,8 @@ class CustomReportImporter
         $error = false;
         foreach ($arOriginal[$origPath] as $data) {
             if ($data['type'] != 's') continue;
+            if ($data['val'] == 0) continue;
+            if ($data['val'] == '-') continue;
 
             if (!array_key_exists($data['page'], $arTemp)) {
                 // echo "\r\nerror block is A\r\n";
@@ -433,17 +435,6 @@ class CustomReportImporter
             throw new Exception('Структура загруженного документа не соответствует образцу!');
             // $this->error_handler("Некорректный формат документа!");
         } else {
-
-            if ($report->user_id != 257) {
-                $this->log(
-                    message: implode(' ', [$report->user_id, $report->custom_report_type_id, count($arDocument)]),
-                    type: CustomReportLogType::DEBUG,
-                );
-
-                die();
-            }
-
-
             $this->insert_data_into_bd($report, $arDocument);
             $this->mark_report_as_worked($report);
         }
@@ -480,7 +471,7 @@ class CustomReportImporter
         ?CustomReportType $customReportType = null,
         ?User $user = null,
         ?string $filepath = null,
-        ?stirng $templateFilepath = null,
+        ?string $templateFilepath = null,
     ): void {
         if ($this->console) {
             $comment = [
