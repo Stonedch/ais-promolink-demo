@@ -47,6 +47,8 @@ class CustomReportImporter
 
     public function handle(?int $take = null): void
     {
+        $this->log(message: "Старт", type: CustomReportLogType::DEBUG, storing: false);
+
         $reports = CustomReport::query()
             ->orderBy('id', 'desc')
             ->where('worked', false)
@@ -58,18 +60,27 @@ class CustomReportImporter
 
         $reports = $reports->get();
 
+        $this->log(message: "Список отчетов получен", type: CustomReportLogType::DEBUG, storing: false);
+
         $reportTypes = CustomReportType::query()
             ->whereIn('id', $reports->pluck('custom_report_type_id'))
             ->get()
             ->keyBy('id');
+
+        $this->log(message: "Список типов отчетов получен", type: CustomReportLogType::DEBUG, storing: false);
 
         $attachments = Attachment::query()
             ->whereIn('id', $reportTypes->pluck('attachment_id'))
             ->get()
             ->keyBy('id');
 
+        $this->log(message: "Список документов получен", type: CustomReportLogType::DEBUG, storing: false);
+        $this->log(message: "Старт обработки", type: CustomReportLogType::DEBUG, storing: false);
+
         $reports->map(function (CustomReport $report) use ($reportTypes, $attachments) {
             $reportType = $reportTypes->get($report->custom_report_type_id);
+
+            $this->log(message: "Получен отчет №{$report->id}", type: CustomReportLogType::DEBUG, storing: false);
 
             try {
                 $template = $attachments->get($reportType->attachment_id);
@@ -160,6 +171,8 @@ class CustomReportImporter
         $arInsert = [];
         $departament_id = $this->obUsers->find($report->user_id)->departament_id;
 
+        $this->log(message: 'Учреждение найдено', type: CustomReportLogType::DEBUG, storing: false);
+
         foreach ($document as $doc) {
             $arInsert[] = [
                 "departament_id" => $departament_id,
@@ -175,19 +188,22 @@ class CustomReportImporter
             ];
         }
 
+        $this->log(message: 'Массив подготовлен', type: CustomReportLogType::DEBUG, storing: false);
+
         CustomReportData::insert($arInsert);
+
+        $this->log(message: 'Массив загружен', type: CustomReportLogType::DEBUG, storing: false);
     }
 
     private function update(CustomReport $report, array $document): void
     {
-        $reportData = CustomReportData::query()
+        CustomReportData::query()
             ->where('user_id', $report->user_id)
             ->where('custom_report_type_id', $report->custom_report_type_id)
-            ->get();
+            ->get()
+            ->map(fn(CustomReportData $reportData) => $reportData->delete());
 
-        $reportData->map(function (CustomReportData $reportData) {
-            $reportData->delete();
-        });
+        $this->log(message: 'Обновляемый отчет подготовлен под загрузку новых данных', type: CustomReportLogType::DEBUG, storing: false);
 
         $this->insert($report, $document);
     }
@@ -285,10 +301,10 @@ class CustomReportImporter
 
                     switch ($type) {
                         case "f":
-                            $value = floatval(str_replace([" ", ","], "", $value));
+                            $value = floatval(str_replace([" ", ""], "", $value));
                             break;
                         case "n":
-                            $value = intval(str_replace([" ", ","], "", $value));
+                            $value = intval(str_replace([" ", ""], "", $value));
                             break;
                         default:
                             $value = trim($value);
@@ -340,9 +356,6 @@ class CustomReportImporter
         }
 
 
-        // var_dump($arOriginal[$origPath]);
-        // die();
-
         $error = false;
         foreach ($arOriginal[$origPath] as $data) {
             if ($data['type'] != 's') continue;
@@ -350,29 +363,17 @@ class CustomReportImporter
             if ($data['val'] == '-') continue;
 
             if (!array_key_exists($data['page'], $arTemp)) {
-                // echo "\r\nerror block is A\r\n";
-
-                $this->log(
-                    message: 'error block is A',
-                    type: CustomReportLogType::WARNING,
-                );
-
+                $this->log(message: 'error block is A', type: CustomReportLogType::WARNING);
                 $error = true;
                 break;
             }
             if (!array_key_exists($data['row'], $arTemp[$data['page']])) {
-                // echo "\r\nerror block is B\r\n";
-
-                $this->log(
-                    message: 'error block is B',
-                    type: CustomReportLogType::WARNING,
-                );
-
+                $this->log(message: 'error block is B', type: CustomReportLogType::WARNING);
                 $error = true;
                 break;
             }
             if (!array_key_exists($data['col'], $arTemp[$data['page']][$data['row']])) {
-                echo "\r\nerror block is C\r\n";
+                $this->log(message: 'error block is C', type: CustomReportLogType::WARNING);
                 $error = true;
                 break;
             }
@@ -383,10 +384,6 @@ class CustomReportImporter
                     $arTemp[$data['page']][$data['row']][$data['col']]['val'] != $data['val'] or
                     $arTemp[$data['page']][$data['row']][$data['col']]['type'] != $data['type']
                 ) {
-
-
-                    // echo "\r\nerror block is D-a [" . $coord . "], type " . $data['type'] . "|" . $arTemp[$data['page']][$data['row']][$data['col']]['type'] . " («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)\r\n";
-
                     $this->log(
                         message: "error block is D-a [" . $coord . "], type " . $data['type'] . "|" . $arTemp[$data['page']][$data['row']][$data['col']]['type'] . " («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)",
                         type: CustomReportLogType::WARNING,
@@ -400,8 +397,6 @@ class CustomReportImporter
                     $arTemp[$data['page']][$data['row']][$data['col']]['val'] != $data['val'] or
                     $arTemp[$data['page']][$data['row']][$data['col']]['type'] != $data['type']
                 ) {
-                    // echo "\r\nerror block is D-b [" . $coord . "] («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)\r\n";
-
                     $this->log(
                         message: "error block is D-b [" . $coord . "] («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)",
                         type: CustomReportLogType::WARNING,
@@ -423,19 +418,26 @@ class CustomReportImporter
     private function load_report($report, $exampleDoc)
     {
         $xls = $this->get_xls_reader_by_attachment_id($report->attachment_id);
+        $this->log(message: 'Получен reader', type: CustomReportLogType::DEBUG, storing: false);
+
         if (is_string($xls)) {
             $this->error_handler($xls);
             return false;
         }
 
         $arDocument = $this->read_xls_into_array($xls);
+        $this->log(message: 'Документ прочитан', type: CustomReportLogType::DEBUG, storing: false);
+
         $res = $this->verify_document_with_original($arDocument, $exampleDoc);
+        $this->log(message: 'Документ сравнен', type: CustomReportLogType::DEBUG, storing: false);
 
         if ($res === false) {
             throw new Exception('Структура загруженного документа не соответствует образцу!');
             // $this->error_handler("Некорректный формат документа!");
         } else {
             $this->insert_data_into_bd($report, $arDocument);
+            $this->log(message: 'Документ загружен', type: CustomReportLogType::DEBUG, storing: false);
+
             $this->mark_report_as_worked($report);
         }
     }
