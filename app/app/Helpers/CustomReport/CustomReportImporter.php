@@ -17,6 +17,7 @@ use Throwable;
 use App\Models\CustomReportData;
 use App\Models\CustomReportLog;
 use Illuminate\Support\Facades\Artisan;
+use Symfony\Component\VarDumper\VarDumper;
 
 setlocale(LC_ALL, 'ru_RU.UTF-8');
 
@@ -111,7 +112,7 @@ class CustomReportImporter
 
                 $this->log(
                     message: 'is ready',
-                    type: CustomReportLogType::LOG,
+                    type: CustomReportLogType::ACCESS,
                     customReport: $report,
                     customReportType: $reportType,
                     templateFilepath: $templateFilepath
@@ -188,7 +189,8 @@ class CustomReportImporter
             ];
         }
 
-        $this->log(message: 'Массив подготовлен', type: CustomReportLogType::DEBUG, storing: false);
+        $count = count($arInsert);
+        $this->log(message: "Массив подготовлен ({$count})", type: CustomReportLogType::DEBUG, storing: false);
 
         CustomReportData::insert($arInsert);
 
@@ -236,6 +238,7 @@ class CustomReportImporter
             return "Некорректный формат (.$file->extension)";
         }
         $filepath = storage_path("app/{$file->disk}/{$file->path}{$file->name}.{$file->extension}");
+        $this->log(message: "Получен файт на отчет \"{$filepath}\"", type: CustomReportLogType::DEBUG, storing: false);
 
         return $this->get_xls_reader_by_filepath($filepath);
     }
@@ -281,13 +284,6 @@ class CustomReportImporter
                 while ($read_now['col'] < $page_end_coord['col']) {
                     $type = $sheet->getCell([$read_now['col'], $read_now['row']])->getDataType();
                     $read_now['col']++;
-                    // if ($type == 'null') continue;
-
-                    /*if(!in_array($type,$arKnownValues)) {
-                        echo "tick ".$page_number."|".$read_now['col'].":".$read_now['row']."\r\n";
-                        var_dump($type); die();
-                    }*/
-
 
                     try {
                         $value = $sheet->getCell([$read_now['col'], $read_now['row']])->getFormattedValue();
@@ -298,13 +294,12 @@ class CustomReportImporter
                     if ($value == '') continue;
                     if ($value == 'null') continue;
 
-
                     switch ($type) {
                         case "f":
-                            $value = floatval(str_replace([" ", ""], "", $value));
+                            $value = floatval(str_replace([" ", ","], ["", ""], $value));
                             break;
                         case "n":
-                            $value = intval(str_replace([" ", ""], "", $value));
+                            $value = intval(str_replace([" ", ","], ["", ""], $value));
                             break;
                         default:
                             $value = trim($value);
@@ -378,14 +373,17 @@ class CustomReportImporter
                 break;
             }
 
-            $coord = $data['page'] . "|" . $data['row'] . ":" . $data['col'];
+            $coord = "[страница: \"{$data['page']}\"; колонка: {$data['col']}; строка: {$data['row']}]";
+            $compareTypes = "[тип значение в документе: \"{$arTemp[$data['page']][$data['row']][$data['col']]['type']}\"; в шаблоне: \"{$data['type']}\"]";
+            $compareValues = "[значение в документе: \"{$arTemp[$data['page']][$data['row']][$data['col']]['val']}\"; в шаблоне: \"{$data['val']}\"]";
+
             if ($data['type'] != 'null') {
                 if (
                     $arTemp[$data['page']][$data['row']][$data['col']]['val'] != $data['val'] or
                     $arTemp[$data['page']][$data['row']][$data['col']]['type'] != $data['type']
                 ) {
                     $this->log(
-                        message: "error block is D-a [" . $coord . "], type " . $data['type'] . "|" . $arTemp[$data['page']][$data['row']][$data['col']]['type'] . " («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)",
+                        message: "Структура загруженного документа не соответствует образцу: {$coord} {$compareTypes} {$compareValues}",
                         type: CustomReportLogType::WARNING,
                     );
 
@@ -398,7 +396,7 @@ class CustomReportImporter
                     $arTemp[$data['page']][$data['row']][$data['col']]['type'] != $data['type']
                 ) {
                     $this->log(
-                        message: "error block is D-b [" . $coord . "] («" . $arTemp[$data['page']][$data['row']][$data['col']]['val'] . "» vs «" . $data['val'] . "»)",
+                        message: "Структура загруженного документа не соответствует образцу: {$coord} {$compareTypes} {$compareValues}",
                         type: CustomReportLogType::WARNING,
                     );
 
@@ -433,7 +431,6 @@ class CustomReportImporter
 
         if ($res === false) {
             throw new Exception('Структура загруженного документа не соответствует образцу!');
-            // $this->error_handler("Некорректный формат документа!");
         } else {
             $this->insert_data_into_bd($report, $arDocument);
             $this->log(message: 'Документ загружен', type: CustomReportLogType::DEBUG, storing: false);
@@ -487,7 +484,6 @@ class CustomReportImporter
             if ($templateFilepath) $comment[] = "template_filepath: {@$templateFilepath}";
 
             $type->print($this->console, $type->name() . ': [' . implode('; ', $comment) . ']');
-            // $this->console->comment($type->name() . ': [' . implode('; ', $comment) . ']');
         }
 
         if ($storing) {
