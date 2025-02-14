@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Orchid\Filters\Filterable;
+use Orchid\Filters\Types\Ilike;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
@@ -23,6 +24,11 @@ class Departament extends Model
         'sort',
         'rating',
         'inn',
+        'dadata',
+        'address',
+        'lat',
+        'lon',
+        'okpo',
     ];
 
     protected $allowedFilters = [
@@ -32,6 +38,11 @@ class Departament extends Model
         'sort' => Where::class,
         'rating' => Where::class,
         'inn' => Where::class,
+        'dadata' => Ilike::class,
+        'address' => Ilike::class,
+        'lat' => Where::class,
+        'lon' => Where::class,
+        'okpo' => Where::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
     ];
@@ -43,6 +54,11 @@ class Departament extends Model
         'sort',
         'rating',
         'inn',
+        'dadata',
+        'address',
+        'lat',
+        'lon',
+        'okpo',
         'updated_at',
         'created_at',
     ];
