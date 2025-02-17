@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Artisan;
 use Symfony\Component\VarDumper\VarDumper;
 
 setlocale(LC_ALL, 'ru_RU.UTF-8');
+ini_set('memory_limit', '-1');
 
 class CustomReportImporter
 {
@@ -30,7 +31,9 @@ class CustomReportImporter
     ];
 
     protected bool $debug = false;
+
     protected ?Command $console;
+    protected object $output;
 
     protected $report_types;
     protected $timestamp;
@@ -81,10 +84,13 @@ class CustomReportImporter
         $reports->map(function (CustomReport $report) use ($reportTypes, $attachments) {
             $reportType = $reportTypes->get($report->custom_report_type_id);
 
+            $memory = memory_get_usage() / 1024 / 1024;
+            $this->log(message: "ОЗУ: $memory мб", type: CustomReportLogType::ACCESS, storing: false);
             $this->log(message: "Получен отчет №{$report->id}", type: CustomReportLogType::DEBUG, storing: false);
 
             try {
                 $template = $attachments->get($reportType->attachment_id);
+                // $template = Attachment::find($reportType->attachment_id);
 
                 if ($reportType->is_freelace) {
                     throw_if(
@@ -144,6 +150,11 @@ class CustomReportImporter
         $this->debug = $debug;
     }
 
+    public function setConsoleOutput(object $output): void
+    {
+        $this->output = $output;
+    }
+
     public function setConsole(?Command $console): void
     {
         $this->console = $console;
@@ -189,10 +200,30 @@ class CustomReportImporter
             ];
         }
 
+        $take = 10000;
         $count = count($arInsert);
+
         $this->log(message: "Массив подготовлен ({$count})", type: CustomReportLogType::DEBUG, storing: false);
 
-        CustomReportData::insert($arInsert);
+        if (empty($this->output) == false) {
+            $progressBar = $this->output->createProgressBar($count);
+            $progressBar->start();
+        }
+
+        foreach (array_chunk($arInsert, $take) as $chunk) {
+            CustomReportData::insert($chunk);
+
+            if (empty($this->output) == false) {
+                $progressBar->advance($take);
+            }
+        }
+
+        if (empty($this->output) == false) {
+            $progressBar->finish();
+        }
+
+        if ($this->console) $this->console->comment("");
+        $this->log(message: "Чанки загружены", type: CustomReportLogType::DEBUG, storing: false);
 
         $this->log(message: 'Массив загружен', type: CustomReportLogType::DEBUG, storing: false);
     }
@@ -322,17 +353,15 @@ class CustomReportImporter
         return $arResult;
     }
 
+    protected static array $arOriginal = [];
+
     private function verify_document_with_original($arDocument, $origPath)
     {
-        static $arOriginal;
-        if (!is_array($arOriginal)) {
-            $arOriginal = [];
-        }
-        if (!array_key_exists($origPath, $arOriginal)) {
+        if (!array_key_exists($origPath, self::$arOriginal)) {
             $xls = $this->get_xls_reader_by_filepath($origPath);
-            $arOriginal[$origPath] = $this->read_xls_into_array($xls);
+            self::$arOriginal[$origPath] = $this->read_xls_into_array($xls);
+            $xls->disconnectWorksheets();
         }
-
 
         $arTemp = [];
         foreach ($arDocument as $elem) {
@@ -352,7 +381,7 @@ class CustomReportImporter
 
 
         $error = false;
-        foreach ($arOriginal[$origPath] as $data) {
+        foreach (self::$arOriginal[$origPath] as $data) {
             if ($data['type'] != 's') continue;
             if ($data['val'] == 0) continue;
             if ($data['val'] == '-') continue;
@@ -424,6 +453,7 @@ class CustomReportImporter
         }
 
         $arDocument = $this->read_xls_into_array($xls);
+        $xls->disconnectWorksheets();
         $this->log(message: 'Документ прочитан', type: CustomReportLogType::DEBUG, storing: false);
 
         $res = $this->verify_document_with_original($arDocument, $exampleDoc);
@@ -437,6 +467,7 @@ class CustomReportImporter
 
             $this->mark_report_as_worked($report);
         }
+        $arDocument = null;
     }
 
     private function mark_report_as_worked($report)
