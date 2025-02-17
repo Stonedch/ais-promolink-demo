@@ -49,13 +49,13 @@
                 </td>
                 <td class="align-middle">
                     <div class="btn-group" role="group">
-                        @if ($form->canUserEdit(auth()->user()))
+                        {{-- @if ($form->canUserEdit(auth()->user()))
                             <a href="{{ route('web.forms.index', ['id' => $form->event->id]) }}" type="button"
                                 class="btn btn-secondary py-1 px-3">
                                 <img width="16px" src="/img/pencil-square.svg" />
                                 <small>редактировать</small>
                             </a>
-                        @endif
+                        @endif --}}
                         <a href="{{ route('web.minister.by-form', ['form' => $form->id]) }}"
                             type="button" class="btn btn-secondary py-1 px-3">
                             <img width="16px" src="/img/search.svg" />
