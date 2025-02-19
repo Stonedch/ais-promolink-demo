@@ -95,8 +95,12 @@ class BotNotificationScreen extends Screen
                     ->width(200)
                     ->render(function (BotUserNotification $notification) {
                         try {
-                            return $this->users->where('id', $this->botUsers->where('id', $notification->bot_user_id)->first()->user_id)->first()->getFullname();
-                        } catch (Throwable) {
+                            $botUser = $this->botUsers->where('id', $notification->bot_user_id)->first();
+                            throw_if(empty($botUser));
+                            $user = $this->users->where('id', $botUser->user_id)->first();
+                            throw_if(empty($user));
+                            return $user->getFullname();
+                        } catch (Throwable|Exception) {
                             return '-';
                         }
                     }),
