@@ -150,11 +150,15 @@ class Event extends Model
 
         $count = $query->clone()->count();
 
-        $lastEventIdentifier = Cache::remember(
-            "Event.lastByDepartament.lastEvent.v0.[{$formIdentifier}:{$departamentIdentifier}:{$count}]",
-            now()->addDays(7),
-            fn() => $query->orderBy('id', 'DESC')->select('id')->pluck('id')->first()
-        );
+        // Нужно что-то придумать с инвалидацией
+
+        // $lastEventIdentifier = Cache::remember(
+        //     "Event.lastByDepartament.lastEvent.v0.[{$formIdentifier}:{$departamentIdentifier}:{$count}]",
+        //     now()->addDays(7),
+        //     fn() => $query->orderBy('id', 'DESC')->select('id')->pluck('id')->first()
+        // );
+
+        $lastEventIdentifier = $query->orderBy('id', 'DESC')->select('id')->pluck('id')->first();
 
         $lastEvent = Event::find($lastEventIdentifier);
 
