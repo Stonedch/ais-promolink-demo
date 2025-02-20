@@ -144,24 +144,10 @@ class Event extends Model
 
     public static function lastByDepartament(int $formIdentifier, int $departamentIdentifier): ?self
     {
-        $query = self::query()
+        return self::query()
+            ->orderBy('id', 'DESC')
             ->where('form_id', $formIdentifier)
-            ->where('departament_id', $departamentIdentifier);
-
-        $count = $query->clone()->count();
-
-        // Нужно что-то придумать с инвалидацией
-
-        // $lastEventIdentifier = Cache::remember(
-        //     "Event.lastByDepartament.lastEvent.v0.[{$formIdentifier}:{$departamentIdentifier}:{$count}]",
-        //     now()->addDays(7),
-        //     fn() => $query->orderBy('id', 'DESC')->select('id')->pluck('id')->first()
-        // );
-
-        $lastEventIdentifier = $query->orderBy('id', 'DESC')->select('id')->pluck('id')->first();
-
-        $lastEvent = Event::find($lastEventIdentifier);
-
-        return $lastEvent;
+            ->where('departament_id', $departamentIdentifier)
+            ->first();
     }
 }
