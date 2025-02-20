@@ -55,6 +55,7 @@ class CustomReportImporter
 
         $reports = CustomReport::query()
             ->orderBy('id', 'desc')
+            ->whereNull('worked_at')
             ->where('worked', false)
             ->whereNotNull('user_id');
 
@@ -84,8 +85,8 @@ class CustomReportImporter
         $reports->map(function (CustomReport $report) use ($reportTypes, $attachments) {
             $reportType = $reportTypes->get($report->custom_report_type_id);
 
-            $memory = memory_get_usage() / 1024 / 1024;
-            $this->log(message: "ОЗУ: $memory мб", type: CustomReportLogType::ACCESS, storing: false);
+            // $memory = memory_get_usage() / 1024 / 1024;
+            // $this->log(message: "ОЗУ: $memory мб", type: CustomReportLogType::ACCESS, storing: false);
             $this->log(message: "Получен отчет №{$report->id}", type: CustomReportLogType::DEBUG, storing: false);
 
             try {
@@ -119,6 +120,7 @@ class CustomReportImporter
                 $this->log(
                     message: 'is ready',
                     type: CustomReportLogType::ACCESS,
+                    user: User::find($report->user_id),
                     customReport: $report,
                     customReportType: $reportType,
                     templateFilepath: $templateFilepath
@@ -130,6 +132,7 @@ class CustomReportImporter
                 $this->log(
                     message: $e->getMessage(),
                     type: CustomReportLogType::ERROR,
+                    user: User::find($report->user_id),
                     customReport: $report,
                     customReportType: $reportType,
                     storing: false,
@@ -138,10 +141,14 @@ class CustomReportImporter
                 $this->log(
                     message: $e->getMessage(),
                     type: CustomReportLogType::ERROR,
+                    user: User::find($report->user_id),
                     customReport: $report,
                     customReportType: $reportType,
                 );
             }
+
+            $report->worked_at = now();
+            $report->save();
         });
     }
 
@@ -387,17 +394,17 @@ class CustomReportImporter
             if ($data['val'] == '-') continue;
 
             if (!array_key_exists($data['page'], $arTemp)) {
-                $this->log(message: 'error block is A', type: CustomReportLogType::WARNING);
+                $this->log(message: 'Отчет не соответствует структуре (A)', type: CustomReportLogType::ERROR);
                 $error = true;
                 break;
             }
             if (!array_key_exists($data['row'], $arTemp[$data['page']])) {
-                $this->log(message: 'error block is B', type: CustomReportLogType::WARNING);
+                $this->log(message: 'Отчет не соответствует структуре (B)', type: CustomReportLogType::ERROR);
                 $error = true;
                 break;
             }
             if (!array_key_exists($data['col'], $arTemp[$data['page']][$data['row']])) {
-                $this->log(message: 'error block is C', type: CustomReportLogType::WARNING);
+                $this->log(message: 'Отчет не соответствует структуре (C)', type: CustomReportLogType::ERROR);
                 $error = true;
                 break;
             }
@@ -413,7 +420,7 @@ class CustomReportImporter
                 ) {
                     $this->log(
                         message: "Структура загруженного документа не соответствует образцу: {$coord} {$compareTypes} {$compareValues}",
-                        type: CustomReportLogType::WARNING,
+                        type: CustomReportLogType::ERROR,
                     );
 
                     $error = true;
@@ -426,7 +433,7 @@ class CustomReportImporter
                 ) {
                     $this->log(
                         message: "Структура загруженного документа не соответствует образцу: {$coord} {$compareTypes} {$compareValues}",
-                        type: CustomReportLogType::WARNING,
+                        type: CustomReportLogType::ERROR,
                     );
 
                     $error = true;
@@ -527,6 +534,24 @@ class CustomReportImporter
                 'filepath' => @$filepath,
                 'template_filepath' => @$templateFilepath,
             ])->save();
+        }
+
+        if (empty($user) == false && empty($customReportType) == false) {
+            $telegramMessage = null;
+
+            if ($type == CustomReportLogType::ACCESS) {
+                $telegramMessage = "Ваш отчет \"{$customReportType->title}\" был успешно загружен ";
+            } elseif ($type == CustomReportLogType::ERROR) {
+                $telegramMessage = "Ваш отчет \"{$customReportType->title}\" не был загружен с ошибкой: $message";
+            }
+
+            if (empty($telegramMessage) == false) {
+                try {
+                    TelegramBotHelper::notify($user, 'Загрузка отчета', $telegramMessage);
+                } catch (Throwable | Exception) {
+                    $this->log('ТГ пользователь не найден', CustomReportLogType::DEBUG, false);
+                }
+            }
         }
     }
 }
