@@ -80,6 +80,7 @@ class MinisterController extends Controller
             });
 
             $formResults = FormResult::query()
+                ->with('attachment')
                 ->whereIn('event_id', $formEvents->pluck('id'))
                 ->whereNotNull('value')
                 ->where('value', '!=', '')
@@ -161,6 +162,7 @@ class MinisterController extends Controller
                 $collectionValues = \App\Models\CollectionValue::whereIn('collection_id', $collections->pluck('id'))->get()->keyBy('id');
 
                 $formResults = FormResult::query()
+                    ->with('attachment')
                     ->whereIn('event_id', $events->pluck('id'))
                     ->get()
                     ->groupBy('event_id');
@@ -211,6 +213,7 @@ class MinisterController extends Controller
                 });
 
                 $formResults = FormResult::query()
+                    ->with('attachment')
                     ->whereIn('event_id', $formEvents->pluck('id'))
                     ->whereNotNull('value')
                     ->where('value', '!=', '')
