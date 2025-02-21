@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Orchid\Attachment\Attachable;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -11,7 +12,7 @@ use Orchid\Screen\AsSource;
 
 class FormResult extends Model
 {
-    use AsSource, Filterable;
+    use AsSource, Filterable, Attachable;
 
     protected $table = 'form_results';
 

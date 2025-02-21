@@ -87,9 +87,11 @@ class Event extends Model
             });
     }
 
-    public static function createByDistrict(Form $form, Departament $departament, string $formStructure = null)
+    public static function createByDistrict(Form $form, Departament $departament, string $formStructure = null): Event
     {
-        (new Event())->fill([
+        $event = new Event();
+        
+        $event->fill([
             'form_id' => $form->id,
             'form_structure' => $formStructure ?: $form->getStructure(),
             'departament_id' => $departament->id,
@@ -106,6 +108,8 @@ class Event extends Model
 
             return $user;
         });
+
+        return $event;
     }
 
     public function formResults(): HasMany

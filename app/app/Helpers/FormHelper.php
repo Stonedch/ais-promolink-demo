@@ -22,6 +22,7 @@ use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Orchid\Attachment\File;
 use Throwable;
 
 ini_set('memory_limit', '-1');
@@ -366,9 +367,15 @@ class FormHelper
         $event->save();
     }
 
-    public static function writeResults(Event $event, array $requestedFields, User $user, string $savedStructure = ''): void
-    {
-        FormResult::query()->where('event_id', $event->id)->delete();
+    public static function writeResults(
+        Event $event,
+        array $requestedFields,
+        User $user,
+        string $savedStructure = '',
+        array $files = [],
+
+    ): void {
+        FormResult::query()->whereNot('value', '{files}')->where('event_id', $event->id)->delete();
 
         $structure = json_decode($event->form_structure);
 
@@ -411,6 +418,51 @@ class FormHelper
                 (new FormResult())->fill($formResultData)->save();
             }
         }
+
+        if (isset($files['fields'])) {
+            foreach ($files['fields'] as $fid => $files) {
+                foreach ($files as $index => $files) {
+                    $formResult = FormResult::query()
+                        ->where('index', $index)
+                        ->where('field_id', $fid)
+                        ->where('event_id', $event->id)
+                        ->first();
+
+                    if (empty($formResult)) {
+                        $formResult = new FormResult();
+
+                        $formResult->fill([
+                            'user_id' => $user->id,
+                            'event_id' => $event->id,
+                            'field_id' => $fid,
+                            'index' => $index,
+                            'value' => '{files}',
+                        ]);
+
+                        $formResult->save();
+                    }
+
+                    $attachments = $formResult->attachment()->pluck('attachments.id');
+
+                    foreach ($files as $file) {
+                        $file = new File($file);
+                        $attachments[] = $file->load()->id;
+                    }
+
+                    $formResult->attachment()->sync($attachments);
+                }
+            }
+        }
+
+        // if (
+        //     isset($files['fields'])
+        //     && isset($files['fields'][$field->id])
+        //     && isset($files['fields'][$field->id][0])
+        // ) {
+        //     foreach ($files['fields'][$field->id][0] as $file) {
+        //         dd($file);
+        //     }
+        // }
 
         $event->user_id = $user->id;
 

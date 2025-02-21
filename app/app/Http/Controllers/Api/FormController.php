@@ -114,13 +114,29 @@ class FormController extends Controller
 
             throw_if($event->getCurrentStatus() == 200, new HumanException('604, Ошибка проверки формы, просрочено!'));
 
-            FormHelper::writeResults($event, $request->input('fields', []), $user, $request->input('structure', ''));
+            if ($request->input('json', false)) {
+                $fields = $request->input('fields', []);
+
+                foreach ($fields as $key => $value) {
+                    $fields[$key] = json_decode($value[0], true);
+                }
+
+                $request->merge(['fields' => $fields]);
+            }
+
+            FormHelper::writeResults(
+                $event,
+                $request->input('fields', []),
+                $user,
+                $request->input('structure', ''),
+                files: $request->file()
+            );
 
             return Responser::returnSuccess($response);
         } catch (HumanException $e) {
             return Responser::returnError([$e->getMessage()]);
         } catch (Throwable $e) {
-            return Responser::returnError();
+            return Responser::returnError([$e->getMessage()]);
         }
     }
 

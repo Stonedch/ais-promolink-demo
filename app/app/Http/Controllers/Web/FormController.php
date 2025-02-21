@@ -67,6 +67,7 @@ class FormController extends Controller
             $collectionValues = CollectionValue::whereIn('collection_id', $collections->pluck('id'))->get();
 
             $formResults = FormResult::query()
+                ->with('attachment')
                 ->join('events', 'events.id', 'form_results.event_id')
                 ->whereIn('events.id', $allEvents->pluck('id'))
                 ->whereIn('events.form_id', $forms->pluck('id'))
