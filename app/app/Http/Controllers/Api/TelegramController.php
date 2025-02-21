@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\BotHelpers\TelegramBotHelper;
 use App\Helpers\PhoneNormalizer;
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Response;
 use TelegramBot\Api\Client;
+use Throwable;
 
 class TelegramController extends Controller
 {
@@ -16,6 +18,7 @@ class TelegramController extends Controller
 
         $bot->on(function (\TelegramBot\Api\Types\Update $update) use ($bot) {
             $message = $update->getMessage();
+            if (empty($message)) return;
             $id = $message->getChat()->getId();
 
             if (!is_null(TelegramBotHelper::getUserByUserId($id))) {
