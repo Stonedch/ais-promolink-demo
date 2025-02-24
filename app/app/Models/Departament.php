@@ -33,7 +33,7 @@ class Departament extends Model
 
     protected $allowedFilters = [
         'id' => Where::class,
-        'name' => Like::class,
+        'name' => Ilike::class,
         'departament_type_id' => Where::class,
         'sort' => Where::class,
         'rating' => Where::class,
