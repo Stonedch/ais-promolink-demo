@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Helpers\PhoneNormalizer;
+use App\Http\Middleware\UserUnActive;
 use App\Orchid\Screens\BotNotification\BotNotificationScreen;
 use App\Orchid\Screens\Collection\CollectionEditScreen;
 use App\Orchid\Screens\Collection\CollectionListScreen;
@@ -45,10 +46,12 @@ use Tabuna\Breadcrumbs\Trail;
 
 // Main
 Route::screen('/main', PlatformScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.main');
 
 // Platform > Profile
 Route::screen('profile', UserProfileScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.profile')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
@@ -56,6 +59,7 @@ Route::screen('profile', UserProfileScreen::class)
 
 // Platform > System > Users > User
 Route::screen('users/{user}/edit', UserEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.systems.users.edit')
     ->breadcrumbs(fn(Trail $trail, $user) => $trail
         ->parent('platform.systems.users')
@@ -63,6 +67,7 @@ Route::screen('users/{user}/edit', UserEditScreen::class)
 
 // Platform > System > Users > Create
 Route::screen('users/create', UserEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.systems.users.create')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.systems.users')
@@ -70,6 +75,7 @@ Route::screen('users/create', UserEditScreen::class)
 
 // Platform > System > Users
 Route::screen('users', UserListScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.systems.users')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
@@ -77,6 +83,7 @@ Route::screen('users', UserListScreen::class)
 
 // Platform > System > Roles > Role
 Route::screen('roles/{role}/edit', RoleEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.systems.roles.edit')
     ->breadcrumbs(fn(Trail $trail, $role) => $trail
         ->parent('platform.systems.roles')
@@ -84,6 +91,7 @@ Route::screen('roles/{role}/edit', RoleEditScreen::class)
 
 // Platform > System > Roles > Create
 Route::screen('roles/create', RoleEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.systems.roles.create')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.systems.roles')
@@ -91,6 +99,7 @@ Route::screen('roles/create', RoleEditScreen::class)
 
 // Platform > System > Roles
 Route::screen('roles', RoleListScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.systems.roles')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
@@ -98,6 +107,7 @@ Route::screen('roles', RoleListScreen::class)
 
 // Platform > Collections 
 Route::screen('collections', CollectionListScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.collections')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
@@ -105,6 +115,7 @@ Route::screen('collections', CollectionListScreen::class)
 
 // Platform > Collections > Create
 Route::screen('collections/create', CollectionEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.collections.create')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.collections')
@@ -112,6 +123,7 @@ Route::screen('collections/create', CollectionEditScreen::class)
 
 // Platform > Collections > Edit
 Route::screen('collections/{collection}/edit', CollectionEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.collections.edit')
     ->breadcrumbs(fn(Trail $trail, $collection) => $trail
         ->parent('platform.collections')
@@ -119,6 +131,7 @@ Route::screen('collections/{collection}/edit', CollectionEditScreen::class)
 
 // Platform > DepartamentTypes
 Route::screen('departament-types', DepartamentTypeListScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.departament-types')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
@@ -126,6 +139,7 @@ Route::screen('departament-types', DepartamentTypeListScreen::class)
 
 // Platform > DepartamentTypes > Create
 Route::screen('departament-types/create', DepartamentTypeEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.departament-types.create')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.departament-types')
@@ -133,6 +147,7 @@ Route::screen('departament-types/create', DepartamentTypeEditScreen::class)
 
 // Platform > DepartamentTypes > Edit
 Route::screen('departament-types/{departamentType}/edit', DepartamentTypeEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.departament-types.edit')
     ->breadcrumbs(fn(Trail $trail, $departamentType) => $trail
         ->parent('platform.departament-types')
@@ -140,6 +155,7 @@ Route::screen('departament-types/{departamentType}/edit', DepartamentTypeEditScr
 
 // Platform > Departaments
 Route::screen('departaments', DepartamentListScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.departaments')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
@@ -147,6 +163,7 @@ Route::screen('departaments', DepartamentListScreen::class)
 
 // Platform > Departaments > Create
 Route::screen('departaments/create', DepartamentEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.departaments.create')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.departaments')
@@ -154,6 +171,7 @@ Route::screen('departaments/create', DepartamentEditScreen::class)
 
 // Platform > Departaments > Edit
 Route::screen('departaments/{departament}/edit', DepartamentEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.departaments.edit')
     ->breadcrumbs(fn(Trail $trail, $departament) => $trail
         ->parent('platform.departaments')
@@ -161,6 +179,7 @@ Route::screen('departaments/{departament}/edit', DepartamentEditScreen::class)
 
 // Platform > Forms
 Route::screen('forms', FormListScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.forms')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
@@ -168,6 +187,7 @@ Route::screen('forms', FormListScreen::class)
 
 // Platform > Forms > Create
 Route::screen('forms/create', FormEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.forms.create')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.forms')
@@ -175,6 +195,7 @@ Route::screen('forms/create', FormEditScreen::class)
 
 // Platform > Forms > Edit
 Route::screen('forms/{form}/edit', FormEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.forms.edit')
     ->breadcrumbs(fn(Trail $trail, $form) => $trail
         ->parent('platform.forms')
@@ -182,6 +203,7 @@ Route::screen('forms/{form}/edit', FormEditScreen::class)
 
 // Platform > FormCategories
 Route::screen('form-categories', FormCategoryListScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.form-categories')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
@@ -189,6 +211,7 @@ Route::screen('form-categories', FormCategoryListScreen::class)
 
 // Platform > FormCategories > Create
 Route::screen('form-categiries/create', FormCategoryEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.form-categories.create')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.form-categories')
@@ -196,6 +219,7 @@ Route::screen('form-categiries/create', FormCategoryEditScreen::class)
 
 // Platform > FormCategories > Edit
 Route::screen('form-categories/{formCategory}/edit', FormCategoryEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.form-categories.edit')
     ->breadcrumbs(fn(Trail $trail, $formCategory) => $trail
         ->parent('platform.form-categories')
@@ -203,6 +227,7 @@ Route::screen('form-categories/{formCategory}/edit', FormCategoryEditScreen::cla
 
 // Platform > Events
 Route::screen('events', EventListScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.events')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
@@ -210,6 +235,7 @@ Route::screen('events', EventListScreen::class)
 
 // Platform > Events > Results
 Route::screen('events/{event}/results', ResultListScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.events.results')
     ->breadcrumbs(fn(Trail $trail, $event) => $trail
         ->parent('platform.index')
@@ -217,6 +243,7 @@ Route::screen('events/{event}/results', ResultListScreen::class)
 
 // Platform > Districts
 Route::screen('districts', DistrictListScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.districts')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
@@ -224,6 +251,7 @@ Route::screen('districts', DistrictListScreen::class)
 
 // Platform > Districts > Create
 Route::screen('districts/create', DistrictEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.districts.create')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.districts')
@@ -231,6 +259,7 @@ Route::screen('districts/create', DistrictEditScreen::class)
 
 // Platform > Districts > Edit
 Route::screen('districts/{district}/edit', DistrictEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.districts.edit')
     ->breadcrumbs(fn(Trail $trail, $district) => $trail
         ->parent('platform.districts')
@@ -238,6 +267,7 @@ Route::screen('districts/{district}/edit', DistrictEditScreen::class)
 
 // Platform > ExternalDepartaments
 Route::screen('external-departaments', ExternalDepartamentListScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.external-departaments')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
@@ -245,6 +275,7 @@ Route::screen('external-departaments', ExternalDepartamentListScreen::class)
 
 // Platform > ExternalDepartaments > Create
 Route::screen('external-departaments/create', ExternalDepartamentEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.external-departaments.create')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.external-departaments')
@@ -252,6 +283,7 @@ Route::screen('external-departaments/create', ExternalDepartamentEditScreen::cla
 
 // Platform > ExternalDepartaments > Edit
 Route::screen('external-departaments/{externalDepartament}/edit', ExternalDepartamentEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.external-departaments.edit')
     ->breadcrumbs(fn(Trail $trail, $externalDepartament) => $trail
         ->parent('platform.external-departaments')
@@ -259,6 +291,7 @@ Route::screen('external-departaments/{externalDepartament}/edit', ExternalDepart
 
 // Platform > CustomReportTypes
 Route::screen('custom-report-types', CustomReportTypeListScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.custom-report-types')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
@@ -266,6 +299,7 @@ Route::screen('custom-report-types', CustomReportTypeListScreen::class)
 
 // Platform > CustomReportTypes > Create
 Route::screen('custom-report-types/create', CustomReportTypeEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.custom-report-types.create')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.custom-report-types')
@@ -273,6 +307,7 @@ Route::screen('custom-report-types/create', CustomReportTypeEditScreen::class)
 
 // Platform > CustomReportTypes > Edit
 Route::screen('custom-report-types/{customReportType}/edit', CustomReportTypeEditScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.custom-report-types.edit')
     ->breadcrumbs(fn(Trail $trail, $customReportType) => $trail
         ->parent('platform.custom-report-types')
@@ -280,6 +315,7 @@ Route::screen('custom-report-types/{customReportType}/edit', CustomReportTypeEdi
 
 // Platform > BotNotifications
 Route::screen('bot-notifications', BotNotificationScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.bot-notifications')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
@@ -287,6 +323,7 @@ Route::screen('bot-notifications', BotNotificationScreen::class)
 
 // Platform > CustomReportLogs
 Route::screen('custom-report-logs', CustomReportLogListScreen::class)
+    ->middleware([UserUnActive::class])
     ->name('platform.custom-report-logs')
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')

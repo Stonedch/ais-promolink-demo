@@ -24,6 +24,7 @@ class User extends Authenticatable
         'first_name',
         'middle_name',
         'password',
+        'is_active',
     ];
 
     protected $hidden = [
@@ -47,6 +48,7 @@ class User extends Authenticatable
         'middle_name' => Ilike::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
+        'is_active' => Where::class,
     ];
 
     protected $allowedSorts = [
@@ -59,6 +61,7 @@ class User extends Authenticatable
         'middle_name',
         'updated_at',
         'created_at',
+        'is_active',
     ];
 
     public static function createAdminByPhone(string $phone, string $password)

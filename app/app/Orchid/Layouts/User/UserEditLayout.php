@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\User;
 
+use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Cropper;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Layouts\Rows;
@@ -41,6 +42,10 @@ class UserEditLayout extends Rows
             Cropper::make('user.attachment_id')
                 ->targetId()
                 ->title('Аватар'),
+
+            CheckBox::make('user.is_active')
+                ->sendTrueOrFalse()
+                ->title('Активность пользователя'),
         ];
     }
 }
