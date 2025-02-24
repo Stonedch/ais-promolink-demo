@@ -66,33 +66,31 @@ class EventListScreen extends Screen
         return [
             Layout::block([
                 Layout::tabs([
-                    'По типу учреждения' => [
-                        Layout::rows([
-                            Group::make([
-                                Select::make('events.departament_type_id')
-                                    ->empty('-')
-                                    ->options(fn () => DepartamentType::pluck('name', 'id'))
-                                    ->title('Тип учреждения')
-                                    ->class('form-control _relation-departament-type'),
-                                Select::make('events.form_id')
-                                    ->empty('-')
-                                    ->options(function () {
-                                        return Form::where('periodicity', 50)->pluck('name', 'id');
-                                    })
-                                    ->title('Формы')
-                                    ->class('form-control _relation-departament-type-forms'),
-                            ]),
-                            Button::make('Создать')
-                                ->icon('bs.check-circle')
-                                ->canSee(Auth::user()->hasAccess('platform.events.create'))
-                                ->method('createEvents')
+                    'По типу учреждения' => [Layout::rows([
+                        Group::make([
+                            Select::make('events.departament_type_id')
+                                ->empty('-')
+                                ->options(fn() => DepartamentType::pluck('name', 'id'))
+                                ->title('Тип учреждения')
+                                ->class('form-control _relation-departament-type'),
+                            Select::make('events.form_id')
+                                ->empty('-')
+                                ->options(function () {
+                                    return Form::where('periodicity', 50)->pluck('name', 'id');
+                                })
+                                ->title('Формы')
+                                ->class('form-control _relation-departament-type-forms'),
                         ]),
-                    ],
+                        Button::make('Создать')
+                            ->icon('bs.check-circle')
+                            ->canSee(Auth::user()->hasAccess('platform.events.create'))
+                            ->method('createEvents')
+                    ])],
                     'По району' => [Layout::rows([
                         Group::make([
                             Select::make('eventsByDistrict.district_id')
                                 ->empty('-')
-                                ->options(fn () => District::pluck('name', 'id'))
+                                ->options(fn() => District::pluck('name', 'id'))
                                 ->title('Районы')
                                 ->class('form-control _relation-districts'),
                             Select::make('eventsByDistrict.form_id')
@@ -108,6 +106,26 @@ class EventListScreen extends Screen
                             ->canSee(Auth::user()->hasAccess('platform.events.create'))
                             ->method('createEventsByDistrict')
                     ])],
+                    'По учреждению' => [Layout::rows([
+                        Group::make([
+                            Select::make('eventsByDistrict.departament_id')
+                                ->empty('-')
+                                ->options(fn() => Departament::pluck('name', 'id'))
+                                ->title('Учреждения')
+                                ->class('form-control'),
+                            Select::make('eventsByDistrict.form_id')
+                                ->empty('-')
+                                ->options(function () {
+                                    return Form::where('periodicity', 50)->pluck('name', 'id');
+                                })
+                                ->title('Формы')
+                                ->class('form-control'),
+                        ]),
+                        Button::make('Создать')
+                            ->icon('bs.check-circle')
+                            ->canSee(Auth::user()->hasAccess('platform.events.create'))
+                            ->method('createEventsByDepartament')
+                    ])],
                 ]),
                 Layout::rows([]),
             ])->title('Создание событий'),
@@ -117,7 +135,7 @@ class EventListScreen extends Screen
                     ->align(TD::ALIGN_CENTER)
                     ->width(100)
                     ->canSee(Auth::user()->hasAccess('platform.form_results.list') || Auth::user()->hasAccess('platform.events.edit'))
-                    ->render(fn (Event $event) => DropDown::make()
+                    ->render(fn(Event $event) => DropDown::make()
                         ->icon('bs.three-dots-vertical')
                         ->list([
                             Link::make('Результаты')
@@ -166,7 +184,7 @@ class EventListScreen extends Screen
 
                 TD::make('', 'Процент заполнения')
                     ->width(200)
-                    ->render(fn (Event $event) => FormHelper::getPercent($event) . '%'),
+                    ->render(fn(Event $event) => FormHelper::getPercent($event) . '%'),
 
                 TD::make('filled_at', 'Дата заполнения')
                     ->usingComponent(DateTimeRender::class)
@@ -236,7 +254,32 @@ class EventListScreen extends Screen
             Departament::query()
                 ->where('district_id', $district->id)
                 ->get()
-                ->map(fn (Departament $departament) => Event::createByDistrict($form, $departament));
+                ->map(fn(Departament $departament) => Event::createByDistrict($form, $departament));
+
+            Toast::success('Успешно');
+        } catch (HumanException $e) {
+            Toast::error($e->getMessage());
+        } catch (Throwable $e) {
+            Toast::error("Внутренняя ошибка! {$e->getMessage()}");
+        }
+    }
+
+    public function createEventsByDepartament(Request $request)
+    {
+        try {
+            $departamentIdentifier = $request->input('eventsByDistrict.departament_id');
+            $formIdentifier = $request->input('eventsByDistrict.form_id');
+
+            throw_if(empty($departamentIdentifier), new HumanException('Пожалуйста, укажите район!'));
+            throw_if(empty($formIdentifier), new HumanException('Пожалуйста, укажите форму!'));
+
+            $departament = Departament::find($departamentIdentifier);
+            $form = Form::find($formIdentifier);
+
+            throw_if(empty($departament), new HumanException('Район не найден!'));
+            throw_if(empty($form), new HumanException('Форма не найдена!'));
+
+            Event::createByDistrict($form, $departament);
 
             Toast::success('Успешно');
         } catch (HumanException $e) {
