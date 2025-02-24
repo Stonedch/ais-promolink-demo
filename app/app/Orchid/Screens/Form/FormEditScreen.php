@@ -67,13 +67,14 @@ class FormEditScreen extends Screen
             ? Field::where('form_id', $form->id)->orderBy('sort')->get()
             : new SupportCollection();
 
-        $fields->map(function (Field $field) use ($groups) {
+        $fields->map(function (Field $field) use ($groups, $fields) {
             $field->general_id = $field->id;
             $field->general_name = $field->name;
             $field->general_group_id = $field->group_id;
             $field->general_type = FormStructureType::FIELD->value;
 
             $field->general_sort = self::fixGeneralSort($field->sort, $groups);
+            $field->general_sort = self::fixGeneralSort($field->general_sort, $fields, $field->id);
 
             $field->field_type = $field->type;
             $field->field_collection_id = $field->collection_id;
@@ -103,9 +104,16 @@ class FormEditScreen extends Screen
         ];
     }
 
-    protected static function fixGeneralSort(int $sort, SupportCollection $structure): int
+    protected static function fixGeneralSort(int $sort, SupportCollection $structure, int $id = null): int
     {
-        if ($structure->where('sort', $sort)->count()) {
+        $findeds = $structure
+            ->where('sort', $sort);
+
+        if (empty($id) == false) {
+            $findeds = $findeds->where('id', '!=', $id);
+        }
+
+        if ($findeds->count()) {
             $sort = self::$lastGeneralSort;
             self::$lastGeneralSort += 100;
         }
