@@ -92,7 +92,7 @@ class UserListLayout extends Table
                 ->width(200)
                 ->render(function (User $user) {
                     try {
-                        return empty(BotUser::where('user_id', $user->id)->count())
+                        return empty(BotUser::where('phone', $user->phone)->count())
                             ? '<b class="badge bg-danger col-auto ms-auto">Нет</b>'
                             : '<b class="badge bg-success col-auto ms-auto">Есть</b>';
                     } catch (Throwable) {
