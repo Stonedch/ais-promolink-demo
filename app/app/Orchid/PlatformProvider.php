@@ -80,7 +80,7 @@ class PlatformProvider extends OrchidServiceProvider
 
             Menu::make('Лог загружаемых документов')
                 ->icon('bs.database')
-                ->route('platform.custom-report-types')
+                ->route('platform.custom-report-logs')
                 ->permission('platform.custom-reports.base')
                 ->canSee(config('app.custom_reports'))
                 ->divider(),
