@@ -18,7 +18,7 @@ class ChunkEventPreparedHelper extends EventPreparedHelper
                     $query->whereNull('prepared_at');
                 }
             })
-            ->chunk($takeByChunk, function (Collection $events) use ($console) {
+            ->chunk($takeByChunk, function (Collection $events) use ($console, $takeByChunk) {
                 $events->map(fn(Event $event) => self::prepare($event));
                 if (empty($console) == false) $console->comment(" - ready chunk ({$takeByChunk})");
             });
