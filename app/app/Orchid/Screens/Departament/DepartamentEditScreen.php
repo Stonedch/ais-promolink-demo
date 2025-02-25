@@ -9,6 +9,7 @@ use App\Models\DepartamentType;
 use App\Models\District;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
@@ -86,6 +87,10 @@ class DepartamentEditScreen extends Screen
                 Input::make('departament.rating')
                     ->type('double')
                     ->title('Рейтинг'),
+
+                CheckBox::make('departament.show_in_dashboard')
+                    ->sendTrueOrFalse()
+                    ->title('Показывать в дашборде'),
             ]),
         ];
     }

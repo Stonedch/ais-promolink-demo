@@ -29,6 +29,7 @@ class Departament extends Model
         'lat',
         'lon',
         'okpo',
+        'show_in_dashboard',
     ];
 
     protected $allowedFilters = [
@@ -43,6 +44,7 @@ class Departament extends Model
         'lat' => Where::class,
         'lon' => Where::class,
         'okpo' => Where::class,
+        'show_in_dashboard' => Where::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
     ];
@@ -59,6 +61,7 @@ class Departament extends Model
         'lat',
         'lon',
         'okpo',
+        'show_in_dashboard',
         'updated_at',
         'created_at',
     ];

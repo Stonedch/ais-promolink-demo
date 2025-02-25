@@ -131,6 +131,14 @@ class DepartamentListScreen extends Screen
                         }
                     }),
 
+                TD::make('show_in_dashboard', 'Показывать в дашборде')
+                    ->filter(TD::FILTER_SELECT, [true => 'Да', false => 'Нет'])
+                    ->sort()
+                    ->width(200)
+                    ->render(function (Departament $departament) {
+                        return $departament->show_in_dashboard ? 'Да' : 'Нет';
+                    }),
+
                 TD::make('created_at', 'Создано')
                     ->usingComponent(DateTimeRender::class)
                     ->filter(TD::FILTER_DATE_RANGE)
