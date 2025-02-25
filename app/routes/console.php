@@ -32,7 +32,7 @@ Artisan::command(FindEventAuthors::class, function () {
 
 Artisan::command(EventPrepare::class, function () {
     $this->comment('Prepare events and results');
-})->everyMinute();
+})->everyThirtyMinutes();
 
 Artisan::command(ReinitEvents::class, function () {
     $this->comment('Пересоздание переодичных отчетов');

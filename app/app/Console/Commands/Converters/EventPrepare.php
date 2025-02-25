@@ -16,7 +16,8 @@ class EventPrepare extends Command
     {
         ChunkEventPreparedHelper::chunkPrepare(
             takeByChunk: 100,
-            withPrepared: false
+            withPrepared: false,
+            console: $this
         );
     }
 }
