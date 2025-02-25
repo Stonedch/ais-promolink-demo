@@ -302,7 +302,9 @@ class FormController extends Controller
     {
         try {
             $user = $request->user();
-            $filledAt = Carbon::createFromTimestamp(strtotime($request->input('filled_at', now()->format("d.m.Y H:i:s"))));
+
+            $filledAt = Carbon::createFromTimestamp(strtotime($request->input('filled_at', now()->format("d.m.Y")) . ' 12:00:00'));
+
             $departamentIdentifier = $user->departament_id;
             $departament = Departament::find($departamentIdentifier);
             $form = Form::find($request->input('identifier'));
