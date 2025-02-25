@@ -10,6 +10,7 @@ use App\Models\CustomReportType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use OCILob;
 
 class CustomReportController extends Controller
 {
@@ -52,13 +53,24 @@ class CustomReportController extends Controller
                     return $log;
                 });
 
-            $response['customReportTypes'] = CustomReportType::query()
-                ->whereIn('id', $response['logs']->pluck('custom_report_type_id'))
-                ->get()
-                ->keyBy('id');
-
             $response['customReports'] = CustomReport::query()
-                ->whereIn('id', $response['logs']->pluck('custom_report_id'))
+                ->where('user_id', $user->id)
+                ->get()
+                ->keyBy('id')
+                ->map(function (CustomReport $report) {
+                    $report->status = 'В работе';
+
+                    if ($report->worked) {
+                        $report->status = 'Выполнен';
+                    } elseif ($report->worked == false and empty($report->worked_at) == false) {
+                        $report->status = 'Ошибка загрузки';
+                    }
+                    
+                    return $report;
+                });
+
+            $response['customReportTypes'] = CustomReportType::query()
+                ->whereIn('id', $response['customReports']->pluck('custom_report_type_id'))
                 ->get()
                 ->keyBy('id');
 
