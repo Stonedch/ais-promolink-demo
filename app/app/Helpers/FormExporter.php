@@ -13,9 +13,11 @@ use ZipArchive;
 
 class FormExporter
 {
+    protected static string $separator = '	';
+
     public static function exportArchiveBy(Form $form): string
     {
-        $events = Event::where('form_id', $form->id)->get();
+        $events = Event::where('form_id', $form->id)->orderBy('id', 'desc')->get();
         $results = FormResult::query()->whereIn('event_id', $events->pluck('id'))->orderBy('index', 'asc')->get();
         $departaments = Departament::whereIn('id', $events->pluck('departament_id'))->get();
 
@@ -60,13 +62,13 @@ class FormExporter
 
                 try {
                     fputs($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
-                    fwrite($file, implode(';', $headers) . PHP_EOL);
+                    fwrite($file, implode(self::$separator, $headers) . PHP_EOL);
 
                     foreach ($values as $slice) {
                         $counter = 0;
 
                         foreach (array_keys($headers) as $id) {
-                            $divider = ++$counter < count($headers) ? ';' : PHP_EOL;
+                            $divider = ++$counter < count($headers) ? self::$separator : PHP_EOL;
                             $cell = isset($slice[$id]) ? $slice[$id] : null;
                             fwrite($file, $cell . $divider);
                         }
@@ -75,8 +77,13 @@ class FormExporter
                     fclose($file);
                 }
 
-                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Csv');
+                // $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Csv');
+                // $excel = $reader->load($filepath);
+
+                $reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+                $reader->setDelimiter(self::$separator);
                 $excel = $reader->load($filepath);
+
                 $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
                 $xlsxFilename = "xlsx-$createdAt.xlsx";
                 $xlsxFilepath = $departamentFolderPath . $xlsxFilename;
