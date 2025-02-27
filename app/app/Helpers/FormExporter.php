@@ -25,13 +25,16 @@ class FormExporter
         $rootPath = storage_path('app/private/archives/');
         $rootFolderPath = "{$rootPath}{$rootFolderName}/";
 
-        mkdir($rootFolderPath);
+        mkdir($rootFolderPath, recursive: true);
 
         $filename = "dot.txt";
         $filepath = $rootFolderPath . $filename;
         $file = fopen($filepath, 'a');
         fputs($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
-        fwrite($file, 'dot' . PHP_EOL);
+        fwrite($file, 'Форма: ' . $form->name . PHP_EOL);
+        fwrite($file, 'Дата: ' . date('d.m.Y H:i:s') . PHP_EOL);
+        fwrite($file, 'Количество событий в выгрузке: ' . $events->count() . PHP_EOL);
+        fwrite($file, 'Количество учреждений в выгрузке: ' . $departaments->count() . PHP_EOL);
         fclose($file);
 
         foreach ($departaments as $departament) {
@@ -42,15 +45,16 @@ class FormExporter
 
             foreach ($events->where('departament_id', $departament->id) as $event) {
                 $structure = json_decode($event->form_structure);
-                $headers = collect($structure->fields)->pluck('name', 'id')->toArray();
+                $headers = collect($structure->fields)->sortBy('sort')->pluck('name', 'id')->toArray();
                 $values = [];
 
                 if (empty($event->filled_at) == false) {
                     $eventResults = $results->where('event_id', $event->id);
 
-
-                    foreach ($eventResults as $result) {
-                        $values[$result->index][$result->field_id] = $result->value;
+                    foreach ($headers as $fid => $header) {
+                        foreach ($eventResults->where('field_id', $fid) as $result) {
+                            $values[$result->index][strval($result->field_id)] = $result->value;
+                        }
                     }
                 }
 
