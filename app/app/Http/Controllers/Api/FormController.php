@@ -248,6 +248,16 @@ class FormController extends Controller
     public function saveFieldBlockeds(Request $request): JsonResponse
     {
         try {
+            if ($request->input('json', false)) {
+                $fields = $request->input('fields', []);
+
+                foreach ($fields as $key => $value) {
+                    $fields[$key] = json_decode($value[0], true);
+                }
+
+                $request->merge(['fields' => $fields]);
+            }
+
             $fields = Field::query()
                 ->whereIn('id', array_keys($request->input('fields', [])))
                 ->get();
