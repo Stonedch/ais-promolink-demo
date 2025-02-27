@@ -58,7 +58,12 @@ class EventListScreen extends Screen
 
     public function commandBar(): iterable
     {
-        return [];
+        return [
+            Button::make('Удалить страницу выборки')
+                ->icon('bs.trash')
+                ->method('removePage')
+                ->confirm('Выборка отчетов будет удалена'),
+        ];
     }
 
     public function layout(): iterable
@@ -161,6 +166,7 @@ class EventListScreen extends Screen
                 TD::make('form_id', 'Форма')
                     ->sort()
                     ->width(200)
+                    ->filter(TD::FILTER_SELECT, Form::pluck('name', 'id'))
                     ->render(function (Event $event) {
                         try {
                             $form = $this->forms->find($event->form_id);
@@ -293,5 +299,14 @@ class EventListScreen extends Screen
     {
         Event::findOrFail($request->input('id'))->delete();
         Toast::info('Успешно удалено!');
+    }
+
+    public function removePage(Request $request): void
+    {
+        $this->events->map(function (Event $event) {
+            $event->delete();
+        });
+
+        Toast::success("Страница была удалена!");
     }
 }
