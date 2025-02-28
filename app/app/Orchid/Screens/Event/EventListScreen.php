@@ -179,6 +179,7 @@ class EventListScreen extends Screen
                 TD::make('departament_id', 'Учреждение')
                     ->sort()
                     ->width(200)
+                    ->filter(TD::FILTER_SELECT, Departament::pluck('name', 'id'))
                     ->render(function (Event $event) {
                         try {
                             $departament = $this->departaments->find($event->departament_id);
