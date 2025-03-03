@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\BotUserEvent;
 use App\Helpers\BotHelpers\TelegramBotHelper;
 use App\Helpers\PhoneNormalizer;
 use App\Http\Controllers\Controller;
+use App\Models\BotUserQuestion;
 use Exception;
 use Illuminate\Http\Response;
 use TelegramBot\Api\Client;
@@ -21,13 +23,56 @@ class TelegramController extends Controller
             if (empty($message)) return;
             $id = $message->getChat()->getId();
 
-            if (!is_null(TelegramBotHelper::getUserByUserId($id))) {
-                $bot->sendMessage($message->getChat()->getId(), 'Вы уже зарегистрировались: ожидайте уведомлений');
+
+            try {
+                $botUser = TelegramBotHelper::getUserByUserId($id);
+                $user_start_question = $botUser->event == BotUserEvent::ADD_QUERY->value;
+                if ($user_start_question === true) {
+                    // сохранить вопрос
+                    $buttons = [[
+                        ['text' => 'Задать вопрос']
+                    ]];
+
+                    (new BotUserQuestion())->fill([
+                        'bot_user_id' => $botUser->id,
+                        'question' => $message->getText(),
+                    ])->save();
+
+                    $botUser = TelegramBotHelper::getUserByUserId($id);
+                    $botUser->event = null;
+                    $botUser->save();
+
+                    $replyMarkup = new \TelegramBot\Api\Types\ReplyKeyboardMarkup($buttons, true, false, true);
+                    $bot->sendMessage($message->getChat()->getId(), 'Ваш вопрос сохранен: пожалуйста, ожидайте ответа', null, false, null, $replyMarkup);
+                    return;
+                }
+            } catch (Throwable) {
+            }
+
+            if ($message->getText() == "Задать вопрос") {
+                // надо сделать пометку, что от пользователя ожидается вопрос
+                $bot->sendMessage($message->getChat()->getId(), 'Направьте текст Вашего вопроса одним сообщением');
+                $botUser = TelegramBotHelper::getUserByUserId($id);
+                $botUser->event = BotUserEvent::ADD_QUERY->value;
+                $botUser->save();
+            } elseif (!is_null(TelegramBotHelper::getUserByUserId($id))) {
+                $buttons = [[
+                    ['text' => 'Задать вопрос']
+                ]];
+                $replyMarkup = new \TelegramBot\Api\Types\ReplyKeyboardMarkup($buttons, true, false, true);
+                $bot->sendMessage($message->getChat()->getId(), 'Вы уже зарегистрировались: ожидайте уведомлений', null, false, null, $replyMarkup);
             } elseif ($message->getContact() != null) {
                 try {
                     $phone = PhoneNormalizer::normalizePhone($message->getContact()->getPhoneNumber());
                     TelegramBotHelper::store($phone, $id);
-                    $bot->sendMessage($message->getChat()->getId(), 'Вы успешно зарегистрировались: уведомления будут дублироваться в этот чат-бот');
+                    // $bot->sendMessage($message->getChat()->getId(), 'Вы успешно зарегистрировались: уведомления будут дублироваться в этот чат-бот');
+
+                    $buttons = [[
+                        ['text' => 'Задать вопрос']
+                    ]];
+
+                    $replyMarkup = new \TelegramBot\Api\Types\ReplyKeyboardMarkup($buttons, true, false, true);
+                    $bot->sendMessage($message->getChat()->getId(), 'Вы успешно зарегистрировались: уведомления будут дублироваться в этот чат-бот', null, false, null, $replyMarkup);
                 } catch (Trowable $e) {
                     $bot->sendMessage($message->getChat()->getId(), 'Пожалуйста, предоставьте Ваш номер телефона в телеграм!');
                 }
