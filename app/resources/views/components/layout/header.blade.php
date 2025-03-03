@@ -51,6 +51,9 @@
                     <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle"
                         data-bs-toggle="dropdown" aria-expanded="false">
 
+                        #{{ request()->user()->id }},
+                        {{ request()->user()->GetFullname() }}
+
                         @if ($attachment = auth()->user()->avatar())
                             <img src="{{ $attachment->url() }}" alt="mdo" width="32" height="32"
                                 class="rounded-circle" />
