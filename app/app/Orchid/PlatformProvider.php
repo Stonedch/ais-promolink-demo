@@ -76,11 +76,12 @@ class PlatformProvider extends OrchidServiceProvider
                 ->icon('bs.pencil-square')
                 ->route('platform.custom-report-types')
                 ->permission('platform.custom-reports.base')
-                ->canSee(config('app.custom_reports')),
+                ->canSee(config('app.custom_reports'))
+                ->divider(config('app.custom_reports') == false),
 
             Menu::make('Лог загружаемых документов')
                 ->icon('bs.database')
-                ->route('platform.custom-report-types')
+                ->route('platform.custom-report-logs')
                 ->permission('platform.custom-reports.base')
                 ->canSee(config('app.custom_reports'))
                 ->divider(),
@@ -88,6 +89,11 @@ class PlatformProvider extends OrchidServiceProvider
             Menu::make('Бот-уведомления')
                 ->icon('bs.chat-square-dots')
                 ->route('platform.bot-notifications')
+                ->permission('platform.bot_users.base'),
+
+            Menu::make('Вопрос бот-пользователей')
+                ->icon('bs.chat-square-dots')
+                ->route('platform.bot-user-questions')
                 ->permission('platform.bot_users.base')
                 ->divider(),
 

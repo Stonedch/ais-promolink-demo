@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Helpers\PhoneNormalizer;
 use App\Http\Middleware\UserUnActive;
 use App\Orchid\Screens\BotNotification\BotNotificationScreen;
+use App\Orchid\Screens\BotUserQuestion\BotUserQuestionListScreen;
 use App\Orchid\Screens\Collection\CollectionEditScreen;
 use App\Orchid\Screens\Collection\CollectionListScreen;
 use App\Orchid\Screens\CustomReportLog\CustomReportLogListScreen;
@@ -328,3 +329,11 @@ Route::screen('custom-report-logs', CustomReportLogListScreen::class)
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
         ->push('Лог загружаемых документов', route('platform.custom-report-logs')));
+
+// Platform > BotUserQuestions
+Route::screen('bot-user-questions', BotUserQuestionListScreen::class)
+    ->middleware([UserUnActive::class])
+    ->name('platform.bot-user-questions')
+    ->breadcrumbs(fn(Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push('Вопросы бот-пользователей', route('platform.bot-user-questions')));
