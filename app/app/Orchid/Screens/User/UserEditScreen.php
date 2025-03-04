@@ -184,20 +184,24 @@ class UserEditScreen extends Screen
             $request->validate([
                 'user.phone' => 'required',
                 'user' => [
-                    Rule::unique('users', 'phone')->ignore($user->id)
+                    Rule::unique('users', 'phone')->ignore($user->id),
+                    Rule::unique('users', 'email')->ignore($user->id),
                 ],
             ], [
                 'user.phone.required' => 'Поле "Номер телефона" обязательно к заполнению',
-                'user.unique' => 'Поле "Номер телефона" должно быть уникальным',
+                'user.phone.unique' => 'Поле "Номер телефона" должно быть уникальным',
+                'user.email.unique' => 'Поле "E-mail" должно быть уникальным',
             ]);
         } else {
             $request->validate([
                 'user.phone' => 'required|unique:users,phone',
                 'user.password' => 'required',
+                'user.email' => 'unique:users,email',
             ], [
                 'user.phone.required' => 'Поле "Номер телефона" обязательно к заполнению',
                 'user.phone.unique' => 'Поле "Номер телефона" должно быть уникальным',
                 'user.password.required' => 'Поле "Пароль" обязательно к заполнению',
+                'user.email.unique' => 'Поле "E-mail" должно быть уникальным',
             ]);
         }
 
