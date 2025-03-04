@@ -183,7 +183,6 @@ class UserEditScreen extends Screen
         if ($user->exists) {
             $request->validate([
                 'user.phone' => "required|unique:users,phone,{$user->id}",
-                'user.email' => "unique:users,email,{$user->id}",
             ], [
                 'user.phone.required' => 'Поле "Номер телефона" обязательно к заполнению',
                 'user.phone.unique' => 'Поле "Номер телефона" должно быть уникальным',
@@ -193,7 +192,6 @@ class UserEditScreen extends Screen
             $request->validate([
                 'user.phone' => 'required|unique:users,phone',
                 'user.password' => 'required',
-                'user.email' => 'unique:users,email',
             ], [
                 'user.phone.required' => 'Поле "Номер телефона" обязательно к заполнению',
                 'user.phone.unique' => 'Поле "Номер телефона" должно быть уникальным',
