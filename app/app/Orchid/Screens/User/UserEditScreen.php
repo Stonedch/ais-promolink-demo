@@ -182,11 +182,8 @@ class UserEditScreen extends Screen
 
         if ($user->exists) {
             $request->validate([
-                'user.phone' => 'required',
-                'user' => [
-                    Rule::unique('users', 'phone')->ignore($user->id),
-                    Rule::unique('users', 'email')->ignore($user->id),
-                ],
+                'user.phone' => "required|unique:users,phone,{$user->id}",
+                'user.email' => "unique:users,email,{$user->id}",
             ], [
                 'user.phone.required' => 'Поле "Номер телефона" обязательно к заполнению',
                 'user.phone.unique' => 'Поле "Номер телефона" должно быть уникальным',
