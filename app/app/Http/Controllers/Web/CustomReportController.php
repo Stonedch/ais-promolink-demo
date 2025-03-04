@@ -11,6 +11,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use OCILob;
+use Orchid\Attachment\Models\Attachment;
+use Throwable;
 
 class CustomReportController extends Controller
 {
@@ -65,7 +67,7 @@ class CustomReportController extends Controller
                     } elseif ($report->worked == false and empty($report->worked_at) == false) {
                         $report->status = 'Ошибка загрузки';
                     }
-                    
+
                     return $report;
                 });
 
@@ -84,5 +86,18 @@ class CustomReportController extends Controller
                 ->route('web.index.index')
                 ->withErrors(['Внутренняя ошибка']);
         }
+    }
+
+    public function downloadTemplate(Request $request)
+    {
+        $user = $request->user();
+        throw_if(empty($user));
+        throw_if($user->hasAnyAccess(['platform.custom-reports.loading']) == false);
+        $type = CustomReportType::find($request->input('id'));
+        throw_if(empty($type));
+        $template = Attachment::find($type->attachment_id);
+        throw_if(empty($template));
+        $path = storage_path("app/{$template->disk}/{$template->path}{$template->name}.{$template->extension}");
+        return response()->download($path, "{$type->title}.{$template->extension}");
     }
 }
