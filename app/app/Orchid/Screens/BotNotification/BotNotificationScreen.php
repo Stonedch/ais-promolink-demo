@@ -74,6 +74,7 @@ class BotNotificationScreen extends Screen
                 Select::make('notification.departament_type_id')
                     ->empty('-')
                     ->options(fn() => DepartamentType::pluck('name', 'id'))
+                    ->multiple()
                     ->title('Тип учреждения'),
 
                 TextArea::make('notification.message')
@@ -100,7 +101,7 @@ class BotNotificationScreen extends Screen
                             $user = $this->users->where('id', $botUser->user_id)->first();
                             throw_if(empty($user));
                             return $user->getFullname();
-                        } catch (Throwable|Exception) {
+                        } catch (Throwable | Exception) {
                             return '-';
                         }
                     }),
@@ -134,20 +135,22 @@ class BotNotificationScreen extends Screen
     public function notify(Request $request)
     {
         try {
-            $departamentTypeId = $request->input('notification.departament_type_id', null);
-            $message = $request->input('notification.message', null);
+            foreach ($request->input('notification.departament_type_id', []) as $departamentTypeId) {
+                $departamentTypeId = $request->input('notification.departament_type_id', null);
+                $message = $request->input('notification.message', null);
 
-            throw_if(empty($departamentTypeId), new HumanException('Поле "Тип учреждения" обязательно к заполнению!'));
-            throw_if(empty($message), new HumanException('Поле "Сообщение" обязательно к заполнению!'));
+                throw_if(empty($departamentTypeId), new HumanException('Поле "Тип учреждения" обязательно к заполнению!'));
+                throw_if(empty($message), new HumanException('Поле "Сообщение" обязательно к заполнению!'));
 
-            $departaments = Departament::where('departament_type_id', $departamentTypeId)->get();
-            $users = User::whereIn('departament_id', $departaments->pluck('id'))->get();
+                $departaments = Departament::where('departament_type_id', $departamentTypeId)->get();
+                $users = User::whereIn('departament_id', $departaments->pluck('id'))->get();
 
-            foreach ($users as $user) {
-                try {
-                    TelegramBotHelper::notify($user, 'Уведомление', $message);
-                } catch (Exception) {
-                    continue;
+                foreach ($users as $user) {
+                    try {
+                        TelegramBotHelper::notify($user, 'Уведомление', $message);
+                    } catch (Exception) {
+                        continue;
+                    }
                 }
             }
 
