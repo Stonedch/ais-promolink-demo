@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\BotNotification;
 
+use App\Enums\BotUserNotificationStatus;
 use App\Exceptions\HumanException;
 use App\Helpers\BotHelpers\TelegramBotHelper;
 use App\Helpers\FormExporter;
@@ -78,7 +79,8 @@ class BotNotificationScreen extends Screen
                     ->title('Тип учреждения'),
 
                 TextArea::make('notification.message')
-                    ->title('Сообщение'),
+                    ->title('Сообщение')
+                    ->rows(32),
 
                 Button::make('Создать')
                     ->icon('bs.check-circle')
@@ -111,7 +113,28 @@ class BotNotificationScreen extends Screen
                     ->render(function (BotUserNotification $notification) {
                         try {
                             $data = json_decode($notification->data);
-                            return $data->message;
+                            return \Str::words($data->message, 32);
+                        } catch (Throwable) {
+                            return '-';
+                        }
+                    }),
+
+                TD::make('status', 'Статус')
+                    ->width(200)
+                    ->render(function (BotUserNotification $notification) {
+                        try {
+                            $status = BotUserNotificationStatus::from($notification->status);
+                            return $status->bootstrapme();
+                        } catch (Throwable) {
+                            return '-';
+                        }
+                    }),
+
+                TD::make('status_message', 'Тех. сообщение')
+                    ->width(200)
+                    ->render(function (BotUserNotification $notification) {
+                        try {
+                            return \Str::words($notification->status_message, 32);
                         } catch (Throwable) {
                             return '-';
                         }
@@ -136,7 +159,7 @@ class BotNotificationScreen extends Screen
     {
         try {
             foreach ($request->input('notification.departament_type_id', []) as $departamentTypeId) {
-                $departamentTypeId = $request->input('notification.departament_type_id', null);
+                // $departamentTypeId = $request->input('notification.departament_type_id', null);
                 $message = $request->input('notification.message', null);
 
                 throw_if(empty($departamentTypeId), new HumanException('Поле "Тип учреждения" обязательно к заполнению!'));
