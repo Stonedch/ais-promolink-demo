@@ -40,7 +40,7 @@
                                                 </p>
                                             </div>
                                             <p class="m-0 fs-10 lh-sm {{ $status->bootstrapmeColor() }}">
-                                                {{ $notification->data['message'] }}
+                                                {{ \Str::words($notification->data['message'], 16) }}
                                             </p>
                                             @if (empty($notification->read_at))
                                                 <span
