@@ -71,21 +71,47 @@ class BotNotificationScreen extends Screen
     public function layout(): iterable
     {
         return [
-            Layout::rows([
-                Select::make('notification.departament_type_id')
-                    ->empty('-')
-                    ->options(fn() => DepartamentType::pluck('name', 'id'))
-                    ->multiple()
-                    ->title('Тип учреждения'),
+            Layout::tabs([
+                'По учреждениям' => Layout::rows([
+                    Select::make('notification.departament_type_id')
+                        ->empty('-')
+                        ->options(fn() => DepartamentType::pluck('name', 'id'))
+                        ->multiple()
+                        ->title('Тип учреждения'),
 
-                TextArea::make('notification.message')
-                    ->title('Сообщение')
-                    ->rows(32),
+                    TextArea::make('notification.message')
+                        ->title('Сообщение')
+                        ->rows(32),
 
-                Button::make('Создать')
-                    ->icon('bs.check-circle')
-                    ->method('notify')
-            ]),
+                    Button::make('Создать')
+                        ->icon('bs.check-circle')
+                        ->method('notify')
+                ]),
+                'Персонализированная' => Layout::rows([
+                    Select::make('notification.byuser.user_id')
+                        ->empty('-')
+                        ->value([request()->input('uid', null)])
+                        ->options(function () {
+                            $options = [];
+
+                            User::all()->map(function (User $user) use (&$options) {
+                                $options[$user->id] = "#{$user->id}, {$user->getFullname()}";
+                            });
+
+                            return $options;
+                        })
+                        ->multiple()
+                        ->title('Пользователь'),
+
+                    TextArea::make('notification.byuser.message')
+                        ->title('Сообщение')
+                        ->rows(32),
+
+                    Button::make('Создать')
+                        ->icon('bs.check-circle')
+                        ->method('notifyByUser')
+                ]),
+            ])->activeTab(request()->input('tab', 'По учреждениям')),
 
             Layout::table('notifications', [
                 TD::make('id', '#')
@@ -159,7 +185,6 @@ class BotNotificationScreen extends Screen
     {
         try {
             foreach ($request->input('notification.departament_type_id', []) as $departamentTypeId) {
-                // $departamentTypeId = $request->input('notification.departament_type_id', null);
                 $message = $request->input('notification.message', null);
 
                 throw_if(empty($departamentTypeId), new HumanException('Поле "Тип учреждения" обязательно к заполнению!'));
@@ -174,6 +199,31 @@ class BotNotificationScreen extends Screen
                     } catch (Exception) {
                         continue;
                     }
+                }
+            }
+
+            Toast::success('Успешно');
+        } catch (HumanException $e) {
+            Toast::error($e->getMessage());
+        } catch (Throwable $e) {
+            Toast::error("Внутренняя ошибка: {$e->getMessage()}");
+        }
+    }
+
+    public function notifyByUser(Request $request)
+    {
+        try {
+            $users = User::whereIn('id', $request->input('notification.byuser.user_id', []))->get();
+            $message = $request->input('notification.byuser.message', null);
+
+            throw_if(empty($users->count()), new HumanException('Поле "Пользователь" обязательно к заполнению!'));
+            throw_if(empty($message), new HumanException('Поле "Сообщение" обязательно к заполнению!'));
+
+            foreach ($users as $user) {
+                try {
+                    TelegramBotHelper::notify($user, 'Уведомление', $message);
+                } catch (Exception) {
+                    continue;
                 }
             }
 

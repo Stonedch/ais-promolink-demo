@@ -9,6 +9,7 @@ use Orchid\Filters\Types\Ilike;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
+use Throwable;
 
 class BotUserQuestion extends Model
 {
@@ -36,4 +37,22 @@ class BotUserQuestion extends Model
         'updated_at',
         'created_at',
     ];
+
+    public function getUser(): ?User
+    {
+        try {
+            return User::find(BotUser::find($this->bot_user_id)->user_id);
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    public function getUserIdentifier(): ?int
+    {
+        try {
+            return BotUser::find($this->bot_user_id)->user_id;
+        } catch (Throwable) {
+            return null;
+        }
+    }
 }

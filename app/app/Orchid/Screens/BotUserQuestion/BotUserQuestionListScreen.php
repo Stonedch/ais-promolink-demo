@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Orchid\Screen\Actions\DropDown;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
 use Orchid\Support\Facades\Layout;
@@ -68,6 +69,10 @@ class BotUserQuestionListScreen extends Screen
                                 ->icon('bs.trash3')
                                 ->confirm(empty($question->deleted_at) ? 'Вопрос будет закрыт!' : 'Вопрос будет удален!')
                                 ->method('remove', ['id' => $question->id]),
+                            Link::make('Ответить')
+                                ->icon('bs.link')
+                                ->href(route("platform.bot-notifications", ['tab' => 'Персонализированная', 'uid' => $question->getUserIdentifier()]))
+                                ->canSee(empty($question->getUserIdentifier()) == false)
                         ])),
 
                 TD::make('_status', 'Статус')
