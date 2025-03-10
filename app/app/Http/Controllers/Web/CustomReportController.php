@@ -58,18 +58,7 @@ class CustomReportController extends Controller
             $response['customReports'] = CustomReport::query()
                 ->where('user_id', $user->id)
                 ->get()
-                ->keyBy('id')
-                ->map(function (CustomReport $report) {
-                    $report->status = 'В работе';
-
-                    if ($report->worked) {
-                        $report->status = 'Выполнен';
-                    } elseif ($report->worked == false and empty($report->worked_at) == false) {
-                        $report->status = 'Ошибка загрузки';
-                    }
-
-                    return $report;
-                });
+                ->keyBy('id');
 
             $response['customReportTypes'] = CustomReportType::query()
                 ->whereIn('id', $response['customReports']->pluck('custom_report_type_id'))

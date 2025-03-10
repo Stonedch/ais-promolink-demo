@@ -426,7 +426,7 @@ class CustomReportImporter
             if (!array_key_exists($data['col'], $arTemp[$data['page']][$data['row']])) {
                 $cpage = $data['page'] + 1;
                 $crow = $data['row'] + 1;
-                $ccolumn = $data['column'] + 1;
+                $ccolumn = $data['col'] + 1;
                 // $this->log(message: 'Отчет не соответствует структуре (C)', type: CustomReportLogType::ERROR);
                 // $this->log(message: "Колонка №{$ccolumn} отсутствует на странице №{$cpage} в колонке №{$crow} в загруженном в документе на стр. №", type: CustomReportLogType::ERROR_MESSAGE);
                 $this->log(
