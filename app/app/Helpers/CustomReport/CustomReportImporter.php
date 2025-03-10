@@ -430,7 +430,7 @@ class CustomReportImporter
                 // $this->log(message: 'Отчет не соответствует структуре (C)', type: CustomReportLogType::ERROR);
                 // $this->log(message: "Колонка №{$ccolumn} отсутствует на странице №{$cpage} в колонке №{$crow} в загруженном в документе на стр. №", type: CustomReportLogType::ERROR_MESSAGE);
                 $this->log(
-                    message: "Колонка №{$ccolumn} отсутствует на странице №{$cpage} в колонке №{$crow} в загруженном в документе",
+                    message: "Колонка №{$ccolumn} отсутствует на странице №{$cpage} в строке №{$crow} в загруженном в документе",
                     type: CustomReportLogType::ERROR_MESSAGE,
                     customReport: $report,
                     customReportType: CustomReportType::find($report->custom_report_type_id),
