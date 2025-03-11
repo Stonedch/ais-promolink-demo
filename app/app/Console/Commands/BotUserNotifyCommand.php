@@ -32,7 +32,11 @@ class BotUserNotifyCommand extends Command
                 try {
                     $data = json_decode($notification->data);
                     $botUser = $botUsers->where('id', $notification->bot_user_id)->first();
-                    $bot->sendMessage($botUser->telegram_id, $data->message);
+
+                    self::splitMessage($data->message)->map(function (string $part) use ($botUser, $bot) {
+                        $bot->sendMessage($botUser->telegram_id, $part);
+                    });
+
                     $status = BotUserNotificationStatus::READY->value;
                     $this->comment('ready');
                 } catch (Throwable $e) {
@@ -47,5 +51,27 @@ class BotUserNotifyCommand extends Command
                 }
             }
         });
+    }
+
+    protected static function splitMessage(string $string, int $wordsPerPart = 256): Collection
+    {
+        $words = explode(' ', $string);
+        $parts = [];
+        $currentPart = '';
+
+        foreach ($words as $word) {
+            $currentPart .= $word . ' ';
+
+            if (count(explode(' ', trim($currentPart))) >= $wordsPerPart) {
+                $parts[] = trim($currentPart);
+                $currentPart = '';
+            }
+        }
+
+        if (!empty($currentPart)) {
+            $parts[] = trim($currentPart);
+        }
+
+        return collect($parts);
     }
 }
