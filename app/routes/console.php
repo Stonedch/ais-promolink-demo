@@ -2,6 +2,8 @@
 
 use App\Console\Commands\BotUserFindCommand;
 use App\Console\Commands\BotUserNotifyCommand;
+use App\Console\Commands\Cleaners\ArchiveCleanerCommand;
+use App\Console\Commands\Cleaners\ExportCleanerCommand;
 use App\Console\Commands\Converters\EventPrepare;
 use App\Console\Commands\Converters\FindEventAuthors;
 use App\Console\Commands\Converters\SavedStructureConverter;
@@ -41,3 +43,11 @@ Artisan::command(ReinitEvents::class, function () {
 Artisan::command(CustomReportsCommand::class, function () {
     $this->command('Обработка кастомных отчетов');
 })->dailyAt('09:00');
+
+Artisan::command(ArchiveCleanerCommand::class, function () {
+    $this->command('Удаление временных архивов');
+})->dailyAt('04:00');
+
+Artisan::command(ExportCleanerCommand::class, function () {
+    $this->command('Удаление временных экспортов');
+})->dailyAt('04:00');
