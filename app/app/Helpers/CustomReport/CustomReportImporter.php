@@ -362,7 +362,7 @@ class CustomReportImporter
 
     protected static array $arOriginal = [];
 
-    private function verify_document_with_original($arDocument, $origPath)
+    private function verify_document_with_original($arDocument, $origPath, ?CustomReport $report = null, ?User $user = null)
     {
         if (!array_key_exists($origPath, self::$arOriginal)) {
             $xls = $this->get_xls_reader_by_filepath($origPath);
@@ -394,17 +394,48 @@ class CustomReportImporter
             if ($data['val'] == '-') continue;
 
             if (!array_key_exists($data['page'], $arTemp)) {
-                $this->log(message: 'Отчет не соответствует структуре (A)', type: CustomReportLogType::ERROR);
+                $cpage = $data['page'] + 1;
+                // страницы нет в документе, которая присутствует в шаблоне (+ номер страницы data['page'] + 1)
+                // $this->log(message: 'Отчет не соответствует структуре (A)', type: CustomReportLogType::ERROR);
+                $this->log(
+                    message: "Страница №{$cpage} отсутствует в загруженном в документе",
+                    type: CustomReportLogType::ERROR_MESSAGE,
+                    customReport: $report,
+                    customReportType: CustomReportType::find($report->custom_report_type_id),
+                    user: User::find($report->user_id)
+                );
                 $error = true;
                 break;
             }
             if (!array_key_exists($data['row'], $arTemp[$data['page']])) {
-                $this->log(message: 'Отчет не соответствует структуре (B)', type: CustomReportLogType::ERROR);
+                $cpage = $data['page'] + 1;
+                $crow = $data['row'] + 1;
+                // $this->log(message: 'Отчет не соответствует структуре (B)', type: CustomReportLogType::ERROR);
+                // $this->log(message: 'Отчет не соответствует структуре (B)', type: CustomReportLogType::ERROR);
+                // $this->log(message: "Строка №{$crow} отсутствует на странице №{$cpage} в загруженном в документе", type: CustomReportLogType::ERROR_MESSAGE);
+                $this->log(
+                    message: "Строка №{$crow} отсутствует на странице №{$cpage} в загруженном в документе",
+                    type: CustomReportLogType::ERROR_MESSAGE,
+                    customReport: $report,
+                    customReportType: CustomReportType::find($report->custom_report_type_id),
+                    user: User::find($report->user_id)
+                );
                 $error = true;
                 break;
             }
             if (!array_key_exists($data['col'], $arTemp[$data['page']][$data['row']])) {
-                $this->log(message: 'Отчет не соответствует структуре (C)', type: CustomReportLogType::ERROR);
+                $cpage = $data['page'] + 1;
+                $crow = $data['row'] + 1;
+                $ccolumn = $data['col'] + 1;
+                // $this->log(message: 'Отчет не соответствует структуре (C)', type: CustomReportLogType::ERROR);
+                // $this->log(message: "Колонка №{$ccolumn} отсутствует на странице №{$cpage} в колонке №{$crow} в загруженном в документе на стр. №", type: CustomReportLogType::ERROR_MESSAGE);
+                $this->log(
+                    message: "Колонка №{$ccolumn} отсутствует на странице №{$cpage} в строке №{$crow} в загруженном в документе",
+                    type: CustomReportLogType::ERROR_MESSAGE,
+                    customReport: $report,
+                    customReportType: CustomReportType::find($report->custom_report_type_id),
+                    user: User::find($report->user_id)
+                );
                 $error = true;
                 break;
             }
@@ -418,9 +449,16 @@ class CustomReportImporter
                     $arTemp[$data['page']][$data['row']][$data['col']]['val'] != $data['val'] or
                     $arTemp[$data['page']][$data['row']][$data['col']]['type'] != $data['type']
                 ) {
+                    // $this->log(
+                    //     message: "Структура загруженного документа не соответствует образцу: {$coord} {$compareTypes} {$compareValues}",
+                    //     type: CustomReportLogType::ERROR_MESSAGE,
+                    // );
                     $this->log(
                         message: "Структура загруженного документа не соответствует образцу: {$coord} {$compareTypes} {$compareValues}",
-                        type: CustomReportLogType::ERROR,
+                        type: CustomReportLogType::ERROR_MESSAGE,
+                        customReport: $report,
+                        customReportType: CustomReportType::find($report->custom_report_type_id),
+                        user: User::find($report->user_id)
                     );
 
                     $error = true;
@@ -433,7 +471,10 @@ class CustomReportImporter
                 ) {
                     $this->log(
                         message: "Структура загруженного документа не соответствует образцу: {$coord} {$compareTypes} {$compareValues}",
-                        type: CustomReportLogType::ERROR,
+                        type: CustomReportLogType::ERROR_MESSAGE,
+                        customReport: $report,
+                        customReportType: CustomReportType::find($report->custom_report_type_id),
+                        user: User::find($report->user_id)
                     );
 
                     $error = true;
@@ -463,7 +504,7 @@ class CustomReportImporter
         $xls->disconnectWorksheets();
         $this->log(message: 'Документ прочитан', type: CustomReportLogType::DEBUG, storing: false);
 
-        $res = $this->verify_document_with_original($arDocument, $exampleDoc);
+        $res = $this->verify_document_with_original($arDocument, $exampleDoc, $report);
         $this->log(message: 'Документ сравнен', type: CustomReportLogType::DEBUG, storing: false);
 
         if ($res === false) {

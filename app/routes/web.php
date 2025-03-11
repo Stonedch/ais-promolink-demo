@@ -70,6 +70,7 @@ Route::middleware([ServiceUnavailable::class, LogRoute::class, UserUnActive::cla
     // web.custom-reports
     Route::name('custom-reports.')->prefix('/custom-reports')->controller(\App\Http\Controllers\Web\CustomReportController::class)->group(function () {
         Route::get('/', 'index')->name('index');
+        Route::withoutMiddleware([LogRoute::class])->get('/download-template', 'downloadTemplate')->name('download-template');
     });
 });
 

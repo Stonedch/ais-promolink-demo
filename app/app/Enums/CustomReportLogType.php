@@ -10,6 +10,7 @@ enum CustomReportLogType: int
     case DEBUG = 200;
     case WARNING = 300;
     case ERROR = 400;
+    case ERROR_MESSAGE = 450;
     case ACCESS = 500;
 
     public static function options(array $options = []): array
@@ -28,6 +29,7 @@ enum CustomReportLogType: int
             static::DEBUG => 'Тестирование',
             static::WARNING => 'Предупреждение',
             static::ERROR => 'Ошибка',
+            static::ERROR_MESSAGE => 'Описание ошибки',
             static::ACCESS => 'Успешно',
         };
     }
@@ -39,6 +41,7 @@ enum CustomReportLogType: int
             static::DEBUG => $console->line($message),
             static::WARNING => $console->warn($message),
             static::ERROR => $console->error($message),
+            static::ERROR_MESSAGE => $console->error($message),
             static::ACCESS => $console->info($message)
         };
     }
