@@ -61,7 +61,6 @@ class CustomReportController extends Controller
                 ->keyBy('id');
 
             $response['customReportTypes'] = CustomReportType::query()
-                ->whereIn('id', $response['customReports']->pluck('custom_report_type_id'))
                 ->get()
                 ->keyBy('id');
 
