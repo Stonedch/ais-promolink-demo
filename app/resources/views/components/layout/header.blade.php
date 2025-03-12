@@ -76,13 +76,15 @@
         </div>
 
     </div>
-    <div class="container-fluid container">
-        <div class="d-flex gap-3 justify-content-between w-100">
-            <small data-toggle="tooltip" data-placement="bottom" title="#{{ request()->user()->id }}, {{ request()->user()->GetFullname() }}, {{ request()->user()->getDepartamentName() }}">{{ request()->user()->getDepartamentName() }}</small>
-            <div class="d-flex gap-1 justify-content-between" data-toggle="tooltip" data-placement="bottom" title="#{{ request()->user()->id }}, {{ request()->user()->GetFullname() }}, {{ request()->user()->getDepartamentName() }}">
-                <small>#{{ request()->user()->id }},</small>
-                <small>{{ request()->user()->GetFullname() }}</small>
+    @if (request()->user())
+        <div class="container-fluid container">
+            <div class="d-flex gap-3 justify-content-between w-100">
+                <small data-toggle="tooltip" data-placement="bottom" title="#{{ request()->user()->id }}, {{ request()->user()->GetFullname() }}, {{ request()->user()->getDepartamentName() }}">{{ request()->user()->getDepartamentName() }}</small>
+                <div class="d-flex gap-1 justify-content-between" data-toggle="tooltip" data-placement="bottom" title="#{{ request()->user()->id }}, {{ request()->user()->GetFullname() }}, {{ request()->user()->getDepartamentName() }}">
+                    <small>#{{ request()->user()->id }},</small>
+                    <small>{{ request()->user()->GetFullname() }}</small>
+                </div>
             </div>
         </div>
-    </div>
+    @endif
 </nav>
