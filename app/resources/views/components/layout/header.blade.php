@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-light mb-3">
+<nav class="navbar navbar-expand-lg bg-light mb-3 d-flex flex-column gap-3">
     <div class="container-fluid container">
         <a class="navbar-brand" href="/">{{ config('app.name') }}</a>
 
@@ -47,35 +47,42 @@
                     Авторизоваться
                 </a>
             @else
-                <div class="dropdown text-end">
-                    <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-
-                        #{{ request()->user()->id }},
-                        {{ request()->user()->GetFullname() }}
-
-                        @if ($attachment = auth()->user()->avatar())
-                            <img src="{{ $attachment->url() }}" alt="mdo" width="32" height="32"
-                                class="rounded-circle" />
-                        @else
-                            <img src="{{ asset('img/default-avatar.svg') }}" alt="mdo" width="32"
-                                height="32" class="rounded-circle" />
-                        @endif
-                    </a>
-                    <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
-                        <li>
-                            <button class="user-edit dropdown-item">Редактировать</button>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('web.auth.logout.index') }}">Выйти</a>
-                        </li>
-                    </ul>
+                <div class="d-flex gap-3">
+                    <div class="dropdown text-end">
+                        <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            @if ($attachment = auth()->user()->avatar())
+                                <img src="{{ $attachment->url() }}" alt="mdo" width="32" height="32"
+                                    class="rounded-circle" />
+                            @else
+                                <img src="{{ asset('img/default-avatar.svg') }}" alt="mdo" width="32"
+                                    height="32" class="rounded-circle" />
+                            @endif
+                        </a>
+                        <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
+                            <li>
+                                <button class="user-edit dropdown-item">Редактировать</button>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('web.auth.logout.index') }}">Выйти</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             @endif
         </div>
 
+    </div>
+    <div class="container-fluid container">
+        <div class="d-flex gap-3 justify-content-between w-100">
+            <small data-toggle="tooltip" data-placement="bottom" title="#{{ request()->user()->id }}, {{ request()->user()->GetFullname() }}, {{ request()->user()->getDepartamentName() }}">{{ request()->user()->getDepartamentName() }}</small>
+            <div class="d-flex gap-1 justify-content-between" data-toggle="tooltip" data-placement="bottom" title="#{{ request()->user()->id }}, {{ request()->user()->GetFullname() }}, {{ request()->user()->getDepartamentName() }}">
+                <small>#{{ request()->user()->id }},</small>
+                <small>{{ request()->user()->GetFullname() }}</small>
+            </div>
+        </div>
     </div>
 </nav>
