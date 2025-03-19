@@ -44,6 +44,7 @@ class UserEditLayout extends Rows
                 ->title('Аватар'),
 
             CheckBox::make('user.is_active')
+                ->value(true)
                 ->sendTrueOrFalse()
                 ->title('Активность пользователя'),
         ];
