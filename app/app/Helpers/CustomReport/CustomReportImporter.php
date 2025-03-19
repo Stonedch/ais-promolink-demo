@@ -22,7 +22,7 @@ use Symfony\Component\VarDumper\VarDumper;
 setlocale(LC_ALL, 'ru_RU.UTF-8');
 ini_set('memory_limit', '-1');
 
-class CustomReportImporter
+class CustomReportImporter extends Command
 {
     protected const AVAILABLE_EXTENSIONS = [
         'xls',
@@ -33,7 +33,8 @@ class CustomReportImporter
     protected bool $debug = false;
 
     protected ?Command $console;
-    protected object $output;
+    public object $output;
+    public object $input;
 
     protected $report_types;
     protected $timestamp;
@@ -93,14 +94,14 @@ class CustomReportImporter
                 $template = $attachments->get($reportType->attachment_id);
                 // $template = Attachment::find($reportType->attachment_id);
 
-                if ($reportType->is_freelace) {
+                if ($reportType->is_freelance) {
                     throw_if(
                         empty($reportType->command),
                         new UnStoringException('Внештатная команда не распознана')
                     );
 
-                    Artisan::call($reportType->command);
-                } else {
+                    Artisan::call($reportType->command, ['id' => $report->id], $this->output);
+               } else {
                     throw_if(
                         empty($template),
                         new UnStoringException('Ошибка поиска шаблона')
@@ -123,7 +124,7 @@ class CustomReportImporter
                     user: User::find($report->user_id),
                     customReport: $report,
                     customReportType: $reportType,
-                    templateFilepath: $templateFilepath
+                    templateFilepath: @$templateFilepath
                 );
 
                 $report->worked = true;
@@ -140,10 +141,11 @@ class CustomReportImporter
             } catch (Throwable | Exception $e) {
                 $this->log(
                     message: $e->getMessage(),
-                    type: CustomReportLogType::ERROR,
+                    type: CustomReportLogType::ERROR_MESSAGE,
                     user: User::find($report->user_id),
                     customReport: $report,
                     customReportType: $reportType,
+                    storing: true,
                 );
             }
 
@@ -160,6 +162,11 @@ class CustomReportImporter
     public function setConsoleOutput(object $output): void
     {
         $this->output = $output;
+    }
+
+    public function setConsoleInput(object $input): void
+    {
+        $this->input = $input;
     }
 
     public function setConsole(?Command $console): void
