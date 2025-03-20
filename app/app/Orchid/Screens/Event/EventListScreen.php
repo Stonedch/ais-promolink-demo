@@ -76,15 +76,13 @@ class EventListScreen extends Screen
                             Select::make('events.departament_type_id')
                                 ->empty('-')
                                 ->options(fn() => DepartamentType::pluck('name', 'id'))
-                                ->title('Тип учреждения')
-                                ->class('form-control _relation-departament-type'),
+                                ->title('Тип учреждения'),
                             Select::make('events.form_id')
                                 ->empty('-')
                                 ->options(function () {
                                     return Form::where('periodicity', 50)->pluck('name', 'id');
                                 })
-                                ->title('Формы')
-                                ->class('form-control _relation-departament-type-forms'),
+                                ->title('Формы'),
                         ]),
                         Button::make('Создать')
                             ->icon('bs.check-circle')
@@ -96,15 +94,13 @@ class EventListScreen extends Screen
                             Select::make('eventsByDistrict.district_id')
                                 ->empty('-')
                                 ->options(fn() => District::pluck('name', 'id'))
-                                ->title('Районы')
-                                ->class('form-control _relation-districts'),
+                                ->title('Районы'),
                             Select::make('eventsByDistrict.form_id')
                                 ->empty('-')
                                 ->options(function () {
                                     return Form::where('periodicity', 50)->pluck('name', 'id');
                                 })
-                                ->title('Формы')
-                                ->class('form-control _relation-district-forms'),
+                                ->title('Формы'),
                         ]),
                         Button::make('Создать')
                             ->icon('bs.check-circle')
@@ -116,15 +112,13 @@ class EventListScreen extends Screen
                             Select::make('eventsByDistrict.departament_id')
                                 ->empty('-')
                                 ->options(fn() => Departament::pluck('name', 'id'))
-                                ->title('Учреждения')
-                                ->class('form-control'),
+                                ->title('Учреждения'),
                             Select::make('eventsByDistrict.form_id')
                                 ->empty('-')
                                 ->options(function () {
                                     return Form::where('periodicity', 50)->pluck('name', 'id');
                                 })
-                                ->title('Формы')
-                                ->class('form-control'),
+                                ->title('Формы'),
                         ]),
                         Button::make('Создать')
                             ->icon('bs.check-circle')
