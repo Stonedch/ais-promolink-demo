@@ -214,7 +214,7 @@ class CustomReportImporter extends Command
             ];
         }
 
-        $take = 10000;
+        $take = 5000;
         $count = count($arInsert);
 
         $this->log(message: "Массив подготовлен ({$count})", type: CustomReportLogType::DEBUG, storing: false);
