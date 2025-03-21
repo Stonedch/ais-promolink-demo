@@ -20,11 +20,6 @@ class CustomReportController extends Controller
         'index' => 'web.custom-reports.index',
     ];
 
-    protected const MESSAGES = [
-        'loaded' => 'Документ загружен',
-        'is ready' => 'Документь полностью обработан',
-    ];
-
     public function index(Request $request): View|RedirectResponse
     {
         try {
@@ -47,14 +42,7 @@ class CustomReportController extends Controller
                 ->whereNotNull('custom_report_type_id')
                 ->whereNotNull('custom_report_id')
                 ->orderBy('created_at', 'DESC')
-                ->get()
-                ->map(function (CustomReportLog $log) {
-                    if (isset(self::MESSAGES[$log->message])) {
-                        $log->messages = self::MESSAGES[$log->message];
-                    }
-
-                    return $log;
-                });
+                ->get();
 
             $response['customReports'] = CustomReport::query()
                 ->where('user_id', $user->id)

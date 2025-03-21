@@ -6,6 +6,7 @@ use App\Enums\CustomReportLogType;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
@@ -46,6 +47,12 @@ class CustomReport extends Model
         'created_at',
     ];
 
+    protected const LOG_ERROR_MESSAGES = [
+        'loaded' => 'Документ загружен',
+        'is ready' => 'Документь полностью обработан',
+        'SQLSTATE' => 'Внутренняя ошибка, обратитесь в тех. поддержку',
+    ];
+
     public static function boot()
     {
         parent::boot();
@@ -68,15 +75,36 @@ class CustomReport extends Model
         return $status;
     }
 
-    public function getWorkedErrorMessage(string $separator = '; ')
+    public function getWorkedErrorMessage(string $separator = '; ', $replacing = false)
     {
         try {
             throw_if($this->getWorkedStatus() == 'Выполнен');
 
-            $logs = CustomReportLog::query()
+            $query = CustomReportLog::query()
                 ->where('custom_report_id', $this->id)
-                ->where('type', CustomReportLogType::ERROR_MESSAGE->value)
-                ->pluck('message');
+                ->where('type', CustomReportLogType::ERROR_MESSAGE->value);
+
+            $count = $query->count();
+
+            $logs = Cache::remember(
+                "CustomReport.getWorkedErrorMessage.v0.[{$this->id};{$count}]",
+                now()->addDays(7),
+                function () use ($query, $replacing) {
+                    $logs = $query->pluck('message');
+
+                    if ($replacing) {
+                        foreach ($logs as $i => $message) {
+                            foreach (self::LOG_ERROR_MESSAGES as $key => $replacement) {
+                                if (str_contains($message, $key)) {
+                                    $logs[$i] = $replacement;
+                                }
+                            }
+                        }
+                    }
+
+                    return $logs;
+                }
+            );
 
             throw_if(empty($logs->count()));
 
