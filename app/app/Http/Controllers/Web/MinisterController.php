@@ -127,7 +127,7 @@ class MinisterController extends Controller
         }
     }
 
-    public function byForm(Form $form = null): View|RedirectResponse
+    public function byForm(?Form $form = null): View|RedirectResponse
     {
         try {
             $this->checkAccess();
@@ -164,8 +164,7 @@ class MinisterController extends Controller
                 $formResults = FormResult::query()
                     ->with('attachment')
                     ->whereIn('event_id', $events->pluck('id'))
-                    ->get()
-                    ->groupBy(['event_id', 'field_id', 'index']);
+                    ->get();
 
                 $headers = [];
 
