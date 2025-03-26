@@ -93,6 +93,7 @@ Route::middleware([ServiceUnavailable::class, LogRoute::class, UserUnActive::cla
         Route::post('/save-field-blockeds', 'saveFieldBlockeds')->name('save-field-blockeds');
         Route::post('/percent', 'percent')->name('percent');
         Route::post('/old-values', 'getOldValues')->name('get-old-values');
+        Route::post('/all-old-values', 'getAllOldValues')->name('get-all-old-values');
         Route::get('/form-field-blockeds', 'formFieldBlockeds')->name('form-field-blockeds');
         Route::get('/archive', 'archive')->name('archive');
         Route::post('/by-initiative', 'byInitiative')->name('by-initiative');

@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Throwable;
 
 class FormController extends Controller
@@ -153,12 +154,15 @@ class FormController extends Controller
             throw_if(empty($event), new HumanException('Ошибка проверки формы', 120));
             throw_if($event->departament_id != $user->departament_id, new HumanException('Ошибка проверки учреждения', 130));
 
-            $oldEvent = Event::query()
+            $oldEventQuery = Event::query()
                 ->orderBy('id', 'desc')
                 ->whereNot('id', $event->id)
                 ->where('form_id', $event->form_id)
-                ->where('departament_id', $event->departament_id)
-                ->first();
+                ->where('departament_id', $event->departament_id);
+
+            $oldEvent = $oldEventQuery->first();
+
+            throw_if(empty($oldEvent), new HumanException('Старые значение не найдены'));
 
             $response['structure'] = $oldEvent->saved_structure;
             $response['results'] = FormResult::where('event_id', $oldEvent->id)->get();
@@ -185,6 +189,65 @@ class FormController extends Controller
                     }
                 }
             }
+
+            return Responser::returnSuccess($response);
+        } catch (HumanException $e) {
+            return Responser::returnError([$e->getMessage()]);
+        } catch (Throwable | Exception $e) {
+            return Responser::returnError([$e->getMessage()]);
+        }
+    }
+
+    public function getAllOldValues(Request $request): JsonResponse
+    {
+        try {
+            $response = [];
+
+            $user = $request->user();
+            throw_if(empty($user), new HumanException('Ошибка проверки пользователя', 100));
+            throw_if(empty($user->departament_id), new HumanException('Ошибка проверки учреждения', 110));
+
+            $event = Event::find($request->input('event_id', null));
+            throw_if(empty($event), new HumanException('Ошибка проверки формы', 120));
+            throw_if($event->departament_id != $user->departament_id, new HumanException('Ошибка проверки учреждения', 130));
+
+            $oldEventQuery = Event::query()
+                ->orderBy('id', 'desc')
+                ->whereNot('id', $event->id)
+                ->where('form_id', $event->form_id)
+                ->where('departament_id', $event->departament_id);
+
+            $oldEvents = $oldEventQuery->get();
+
+            throw_if(empty($oldEvents->count()), new HumanException('Старые значение не найдены'));
+
+            $oldEvents->map(function (Event $oldEvent) use (&$response, $event) {
+                $response[$oldEvent->id]['structure'] = $oldEvent->saved_structure;
+                $response[$oldEvent->id]['results'] = FormResult::where('event_id', $oldEvent->id)->get();
+
+                $oldFields = collect(json_decode($oldEvent->form_structure)->fields)
+                    ->keyBy('id')
+                    ->map(function ($field) {
+                        $field->name = mb_strtolower($field->name);
+                        return $field;
+                    });
+
+                foreach (json_decode($event->form_structure)->fields as $field) {
+                    if (empty($response[$oldEvent->id]['results']->where('id', $field->id)->count())) {
+                        if (empty($oldFields->get($field->id))) {
+                            $finded = $oldFields->where('name', mb_strtolower($field->name))->first();
+
+                            if (empty($finded) == false) {
+                                $response[$oldEvent->id]['results']->where('field_id', $finded->id)
+                                    ->map(function (FormResult $formResult) use ($field) {
+                                        $formResult->field_id = $field->id;
+                                        return $formResult;
+                                    });
+                            }
+                        }
+                    }
+                }
+            });
 
             return Responser::returnSuccess($response);
         } catch (HumanException $e) {
