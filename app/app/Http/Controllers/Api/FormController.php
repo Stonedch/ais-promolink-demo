@@ -158,7 +158,8 @@ class FormController extends Controller
                 ->orderBy('id', 'desc')
                 ->whereNot('id', $event->id)
                 ->where('form_id', $event->form_id)
-                ->where('departament_id', $event->departament_id);
+                ->where('departament_id', $event->departament_id)
+                ->whereNotNull('filled_at');
 
             $oldEvent = $oldEventQuery->first();
 
@@ -166,6 +167,8 @@ class FormController extends Controller
 
             $response['structure'] = $oldEvent->saved_structure;
             $response['results'] = FormResult::where('event_id', $oldEvent->id)->get();
+
+            throw_if(empty($response['results']), new HumanException('Старые значение не найдены'));
 
             $oldFields = collect(json_decode($oldEvent->form_structure)->fields)
                 ->keyBy('id')
