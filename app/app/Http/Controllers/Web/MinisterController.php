@@ -182,7 +182,6 @@ class MinisterController extends Controller
                     'events' => $events,
                     'formResults' => $formResults,
                     'form' => $form,
-                    // 'headers' => collect(@$events->sortByDesc('created_at')->first()->form_structure->fields)->sortBy('sort'),
                     'headers' => $headers,
                     'collections' => $collections,
                     'collectionValues' => $collectionValues->groupBy('collection_id', true),
