@@ -128,4 +128,6 @@ return [
     'custom_reports_command' => env('CUSTOM_REPORTS_COMMAND', null),
 
     'service_unavailable' => env('SERVICE_UNAVAILABLE', false),
+
+    'custom_dashboard' => env('CUSTOM_DASHBOARD', false),
 ];

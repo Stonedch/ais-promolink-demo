@@ -29,9 +29,15 @@
                             href="{{ route('web.form-checker.index') }}" label="Проверка" />
                     @endif
                     @if (config('app.custom_reports'))
-                        @if (empty(request()->user()) == false && request()->user()->hasAnyAccess(['platform.custom-reports.loading']))
+                        @if (empty(request()->user()) == false &&
+                                request()->user()->hasAnyAccess(['platform.custom-reports.loading']))
                             <x-layout.nav-link activeis="{{ request()->is('custom-reports') }}"
                                 href="{{ route('web.custom-reports.index') }}" label="Загрузить документ" />
+                        @endif
+                    @endif
+                    @if (config('app.custom_dashboard'))
+                        @if (auth()->user()->hasAccess('platform.min.base'))
+                            <x-layout.nav-link activeis="" href="/custom-dashboard/" label="Дашборд" />
                         @endif
                     @endif
                 @endif
@@ -79,8 +85,10 @@
     @if (request()->user())
         <div class="container-fluid container">
             <div class="d-flex gap-3 justify-content-between w-100">
-                <small data-toggle="tooltip" data-placement="bottom" title="#{{ request()->user()->id }}, {{ request()->user()->GetFullname() }}, {{ request()->user()->getDepartamentName() }}">{{ request()->user()->getDepartamentName() }}</small>
-                <div class="d-flex gap-1 justify-content-between" data-toggle="tooltip" data-placement="bottom" title="#{{ request()->user()->id }}, {{ request()->user()->GetFullname() }}, {{ request()->user()->getDepartamentName() }}">
+                <small data-toggle="tooltip" data-placement="bottom"
+                    title="#{{ request()->user()->id }}, {{ request()->user()->GetFullname() }}, {{ request()->user()->getDepartamentName() }}">{{ request()->user()->getDepartamentName() }}</small>
+                <div class="d-flex gap-1 justify-content-between" data-toggle="tooltip" data-placement="bottom"
+                    title="#{{ request()->user()->id }}, {{ request()->user()->GetFullname() }}, {{ request()->user()->getDepartamentName() }}">
                     <small>#{{ request()->user()->id }},</small>
                     <small>{{ request()->user()->GetFullname() }}</small>
                 </div>
