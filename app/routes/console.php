@@ -42,7 +42,7 @@ Artisan::command(ReinitEvents::class, function () {
 
 Artisan::command(CustomReportsCommand::class, function () {
     $this->command('Обработка кастомных отчетов');
-})->dailyAt('09:00');
+})->everyThirtyMinutes();
 
 Artisan::command(ArchiveCleanerCommand::class, function () {
     $this->command('Удаление временных архивов');
