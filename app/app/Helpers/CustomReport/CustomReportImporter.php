@@ -17,7 +17,6 @@ use Throwable;
 use App\Models\CustomReportData;
 use App\Models\CustomReportLog;
 use Illuminate\Support\Facades\Artisan;
-use Symfony\Component\VarDumper\VarDumper;
 
 setlocale(LC_ALL, 'ru_RU.UTF-8');
 ini_set('memory_limit', '-1');
@@ -55,7 +54,7 @@ class CustomReportImporter extends Command
         $this->log(message: "Старт", type: CustomReportLogType::DEBUG, storing: false);
 
         $reports = CustomReport::query()
-            ->orderBy('id', 'desc')
+            ->orderBy('id', 'asc')
             ->whereNull('worked_at')
             ->where('worked', false)
             ->whereNotNull('user_id');
