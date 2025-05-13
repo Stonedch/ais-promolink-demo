@@ -42,18 +42,7 @@ class CustomReportController extends Controller
                 ->whereNotNull('custom_report_type_id')
                 ->whereNotNull('custom_report_id')
                 ->orderBy('created_at', 'DESC')
-                ->get()
-                ->map(function (CustomReportLog $log) {
-                    if ($log->message == 'loaded') {
-                        $log->message = 'Документ загружен';
-                    }
-
-                    if ($log->message == 'is ready') {
-                        $log->message = 'Документ полностью обработан';
-                    }
-
-                    return $log;
-                });
+                ->get();
 
             $response['customReports'] = CustomReport::query()
                 ->where('user_id', $user->id)
@@ -61,7 +50,6 @@ class CustomReportController extends Controller
                 ->keyBy('id');
 
             $response['customReportTypes'] = CustomReportType::query()
-                ->whereIn('id', $response['customReports']->pluck('custom_report_type_id'))
                 ->get()
                 ->keyBy('id');
 

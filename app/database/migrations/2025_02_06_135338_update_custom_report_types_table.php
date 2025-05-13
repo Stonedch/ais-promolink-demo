@@ -15,7 +15,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::tabke('custom_report_types', function (Blueprint $table) {
+        Schema::table('custom_report_types', function (Blueprint $table) {
             $table->dropColumn('is_general');
         });
     }

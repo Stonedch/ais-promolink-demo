@@ -19,6 +19,7 @@ class CustomReportsCommand extends Command
         $importer = new CustomReportImporter();
         $importer->setConsole($this);
         $importer->setConsoleOutput($this->output);
+        $importer->setConsoleInput($this->input);
         $importer->setDebug(false);
         $importer->handle();
     }

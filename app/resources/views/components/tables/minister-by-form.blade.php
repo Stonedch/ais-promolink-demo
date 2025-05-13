@@ -21,12 +21,6 @@
                     <img src="/img/sort.svg" width="14px">
                 </button>
             </th>
-            <th scope="col" data-sort-field="deadline">
-                <span>Средний % заполнения</span>
-                <button class="table__sort bg-transparent border-0" data-sort-field="departament_type">
-                    <img src="/img/sort.svg" width="14px">
-                </button>
-            </th>
             <th scope="col">
                 <span>Взаимодействия</span>
             </th>
@@ -44,27 +38,13 @@
                 <td class="align-middle" data-sort-field="departament_type">
                     {{ implode(', ', $form->departament_types->pluck('name')->toArray()) }}
                 </td>
-                <td class="align-middle" data-sort-field="departament_type">
-                    {{ min([number_format($form->summary_filled_percent, 2), 100]) . '%' }}
-                </td>
                 <td class="align-middle">
                     <div class="btn-group" role="group">
-                        {{-- @if ($form->canUserEdit(auth()->user()))
-                            <a href="{{ route('web.forms.index', ['id' => $form->event->id]) }}" type="button"
-                                class="btn btn-secondary py-1 px-3">
-                                <img width="16px" src="/img/pencil-square.svg" />
-                                <small>редактировать</small>
-                            </a>
-                        @endif --}}
                         <a href="{{ route('web.minister.by-form', ['form' => $form->id]) }}"
                             type="button" class="btn btn-secondary py-1 px-3">
                             <img width="16px" src="/img/search.svg" />
                             <small>просмотр</small>
                         </a>
-                        {{-- <button type="button" class="archive-open btn btn-secondary py-1 px-3" data-event="{{ $form->event->id }}">
-                            <img width="16px" src="/img/files.svg" />
-                            <small>архив</small>
-                        </button> --}}
                     </div>
                 </td>
             </tr>

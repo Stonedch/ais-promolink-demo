@@ -1,0 +1,41 @@
+.btn.-unfolding {
+    display: none;
+    max-width: 10px;
+    overflow: hidden;
+    position: relative;
+    transition: all .3s easy-in-out;
+    text-wrap: nowrap;
+}
+
+.btn.-unfolding:hover {
+    max-width: unset;
+}
+
+
+.btn.-unfolding::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '';
+    background: #fff;
+    width: 100%;
+    height: 100%;
+}
+
+.btn.-unfolding::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    content: '⌫';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn.-unfolding:hover::before,
+.btn.-unfolding:hover::after {
+    content: none;
+}

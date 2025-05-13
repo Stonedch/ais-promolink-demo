@@ -127,7 +127,7 @@ class MinisterController extends Controller
         }
     }
 
-    public function byForm(Form $form = null): View|RedirectResponse
+    public function byForm(?Form $form = null): View|RedirectResponse
     {
         try {
             $this->checkAccess();
@@ -164,8 +164,7 @@ class MinisterController extends Controller
                 $formResults = FormResult::query()
                     ->with('attachment')
                     ->whereIn('event_id', $events->pluck('id'))
-                    ->get()
-                    ->groupBy('event_id');
+                    ->get();
 
                 $headers = [];
 
@@ -183,7 +182,6 @@ class MinisterController extends Controller
                     'events' => $events,
                     'formResults' => $formResults,
                     'form' => $form,
-                    // 'headers' => collect(@$events->sortByDesc('created_at')->first()->form_structure->fields)->sortBy('sort'),
                     'headers' => $headers,
                     'collections' => $collections,
                     'collectionValues' => $collectionValues->groupBy('collection_id', true),
@@ -212,35 +210,13 @@ class MinisterController extends Controller
                     $form->departament_types = $formDepartamentTypes->where('form_id', $form->id);
                 });
 
-                $formResults = FormResult::query()
-                    ->with('attachment')
-                    ->whereIn('event_id', $formEvents->pluck('id'))
-                    ->whereNotNull('value')
-                    ->where('value', '!=', '')
-                    ->select(['form_results.id', 'form_results.event_id'])
-                    ->get()
-                    ->groupBy('event_id');
-
-                $formEvents->map(function (Event $event) use ($formResults) {
+                $formEvents->map(function (Event $event) {
                     try {
                         $event->form_structure = json_decode($event->form_structure);
-                        $event->filled_percent = $formResults[$event->id]->count() / count($event->form_structure->fields) * 100;
                     } catch (Throwable) {
                     }
 
                     return $event;
-                });
-
-                $forms->map(function (Form $form) use ($formEvents) {
-                    try {
-                        $findedFilledPercents = $formEvents->where('form_id', $form->id)->pluck('filled_percent')->toArray();
-                        $form->summary_filled_percent = array_sum($findedFilledPercents) / count($findedFilledPercents);
-                    } catch (Throwable $e) {
-                        dd($formEvents->where('form_id', $form->id), $form);
-                        $form->summary_filled_percent = 0;
-                    }
-
-                    return $form;
                 });
 
                 $response = [
