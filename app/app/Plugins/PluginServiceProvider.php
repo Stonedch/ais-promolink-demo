@@ -11,6 +11,9 @@ abstract class PluginServiceProvider extends ServiceProvider
 {
     protected $pluginName;
 
+    public abstract static function getPluginName(): string;
+    public abstract static function getPluginDescription(): string;
+
     public function register()
     {
         $config = $this->getPluginPath('Config/config.php');

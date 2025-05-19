@@ -14,4 +14,14 @@ class ExamplePluginServiceProvider extends PluginServiceProvider
     }
 
     protected function pluginBoot(): void {}
+
+    public static function getPluginName(): string
+    {
+        return 'Пример базового плагина';
+    }
+
+    public static function getPluginDescription(): string
+    {
+        return 'Реализация базового плагина в качестве примера работы';
+    }
 }

@@ -4,14 +4,28 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens;
 
+use App\Plugins\PluginServiceSupport;
+use Illuminate\Support\Collection;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
+use Orchid\Screen\TD;
+use Orchid\Support\Facades\Layout;
 
 class PlatformScreen extends Screen
 {
+    protected Collection $activePlugins;
+
     public function query(): iterable
     {
-        return [];
+        $this->activePlugins = PluginServiceSupport::getActiveServices()
+            ->map(fn(string $service): object => (object) [
+                'name' => $service::getPluginName(),
+                'description' => $service::getPluginDescription()
+            ]);
+
+        return [
+            'activePlugins' => $this->activePlugins,
+        ];
     }
 
     public function name(): ?string
@@ -35,6 +49,11 @@ class PlatformScreen extends Screen
 
     public function layout(): iterable
     {
-        return [];
+        return [
+            Layout::table('activePlugins', [
+                TD::make('name', 'Название')->render(fn(object $service) => $service->name),
+                TD::make('description', 'Описание')->render(fn(object $service) => $service->description),
+            ])->title('Включенные плагины')->canSee(empty($this->activePlugins->count()) == false),
+        ];
     }
 }

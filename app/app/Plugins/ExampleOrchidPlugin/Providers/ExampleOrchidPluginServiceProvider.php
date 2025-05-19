@@ -14,4 +14,14 @@ class ExampleOrchidPluginServiceProvider extends PluginServiceProvider
     }
 
     protected function pluginBoot(): void {}
+
+    public static function getPluginName(): string
+    {
+        return 'Пример плагина с функционалом Orchid';
+    }
+
+    public static function getPluginDescription(): string
+    {
+        return 'Реализация плагина с функционалом Orchid в качестве примера работы';
+    }
 }
