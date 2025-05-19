@@ -2,7 +2,10 @@
 
 namespace App\Plugins;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Orchid\Platform\Providers\RouteServiceProvider;
+use Orchid\Support\Facades\Dashboard;
 
 abstract class PluginServiceProvider extends ServiceProvider
 {
@@ -10,10 +13,14 @@ abstract class PluginServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->mergeConfigFrom(
-            $this->getPluginPath('Config/config.php'),
-            "plugins.{$this->pluginName}"
-        );
+        $config = $this->getPluginPath('Config/config.php');
+
+        if (file_exists($config)) {
+            $this->mergeConfigFrom(
+                $config,
+                "plugins.{$this->pluginName}"
+            );
+        }
     }
 
     public function boot()
@@ -34,6 +41,14 @@ abstract class PluginServiceProvider extends ServiceProvider
     {
         $webRoutes = $this->getPluginPath('Routes/web.php');
         if (file_exists($webRoutes)) $this->loadRoutesFrom($webRoutes);
+
+        $platformRoutes = $this->getPluginPath('Routes/platform.php');
+        if (file_exists($platformRoutes)) {
+            Route::domain((string) config('platform.domain'))
+                ->prefix(Dashboard::prefix('/'))
+                ->middleware(config('platform.middleware.private'))
+                ->group($platformRoutes);
+        }
     }
 
     protected function loadViews()
