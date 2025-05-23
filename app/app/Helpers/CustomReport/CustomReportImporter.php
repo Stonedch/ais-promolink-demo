@@ -452,8 +452,7 @@ class CustomReportImporter extends Command
 
             if ($data['type'] != 'null') {
                 if (
-                    $arTemp[$data['page']][$data['row']][$data['col']]['val'] != $data['val'] or
-                    $arTemp[$data['page']][$data['row']][$data['col']]['type'] != $data['type']
+                    $arTemp[$data['page']][$data['row']][$data['col']]['val'] != $data['val']
                 ) {
                     // $this->log(
                     //     message: "Структура загруженного документа не соответствует образцу: {$coord} {$compareTypes} {$compareValues}",
@@ -472,8 +471,7 @@ class CustomReportImporter extends Command
                 }
             } else {
                 if (
-                    $arTemp[$data['page']][$data['row']][$data['col']]['val'] != $data['val'] or
-                    $arTemp[$data['page']][$data['row']][$data['col']]['type'] != $data['type']
+                    $arTemp[$data['page']][$data['row']][$data['col']]['val'] != $data['val']
                 ) {
                     $this->log(
                         message: "Структура загруженного документа не соответствует образцу: {$coord} {$compareTypes} {$compareValues}",
