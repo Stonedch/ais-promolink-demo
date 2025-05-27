@@ -67,14 +67,20 @@ class CustomReportController extends Controller
 
     public function downloadTemplate(Request $request)
     {
-        $user = $request->user();
-        throw_if(empty($user));
-        throw_if($user->hasAnyAccess(['platform.custom-reports.loading']) == false);
-        $type = CustomReportType::find($request->input('id'));
-        throw_if(empty($type));
-        $template = Attachment::find($type->attachment_id);
-        throw_if(empty($template));
-        $path = storage_path("app/{$template->disk}/{$template->path}{$template->name}.{$template->extension}");
-        return response()->download($path, "{$type->title}.{$template->extension}");
+        try {
+            $user = $request->user();
+            throw_if(empty($user));
+            throw_if($user->hasAnyAccess(['platform.custom-reports.loading']) == false);
+            $type = CustomReportType::find($request->input('id'));
+            throw_if(empty($type));
+            $template = Attachment::find($type->attachment_id);
+            throw_if(empty($template));
+            $path = storage_path("app/{$template->disk}/{$template->path}{$template->name}.{$template->extension}");
+            return response()->download($path, "{$type->title}.{$template->extension}");
+        } catch (Throwable $e) {
+            return redirect()
+                ->route('web.index.index')
+                ->withErrors([$e->getMessage()]);
+        }
     }
 }
