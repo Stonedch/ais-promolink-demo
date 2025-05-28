@@ -30,7 +30,7 @@ class LoginController extends Controller
         $credentials['phone'] = PhoneNormalizer::normalizePhone($credentials['phone']);
 
         if (Auth::attempt($credentials, $remember)) {
-            return redirect()->route('web.index.index');
+            return redirect()->intended(route('web.index.index'));
         } else {
             return redirect()
                 ->route('web.auth.login.index')
