@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Collection;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Ilike;
@@ -69,5 +71,17 @@ class Departament extends Model
     public function getUsers(): Collection
     {
         return User::where('departament_id', $this->id)->get();
+    }
+
+    public function customReports(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            \App\Models\CustomReport::class,
+            \App\Models\User::class,
+            'departament_id',
+            'user_id',
+            'id',
+            'id'
+        );
     }
 }

@@ -122,4 +122,9 @@ class User extends Authenticatable
             return null;
         }
     }
+
+    public function departament()
+    {
+        return $this->belongsTo(Departament::class);
+    }
 }

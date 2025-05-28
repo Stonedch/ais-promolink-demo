@@ -50,4 +50,18 @@ class CustomReportLog extends Model
         'updated_at',
         'created_at',
     ];
+
+    public function customReport()
+    {
+        return $this->belongsTo(CustomReport::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function customReportType()
+    {
+        return $this->belongsTo(CustomReportType::class, 'custom_report_type_id');
+    }
 }
