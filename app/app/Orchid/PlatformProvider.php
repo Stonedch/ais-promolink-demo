@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid;
 
+use App\Plugins\PluginServiceSupport;
 use Orchid\Platform\Dashboard;
 use Orchid\Platform\ItemPermission;
 use Orchid\Platform\OrchidServiceProvider;
@@ -119,7 +120,7 @@ class PlatformProvider extends OrchidServiceProvider
 
     public function permissions(): array
     {
-        return [
+        $permissions = [
             ItemPermission::group('Система')
                 ->addPermission('platform.systems.roles', 'Роли')
                 ->addPermission('platform.systems.users', 'Пользователи'),
@@ -179,6 +180,13 @@ class PlatformProvider extends OrchidServiceProvider
 
             ItemPermission::group('Бот-рассылка')
                 ->addPermission('platform.bot_users.base', 'Основные'),
+
         ];
+
+        PluginServiceSupport::getActiveServices()->map(function (string $plugin) use (&$permissions) {
+            $permissions = array_merge($permissions, $plugin::getPermissions());
+        });
+
+        return $permissions;
     }
 }

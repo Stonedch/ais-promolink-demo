@@ -36,7 +36,7 @@
                         @endif
                     @endif
                     @if (config('app.custom_dashboard'))
-                        @if (auth()->user()->hasAccess('platform.min.base'))
+                        @if (auth()->user()->hasAccess('platform.plugins.custom-dashboard.view'))
                             <x-layout.nav-link activeis="" href="/custom-dashboard/" label="Дашборд" />
                         @endif
                     @endif
