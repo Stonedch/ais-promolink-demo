@@ -4,6 +4,8 @@ namespace App\Plugins\EntityLogger\Providers;
 
 use App\Plugins\PluginServiceProvider;
 use App\Plugins\PluginServiceSupport;
+use Orchid\Platform\ItemPermission;
+use Orchid\Screen\Actions\Menu;
 
 class EntityLoggerServiceProvider extends PluginServiceProvider
 {
@@ -29,5 +31,23 @@ class EntityLoggerServiceProvider extends PluginServiceProvider
     public static function isActive(): bool
     {
         return in_array(self::class, PluginServiceSupport::getActiveServices()->toArray());
+    }
+
+    public static function getMenu(): array
+    {
+        return [
+            Menu::make('Учет истории сущностей')
+                ->icon('bs.archive')
+                ->permission('platform.plugins.entity-logger.base')
+                ->route('platform.plugins.entity-logger.log.list'),
+        ];
+    }
+
+    public static function getPermissions(): array
+    {
+        return [
+            ItemPermission::group('Учет истории изменений сущностей')
+                ->addPermission('platform.plugins.entity-logger.base', 'Базовые права'),
+        ];
     }
 }
