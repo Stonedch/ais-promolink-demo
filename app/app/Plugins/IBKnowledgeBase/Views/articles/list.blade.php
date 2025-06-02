@@ -41,8 +41,8 @@
                                 <p class="card-text">{{ $article->title }}</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="btn-group">
-                                        <button type="button"
-                                            class="btn btn-sm btn-outline-secondary">Подробнее</button>
+                                        <a href="{{ route('web.plugins.ibkb.articles.show', $article->id) }}" type="button"
+                                            class="btn btn-sm btn-outline-secondary">Подробнее</a>
                                     </div>
                                     <small class="text-muted">{{ $article->created_at->format('d.m.Y H:i') }}</small>
                                 </div>

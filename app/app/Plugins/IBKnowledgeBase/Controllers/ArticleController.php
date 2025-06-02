@@ -41,11 +41,25 @@ class ArticleController extends Controller
         }
     }
 
-    public function show(int $article): View|RedirectResponse
+    public function show(Request $request, int $article): View|RedirectResponse
     {
         try {
             $article = Article::with(['attachment', 'pictures'])->where('id', $article)->first();
-            return view(self::VIEWS['index'], ['article' => $article]);
+            $subArticlesQuery = Article::with('pictures')->orderBy('id', 'desc')->where('parent_id', $article->id);
+
+            if ($request->has('tag')) {
+                $tag = $request->input('tag');
+                $subArticlesQuery = $subArticlesQuery->where('tags', 'ILIKE', "%{$tag}%");
+            }
+
+            if ($request->has('title')) {
+                $name = $request->input('title');
+                $subArticlesQuery = $subArticlesQuery->where('title', 'ILIKE', "%{$name}%");
+            }
+
+            $subArticles = $subArticlesQuery->get();
+
+            return view(self::VIEWS['show'], ['article' => $article, 'subArticles' => $subArticles]);
         } catch (HumanException $e) {
             return redirect()
                 ->route('web.index.index')
