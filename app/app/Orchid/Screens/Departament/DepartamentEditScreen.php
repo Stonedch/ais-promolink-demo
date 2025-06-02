@@ -77,6 +77,13 @@ class DepartamentEditScreen extends Screen
                     ->required()
                     ->title('Тип'),
 
+
+                Select::make('departament.parent_id')
+                    ->empty('-')
+                    ->options(fn() => Departament::pluck('name', 'id'))
+                    ->required()
+                    ->title('Родительское учреждение'),
+
                 Select::make('departament.district_id')
                     ->empty('-')
                     ->options(function () {

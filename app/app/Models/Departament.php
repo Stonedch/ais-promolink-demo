@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Ilike;
@@ -34,6 +36,7 @@ class Departament extends Model
         'lon',
         'okpo',
         'show_in_dashboard',
+        'parent_id',
     ];
 
     protected $allowedFilters = [
@@ -51,6 +54,7 @@ class Departament extends Model
         'show_in_dashboard' => Where::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
+        'parent_id' => Where::class,
     ];
 
     protected $allowedSorts = [
@@ -68,6 +72,7 @@ class Departament extends Model
         'show_in_dashboard',
         'updated_at',
         'created_at',
+        'parent_id',
     ];
 
     public function getUsers(): Collection
@@ -85,5 +90,10 @@ class Departament extends Model
             'id',
             'id'
         );
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Departament::class, 'parent_id');
     }
 }
