@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\EventStatus;
 use App\Notifications\BaseNotification;
+use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -16,6 +17,7 @@ use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
 use Orchid\Support\Color;
 
+#[ObservedBy([EntityLoggerObserver::class])]
 class Event extends Model
 {
     use AsSource, Filterable;

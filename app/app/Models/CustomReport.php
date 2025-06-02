@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\CustomReportLogType;
+use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
@@ -14,6 +15,7 @@ use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
 use Throwable;
 
+#[ObservedBy([EntityLoggerObserver::class])]
 class CustomReport extends Model
 {
     use AsSource, Filterable;

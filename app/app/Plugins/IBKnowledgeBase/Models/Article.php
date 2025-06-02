@@ -3,6 +3,7 @@
 namespace App\Plugins\IBKnowledgeBase\Models;
 
 use App\Models\User;
+use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,6 +18,7 @@ use Orchid\Platform\Concerns\Sortable;
 use Orchid\Screen\AsSource;
 use Orchid\Support\Facades\Dashboard;
 
+#[ObservedBy([EntityLoggerObserver::class])]
 class Article extends Model
 {
     use AsSource, Filterable, Attachable, Sortable, Filterable;

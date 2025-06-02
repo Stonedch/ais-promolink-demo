@@ -3,17 +3,19 @@
 namespace App\Models;
 
 use App\Helpers\PhoneNormalizer;
+use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Orchid\Attachment\Models\Attachment;
 use Orchid\Filters\Types\Ilike;
-use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Platform\Models\User as Authenticatable;
 use Orchid\Support\Facades\Dashboard;
 use Throwable;
 
+#[ObservedBy([EntityLoggerObserver::class])]
 class User extends Authenticatable
 {
     protected $fillable = [

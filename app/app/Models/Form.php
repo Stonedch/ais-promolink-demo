@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -13,6 +14,7 @@ use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
 use Throwable;
 
+#[ObservedBy([EntityLoggerObserver::class])]
 class Form extends Model
 {
     use AsSource, Filterable;

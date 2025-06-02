@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -13,6 +14,7 @@ use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
 
+#[ObservedBy([EntityLoggerObserver::class])]
 class Departament extends Model
 {
     use AsSource, Filterable;
