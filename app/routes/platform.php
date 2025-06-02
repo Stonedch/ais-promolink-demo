@@ -8,6 +8,7 @@ use App\Orchid\Screens\BotNotification\BotNotificationScreen;
 use App\Orchid\Screens\BotUserQuestion\BotUserQuestionListScreen;
 use App\Orchid\Screens\Collection\CollectionEditScreen;
 use App\Orchid\Screens\Collection\CollectionListScreen;
+use App\Orchid\Screens\CustomReportLog\CustomReporByDepartamentLogListScreen;
 use App\Orchid\Screens\CustomReportLog\CustomReportLogListScreen;
 use App\Orchid\Screens\CustomReportType\CustomReportTypeEditScreen;
 use App\Orchid\Screens\CustomReportType\CustomReportTypeListScreen;
@@ -329,6 +330,18 @@ Route::screen('custom-report-logs', CustomReportLogListScreen::class)
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
         ->push('Лог загружаемых документов', route('platform.custom-report-logs')));
+
+// Platform > CustomReportLogs > 
+Route::screen('custom-report-logs/by-departaments', CustomReporByDepartamentLogListScreen::class)
+    ->middleware([UserUnActive::class])
+    ->name('platform.custom-report-logs.by-departaments')
+    ->breadcrumbs(fn(Trail $trail) => $trail
+        ->parent('platform.custom-report-logs')
+        ->push('По учреждениям', route('platform.custom-report-logs.by-departaments')));
+
+Route::get('/custom-report-logs/by-departaments/download/{id}', [CustomReporByDepartamentLogListScreen::class, 'download'])
+    ->name('platform.custom-report-logs.by-departaments.download')
+    ->middleware(['web', 'auth']);
 
 // Platform > BotUserQuestions
 Route::screen('bot-user-questions', BotUserQuestionListScreen::class)
