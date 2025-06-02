@@ -6,7 +6,15 @@
 
             <div class="d-flex justify-content-between align-items-center">
                 <h2 class="title my-0 mb-3">База знаний по ИБ</h2>
-                <a href="{{ route('web.plugins.ibkb.articles.index') }}" class="btn btn-outline-primary" role="button">Все статьи</a>
+                <form action="{{ route('web.plugins.ibkb.articles.index') }}" method="get"
+                    class="d-flex gap-3 align-items-center">
+                    <div class="form-group">
+                        <input name="title" type="text" class="form-control" placeholder="Поиск по названию">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Найти</button>
+                    <a href="{{ route('web.plugins.ibkb.articles.index') }}" class="btn btn-outline-primary"
+                        role="button">Все статьи</a>
+                </form>
             </div>
 
             <div class="d-flex gap-1 mb-3 flex-wrap">

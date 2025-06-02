@@ -9,19 +9,41 @@
     <div class="album">
         <div class="container">
 
-            <h2 class="title my-0 mb-3">База знаний по ИБ</h2>
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="title my-0 mb-3">База знаний по ИБ</h2>
+                <form action="{{ route('web.plugins.ibkb.articles.index') }}" method="get"
+                    class="d-flex gap-3 align-items-center">
+                    <input type="hidden" name="tag" value="{{ request()->input('tag', null) }}">
+                    <div class="form-group">
+                        <input name="title" type="text" class="form-control" placeholder="Поиск по названию"
+                            value="{{ request()->input('title', null) }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Найти</button>
+                </form>
+            </div>
 
             <div class="d-flex gap-1 mb-3 flex-wrap">
+                <a href="{{ route('web.plugins.ibkb.articles.index', ['tag' => null, 'title' => request()->input('title', null)]) }}"
+                    type="button" type="button" @class([
+                        'btn',
+                        'btn-secondary' => request()->has('tag'),
+                        'btn-primary' => request()->has('tag') == false,
+                    ])
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+                    Все
+                </a>
                 @foreach (array_unique(explode(';', implode(';', $articles->pluck('tags')->toArray()))) as $tag)
-                    <a href="{{ route('web.plugins.ibkb.articles.index', ['tag' => $tag]) }}" type="button"
-                        @class([
-                            'btn',
-                            'btn-secondary' => $tag !== request()->input('tag', null),
-                            'btn-primary' => $tag == request()->input('tag', null),
-                        ]) class="btn btn-secondary"
-                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-                        {{ $tag }}
-                    </a>
+                    @if (empty($tag) == false)
+                        <a href="{{ route('web.plugins.ibkb.articles.index', ['tag' => $tag, 'title' => request()->input('title', null)]) }}"
+                            type="button" @class([
+                                'btn',
+                                'btn-secondary' => $tag !== request()->input('tag', null),
+                                'btn-primary' => $tag == request()->input('tag', null),
+                            ])
+                            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+                            {{ $tag }}
+                        </a>
+                    @endif
                 @endforeach
             </div>
 

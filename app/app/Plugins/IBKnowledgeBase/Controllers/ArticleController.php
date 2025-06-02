@@ -26,6 +26,11 @@ class ArticleController extends Controller
                 $query = $query->where('tags', 'ILIKE', "%{$tag}%");
             }
 
+            if ($request->has('title')) {
+                $name = $request->input('title');
+                $query = $query->where('title', 'ILIKE', "%{$name}%");
+            }
+
             $articles = $query->get();
 
             return view(self::VIEWS['index'], ['articles' => $articles]);
