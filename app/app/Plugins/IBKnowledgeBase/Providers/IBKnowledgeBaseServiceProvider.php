@@ -4,6 +4,8 @@ namespace App\Plugins\IBKnowledgeBase\Providers;
 
 use App\Plugins\PluginServiceProvider;
 use App\Plugins\PluginServiceSupport;
+use Orchid\Platform\ItemPermission;
+use Orchid\Screen\Actions\Menu;
 
 class IBKnowledgeBaseServiceProvider extends PluginServiceProvider
 {
@@ -29,5 +31,24 @@ class IBKnowledgeBaseServiceProvider extends PluginServiceProvider
     public static function isActive(): bool
     {
         return in_array(self::class, PluginServiceSupport::getActiveServices()->toArray());
+    }
+
+
+    public static function getMenu(): array
+    {
+        return [
+            Menu::make('База знаний по ИБ')
+                ->icon('bs.newspaper')
+                ->permission('platform.plugins.ibkb.base')
+                ->route('platform.plugins.ibkb.article.list'),
+        ];
+    }
+
+    public static function getPermissions(): array
+    {
+        return [
+            ItemPermission::group('База знаний по ИБ')
+                ->addPermission('platform.plugins.ibkb.base', 'Базовые права'),
+        ];
     }
 }

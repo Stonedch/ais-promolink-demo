@@ -31,6 +31,13 @@ class ArticleEditScreen extends Screen
         ];
     }
 
+    public function permission(): ?iterable
+    {
+        return [
+            'platform.plugins.ibkb.base',
+        ];
+    }
+
     public function commandBar(): array
     {
         return [
@@ -88,6 +95,6 @@ class ArticleEditScreen extends Screen
 
         Alert::info('Статья сохранена');
 
-        return redirect()->route('platform.ibkb.article.edit', $article->id);
+        return redirect()->route('platform.plugins.ibkb.article.edit', $article->id);
     }
 }

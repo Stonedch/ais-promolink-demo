@@ -17,6 +17,13 @@ class ArticleListScreen extends Screen
         return 'База знаний по ИБ';
     }
 
+    public function permission(): ?iterable
+    {
+        return [
+            'platform.plugins.ibkb.base',
+        ];
+    }
+
     public function query(): iterable
     {
         return [
@@ -32,7 +39,7 @@ class ArticleListScreen extends Screen
         return [
             Link::make('Добавить статью')
                 ->icon('plus')
-                ->route('platform.ibkb.article.create')
+                ->route('platform.plugins.ibkb.article.create')
 
         ];
     }
@@ -45,7 +52,7 @@ class ArticleListScreen extends Screen
                     ->sort()
                     ->filter(TD::FILTER_TEXT)
                     ->render(fn(Article $article) => Link::make($article->title)
-                        ->route('platform.ibkb.article.edit', $article)),
+                        ->route('platform.plugins.ibkb.article.edit', $article)),
 
                 TD::make('author', 'Автор')
                     ->sort()

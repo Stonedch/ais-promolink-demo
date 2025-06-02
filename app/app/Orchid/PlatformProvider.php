@@ -19,7 +19,7 @@ class PlatformProvider extends OrchidServiceProvider
 
     public function menu(): array
     {
-        return [
+        $menu = [
             Menu::make('Главная')
                 ->icon('bs.house')
                 ->route(config('platform.index')),
@@ -116,6 +116,12 @@ class PlatformProvider extends OrchidServiceProvider
                 ->permission('platform.systems.roles')
                 ->divider(),
         ];
+
+        PluginServiceSupport::getActiveServices()->map(function (string $plugin) use (&$menu) {
+            $menu = array_merge($menu, $plugin::getMenu());
+        });
+
+        return $menu;
     }
 
     public function permissions(): array
