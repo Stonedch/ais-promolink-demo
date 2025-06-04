@@ -28,12 +28,6 @@ class IBKnowledgeBaseServiceProvider extends PluginServiceProvider
         return 'Данный модуль представляет собой древовидный каталог статей, предназначенный для специалистов по информационной безопасности организаций, зарегистрированных в системе';
     }
 
-    public static function isActive(): bool
-    {
-        return in_array(self::class, PluginServiceSupport::getActiveServices()->toArray());
-    }
-
-
     public static function getMenu(): array
     {
         return [

@@ -23,6 +23,11 @@ abstract class PluginServiceProvider extends ServiceProvider
         return [];
     }
 
+    public static function isActive(): bool
+    {
+        return in_array(static::class, PluginServiceSupport::getActiveServices()->toArray());
+    }
+
     public function register()
     {
         $config = $this->getPluginPath('Config/config.php');

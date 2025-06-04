@@ -28,11 +28,6 @@ class EntityLoggerServiceProvider extends PluginServiceProvider
         return 'Данный модуль представляет собой учет истории изменений сущностей';
     }
 
-    public static function isActive(): bool
-    {
-        return in_array(self::class, PluginServiceSupport::getActiveServices()->toArray());
-    }
-
     public static function getMenu(): array
     {
         return [
