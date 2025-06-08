@@ -11,6 +11,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class EntityLoggerObserver
 {
+    public function created(Model $entity)
+    {
+        if (EntityLoggerServiceProvider::isActive()) {
+            LoggerService::info(EntityLoggerMessage::SAVING, $entity);
+        }
+    }
+
     public function saving(Model $entity)
     {
         if (EntityLoggerServiceProvider::isActive()) {
@@ -21,7 +28,7 @@ class EntityLoggerObserver
     public function deleting(Model $entity)
     {
         if (EntityLoggerServiceProvider::isActive()) {
-            EntityLogger::info(EntityLoggerMessage::DELETING, $entity);
+            LoggerService::info(EntityLoggerMessage::DELETING, $entity);
         }
     }
 }
