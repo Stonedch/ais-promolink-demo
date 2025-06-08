@@ -77,22 +77,26 @@ class Event extends Model
     }
 
     // TODO: rename me pls
-    public static function createBy(Form $form, DepartamentType $departamentType)
+    public static function createBy(Form $form, DepartamentType $departamentType): Collection
     {
         $formStructure = $form->getStructure();
+
+        $events = [];
 
         Departament::query()
             ->where('departament_type_id', $departamentType->id)
             ->get()
-            ->map(function (Departament $departament) use ($formStructure, $form) {
-                self::createByDistrict($form, $departament, $formStructure);
+            ->map(function (Departament $departament) use ($formStructure, $form, &$events) {
+                $events[] = self::createByDistrict($form, $departament, $formStructure);
             });
+
+        return collect($events);
     }
 
     public static function createByDistrict(Form $form, Departament $departament, string $formStructure = null): Event
     {
         $event = new Event();
-        
+
         $event->fill([
             'form_id' => $form->id,
             'form_structure' => $formStructure ?: $form->getStructure(),
