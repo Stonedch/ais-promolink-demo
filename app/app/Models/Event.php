@@ -32,6 +32,7 @@ class Event extends Model
         'refilled_at',
         'saved_structure',
         'changing_filled_at',
+        'approval_departament_id',
     ];
 
     protected $allowedFilters = [
@@ -44,6 +45,7 @@ class Event extends Model
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
         'changing_filled_at' => WhereDateStartEnd::class,
+        'approval_departament_id' => Where::class,
     ];
 
     protected $allowedSorts = [
@@ -56,6 +58,7 @@ class Event extends Model
         'updated_at',
         'created_at',
         'changing_filled_at',
+        'approval_departament_id',
     ];
 
     public function getCurrentStatus()
@@ -71,6 +74,8 @@ class Event extends Model
             return EventStatus::from(300);
         } elseif (empty($deadline) == false && $diff < 0) {
             return EventStatus::from(200);
+        } elseif (empty($this->approval_departament_id) == false) {
+            return EventStatus::from(250);
         } else {
             return EventStatus::from(100);
         }
@@ -159,5 +164,15 @@ class Event extends Model
             ->where('form_id', $formIdentifier)
             ->where('departament_id', $departamentIdentifier)
             ->first();
+    }
+
+    public function form()
+    {
+        return $this->belongsTo(Form::class, 'form_id');
+    }
+
+    public function departament()
+    {
+        return $this->belongsTo(Departament::class, 'departament_id');
     }
 }

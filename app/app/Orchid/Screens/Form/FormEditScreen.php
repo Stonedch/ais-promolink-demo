@@ -212,9 +212,14 @@ class FormEditScreen extends Screen
                         ->title('Возможность редактировать'),
                 ]),
 
-                CheckBox::make('form.by_initiative')
-                    ->sendTrueOrFalse()
-                    ->title('По инициативе'),
+                Group::make([
+                    CheckBox::make('form.by_initiative')
+                        ->sendTrueOrFalse()
+                        ->title('По инициативе'),
+                    CheckBox::make('form.requires_approval')
+                        ->sendTrueOrFalse()
+                        ->title('Требует согласования'),
+                ]),
             ]))
                 ->title('Базовые настройки')
                 ->vertical(true)
@@ -386,5 +391,4 @@ class FormEditScreen extends Screen
         Toast::info('Успешно удалено');
         return redirect()->route('platform.forms');
     }
-
 }

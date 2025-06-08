@@ -76,6 +76,7 @@ class HomeController extends Controller
 
         $departaments = Departament::filters()->defaultSort('id', 'desc')->get();
         $departament = $departaments->where('id', $user->departament_id);
+        $onApproved = Event::with(['form', 'departament'])->where('approval_departament_id', $user->departament_id)->get();
 
         throw_if(
             empty($departament),
@@ -98,6 +99,7 @@ class HomeController extends Controller
             'departaments' => $departaments,
             'forms' => $forms,
             'formCategories' => $categories,
+            'onApproved' => $onApproved,
         ]);
     }
 
