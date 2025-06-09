@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Departament;
 
+use App\Models\CollectionValue;
 use App\Models\Departament;
 use App\Models\DepartamentType;
 use App\Models\District;
@@ -91,6 +92,11 @@ class DepartamentEditScreen extends Screen
                 CheckBox::make('departament.show_in_dashboard')
                     ->sendTrueOrFalse()
                     ->title('Показывать в дашборде'),
+
+                Select::make('departament.federation')
+                    ->empty('-')
+                    ->options(CollectionValue::where('collection_id', 19)->pluck('value', 'value'))
+                    ->title('Федерация')
             ]),
         ];
     }

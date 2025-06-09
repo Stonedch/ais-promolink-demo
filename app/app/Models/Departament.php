@@ -32,6 +32,7 @@ class Departament extends Model
         'lon',
         'okpo',
         'show_in_dashboard',
+        'federation',
     ];
 
     protected $allowedFilters = [
