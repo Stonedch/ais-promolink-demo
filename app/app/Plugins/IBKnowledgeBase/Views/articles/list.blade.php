@@ -31,10 +31,11 @@
                 <div class="col-md-4">
                     <div class="card mb-4 box-shadow">
                         @if ($article->pictures->count())
-                            <img class="card-img-top"
-                                data-src="holder.js/100px225?theme=thumb&amp;bg=55595c&amp;fg=eceeef&amp;text=Thumbnail"
-                                src="{{ $article->pictures->first()->url() }}" data-holder-rendered="true"
-                                style="height: 225px; width: 100%; display: block;">
+                            <div class="card-image-container">
+                                <img class="card-img-top"
+                                    data-src="holder.js/100px225?theme=thumb&amp;bg=55595c&amp;fg=eceeef&amp;text=Thumbnail"
+                                    src="{{ $article->pictures->first()->url() }}" data-holder-rendered="true">
+                            </div>
                         @endif
                         <div class="card-body">
                             <p class="card-text">{{ $article->title }}</p>
@@ -52,4 +53,19 @@
         </div>
 
     </div>
+
+    <style>
+        .card-image-container {
+            height: 225px;
+            width: 100%;
+            display: block;
+        }
+
+        .card-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+    </style>
 </div>
