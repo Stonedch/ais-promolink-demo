@@ -31,6 +31,8 @@ use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
 use App\Orchid\Screens\Subdepartament\DepartamentEditScreen as SubdepartamentDepartamentEditScreen;
 use App\Orchid\Screens\Subdepartament\DepartamentListScreen as SubdepartamentDepartamentListScreen;
+use App\Orchid\Screens\Subdepartament\UserEditScreen as SubdepartamentUserEditScreen;
+use App\Orchid\Screens\Subdepartament\UserListScreen as SubdepartamentUserListScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
@@ -369,10 +371,26 @@ Route::screen('subdepartaments/departaments/create', SubdepartamentDepartamentEd
         ->parent('platform.subdepartaments.departaments')
         ->push('Создание', route('platform.subdepartaments.departaments.create')));
 
-// Platform > Departaments > Edit
+// Platform > Subdepartaments > Departaments > Edit
 Route::screen('subdepartaments/departaments/{departament}/edit', SubdepartamentDepartamentEditScreen::class)
     ->middleware([UserUnActive::class])
     ->name('platform.subdepartaments.departaments.edit')
     ->breadcrumbs(fn(Trail $trail, $departament) => $trail
         ->parent('platform.subdepartaments.departaments')
         ->push('Редактирование', route('platform.subdepartaments.departaments.edit', $departament)));
+
+// Platform > Subdepartaments > Users > Edit
+Route::screen('subdepartaments/users/{user}/edit', SubdepartamentUserEditScreen::class)
+    ->middleware([UserUnActive::class])
+    ->name('platform.subdepartaments.users.edit')
+    ->breadcrumbs(fn(Trail $trail, $user) => $trail
+        ->parent('platform.subdepartaments.departaments')
+        ->push(PhoneNormalizer::humanizePhone($user->phone), route('platform.subdepartaments.users.edit', $user)));
+
+// Platform > Subdepartaments > Users > Create
+Route::screen('subdepartaments/users/create', SubdepartamentUserEditScreen::class)
+    ->middleware([UserUnActive::class])
+    ->name('platform.subdepartaments.users.create')
+    ->breadcrumbs(fn(Trail $trail) => $trail
+        ->parent('platform.subdepartaments.departaments')
+        ->push(__('Create'), route('platform.subdepartaments.users.create')));

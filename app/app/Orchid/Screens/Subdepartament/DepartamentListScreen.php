@@ -8,12 +8,15 @@ use App\Models\Collection;
 use App\Models\Departament;
 use App\Models\DepartamentType;
 use App\Models\District;
+use App\Models\User;
 use App\Orchid\Components\DateTimeRender;
+use App\Orchid\Components\HumanizePhone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
 use Orchid\Support\Facades\Layout;
@@ -29,6 +32,8 @@ class DepartamentListScreen extends Screen
     public function query(Request $request): iterable
     {
         $parentId = $request->input('filter.parent_id.0', $request->user()->departament_id);
+
+        $users = User::where('departament_id', $parentId)->get();
 
         $departaments = Departament::query()
             ->where('parent_id', $parentId)
@@ -48,12 +53,13 @@ class DepartamentListScreen extends Screen
             'districts' => $departaments->isNotEmpty()
                 ? District::whereIn('id', $departaments->pluck('district_id'))->get()
                 : new Collection(),
+            'users' => $users,
         ];
     }
 
     public function name(): ?string
     {
-        return 'Учреждения';
+        return 'Подведомства';
     }
 
     public function permission(): ?iterable
@@ -66,10 +72,14 @@ class DepartamentListScreen extends Screen
     public function commandBar(): iterable
     {
         return [
-            Link::make(__('Add'))
+            Link::make('Добавить подведомство')
                 ->icon('bs.plus')
                 ->href(route('platform.subdepartaments.departaments.create', ['parent_id' => request()->input('filter.parent_id.0', null)]))
-                ->canSee(Auth::user()->hasAccess('platform.departaments.edit')),
+                ->canSee(Auth::user()->hasAccess('platform.subdepartaments.base')),
+            Link::make('Добавить пользователя')
+                ->icon('bs.plus')
+                ->href(route('platform.subdepartaments.users.create', ['parent_id' => request()->input('filter.parent_id.0', null)]))
+                ->canSee(Auth::user()->hasAccess('platform.subdepartaments.base')),
         ];
     }
 
@@ -178,12 +188,99 @@ class DepartamentListScreen extends Screen
                     ->sort()
                     ->width(200),
             ]),
+
+            Layout::table('users', [
+                TD::make(__('Actions'))
+                    ->align(TD::ALIGN_CENTER)
+                    ->width('100px')
+                    ->render(fn(User $user) => DropDown::make()
+                        ->icon('bs.three-dots-vertical')
+                        ->list([
+                            Link::make(__('Edit'))
+                                ->route('platform.subdepartaments.users.edit', $user->id)
+                                ->icon('bs.pencil'),
+
+                            Button::make(__('Delete'))
+                                ->icon('bs.trash3')
+                                ->confirm(__('Once the account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.'))
+                                ->method('removeUser', ['id' => $user->id]),
+                        ])),
+
+                TD::make('id', '#')
+                    ->filter(Input::make())
+                    ->sort(),
+
+                TD::make('phone', 'Номер телефона')
+                    ->usingComponent(HumanizePhone::class)
+                    ->sort()
+                    ->filter(Input::make()),
+
+                TD::make('departament_id', 'Учреждение')
+                    ->sort()
+                    ->filter(TD::FILTER_SELECT, Departament::pluck('name', 'id'))
+                    ->render(function (User $user) {
+                        try {
+                            return Departament::find($user->departament_id)->name;
+                        } catch (Throwable $e) {
+                            return '-';
+                        }
+                    }),
+
+                TD::make('last_name', 'Фамилия')
+                    ->filter(Input::make())
+                    ->width(200),
+
+                TD::make('first_name', 'Имя')
+                    ->filter(Input::make())
+                    ->width(200),
+
+                TD::make('middle_name', 'Отчество')
+                    ->filter(Input::make())
+                    ->width(200),
+
+                TD::make('', 'Установлен аватар?')
+                    ->width(200)
+                    ->render(function (User $user) {
+                        return empty($user->attachment_id)
+                            ? '<b class="badge bg-danger col-auto ms-auto">Нет</b>'
+                            : '<b class="badge bg-success col-auto ms-auto">Да</b>';
+                    }),
+
+                TD::make('', 'Телеграм')
+                    ->width(200)
+                    ->render(function (User $user) {
+                        try {
+                            return empty(BotUser::where('phone', $user->phone)->count())
+                                ? '<b class="badge bg-danger col-auto ms-auto">Нет</b>'
+                                : '<b class="badge bg-success col-auto ms-auto">Есть</b>';
+                        } catch (Throwable) {
+                            return '-';
+                        }
+                    }),
+
+                TD::make('created_at', __('Created'))
+                    ->usingComponent(DateTimeRender::class)
+                    ->align(TD::ALIGN_RIGHT)
+                    ->defaultHidden()
+                    ->sort(),
+
+                TD::make('updated_at', __('Last edit'))
+                    ->usingComponent(DateTimeRender::class)
+                    ->align(TD::ALIGN_RIGHT)
+                    ->sort(),
+            ]),
         ];
     }
 
     public function remove(Request $request): void
     {
         Departament::findOrFail($request->input('id'))->delete();
+        Toast::info('Успешно удалено!');
+    }
+
+    public function removeUser(Request $request): void
+    {
+        User::findOrFail($request->input('id'))->delete();
         Toast::info('Успешно удалено!');
     }
 }

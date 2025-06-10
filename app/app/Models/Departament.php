@@ -107,4 +107,27 @@ class Departament extends Model
     {
         return $this->belongsTo(Departament::class, 'parent_id');
     }
+
+    public function getAllSubordinateIds(): Collection
+    {
+        $ids = [$this->id];
+        $this->getChildIdsRecursive($this->id, $ids);
+        return collect($ids);
+    }
+
+
+    protected function getChildIdsRecursive(int $parentId, array &$ids): void
+    {
+        $childIds = Departament::where('parent_id', $parentId)
+            ->pluck('id')
+            ->toArray();
+
+        if (!empty($childIds)) {
+            $ids = array_merge($ids, $childIds);
+
+            foreach ($childIds as $childId) {
+                $this->getChildIdsRecursive($childId, $ids);
+            }
+        }
+    }
 }
