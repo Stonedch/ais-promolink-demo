@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Console\Commands\Parsers;
+namespace App\Console\Commands\Plugins\AccountingVulnerabilities;
 
 use App\Plugins\AccountingVulnerabilities\Models\Vulnerability;
 use App\Plugins\AccountingVulnerabilities\Models\VulnerabilitySoft;
@@ -12,7 +12,7 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class SafeSurfParseCommand extends Command
 {
-    protected $signature = 'parse:safesurf';
+    protected $signature = 'plugins:accounting-vulnerabilities:parse:safe-surf';
 
     public function handle(): void
     {
