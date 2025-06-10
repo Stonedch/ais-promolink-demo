@@ -28,6 +28,12 @@ abstract class PluginServiceProvider extends ServiceProvider
         return in_array(static::class, PluginServiceSupport::getActiveServices()->toArray());
     }
 
+    public static function path(): string
+    {
+        $reflector = new \ReflectionClass(static::class);
+        return dirname($reflector->getFileName());
+    }
+
     public function register()
     {
         $config = $this->getPluginPath('Config/config.php');
