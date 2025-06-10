@@ -115,6 +115,13 @@ class PlatformProvider extends OrchidServiceProvider
                 ->route('platform.systems.roles')
                 ->permission('platform.systems.roles')
                 ->divider(),
+
+            Menu::make('Подведомства')
+                ->icon('bs.bank')
+                ->route('platform.subdepartaments.departaments')
+                ->permission('platform.subdepartaments.base')
+                ->title('Управление подведомствами')
+                ->divider(),
         ];
 
         PluginServiceSupport::getActiveServices()->map(function (string $plugin) use (&$menu) {
@@ -187,6 +194,8 @@ class PlatformProvider extends OrchidServiceProvider
             ItemPermission::group('Бот-рассылка')
                 ->addPermission('platform.bot_users.base', 'Основные'),
 
+            ItemPermission::group('Подведомства')
+                ->addPermission('platform.subdepartaments.base', 'Основные'),
         ];
 
         PluginServiceSupport::getActiveServices()->map(function (string $plugin) use (&$permissions) {

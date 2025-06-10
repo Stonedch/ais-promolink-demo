@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Ilike;
-use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
@@ -37,6 +36,10 @@ class Departament extends Model
         'okpo',
         'show_in_dashboard',
         'parent_id',
+        'phone',
+        'contact_fullname',
+        'email',
+        'email_fullname',
     ];
 
     protected $allowedFilters = [
@@ -55,6 +58,10 @@ class Departament extends Model
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
         'parent_id' => Where::class,
+        'phone' => Ilike::class,
+        'contact_fullname' => Ilike::class,
+        'email' => Ilike::class,
+        'email_fullname' => Ilike::class,
     ];
 
     protected $allowedSorts = [
@@ -73,6 +80,10 @@ class Departament extends Model
         'updated_at',
         'created_at',
         'parent_id',
+        'phone',
+        'contact_fullname',
+        'email',
+        'email_fullname',
     ];
 
     public function getUsers(): Collection

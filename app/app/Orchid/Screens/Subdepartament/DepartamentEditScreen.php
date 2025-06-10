@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Orchid\Screens\Departament;
+namespace App\Orchid\Screens\Subdepartament;
 
 use App\Models\Departament;
 use App\Models\DepartamentType;
@@ -24,7 +24,7 @@ class DepartamentEditScreen extends Screen
     public function query(Departament $departament): iterable
     {
         return [
-            'departament' => $departament,
+            'departament' => $departament
         ];
     }
 
@@ -36,7 +36,7 @@ class DepartamentEditScreen extends Screen
     public function permission(): ?iterable
     {
         return [
-            'platform.departaments.edit',
+            'platform.subdepartaments.base',
         ];
     }
 
@@ -58,6 +58,10 @@ class DepartamentEditScreen extends Screen
     {
         return [
             Layout::rows([
+                Input::make('departament.parent_id')
+                    ->value(request()->input('parent_id', request()->user()->departament_id))
+                    ->hidden(),
+
                 Input::make('departament.name')
                     ->required()
                     ->title('Название'),
@@ -77,12 +81,6 @@ class DepartamentEditScreen extends Screen
                     })
                     ->required()
                     ->title('Тип'),
-
-
-                Select::make('departament.parent_id')
-                    ->empty('-')
-                    ->options(fn() => Departament::pluck('name', 'id'))
-                    ->title('Родительское учреждение'),
 
                 Select::make('departament.district_id')
                     ->empty('-')
@@ -118,13 +116,13 @@ class DepartamentEditScreen extends Screen
         $departament->fill($request->input('departament', []));
         $departament->save();
         Toast::info('Успешно сохранено!');
-        return redirect()->route('platform.departaments.edit', $departament);
+        return redirect()->route('platform.subdepartaments.departaments.edit', $departament);
     }
 
     public function remove(Departament $departament)
     {
         $departament->delete();
         Toast::info('Успешно удалено');
-        return redirect()->route('platform.departaments');
+        return redirect()->route('platform.subdepartaments.departaments');
     }
 }

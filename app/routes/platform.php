@@ -29,6 +29,8 @@ use App\Orchid\Screens\FormCategory\FormCategoryListScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
+use App\Orchid\Screens\Subdepartament\DepartamentEditScreen as SubdepartamentDepartamentEditScreen;
+use App\Orchid\Screens\Subdepartament\DepartamentListScreen as SubdepartamentDepartamentListScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
@@ -350,3 +352,27 @@ Route::screen('bot-user-questions', BotUserQuestionListScreen::class)
     ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
         ->push('Вопросы бот-пользователей', route('platform.bot-user-questions')));
+
+// Platform > Subdepartaments > Departaments
+Route::screen('subdepartaments/departaments', SubdepartamentDepartamentListScreen::class)
+    ->middleware([UserUnActive::class])
+    ->name('platform.subdepartaments.departaments')
+    ->breadcrumbs(fn(Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push('Подведомства', route('platform.subdepartaments.departaments')));
+
+// Platform > Subdepartaments > Departaments > Create
+Route::screen('subdepartaments/departaments/create', SubdepartamentDepartamentEditScreen::class)
+    ->middleware([UserUnActive::class])
+    ->name('platform.subdepartaments.departaments.create')
+    ->breadcrumbs(fn(Trail $trail) => $trail
+        ->parent('platform.subdepartaments.departaments')
+        ->push('Создание', route('platform.subdepartaments.departaments.create')));
+
+// Platform > Departaments > Edit
+Route::screen('subdepartaments/departaments/{departament}/edit', SubdepartamentDepartamentEditScreen::class)
+    ->middleware([UserUnActive::class])
+    ->name('platform.subdepartaments.departaments.edit')
+    ->breadcrumbs(fn(Trail $trail, $departament) => $trail
+        ->parent('platform.subdepartaments.departaments')
+        ->push('Редактирование', route('platform.subdepartaments.departaments.edit', $departament)));
