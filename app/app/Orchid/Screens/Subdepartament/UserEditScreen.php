@@ -196,6 +196,34 @@ class UserEditScreen extends Screen
 
         Toast::info('Пользователь сохранен');
 
+        try {
+            $login = $request->input('user.phone');
+            $password = $request->input('user.password');
+
+            mail(
+                $user->departament()->first()->email,
+                "Данные авторизации для {$login}",
+                "
+                <html>
+                    <head>
+                        <title>Данные авторизации для {$login}</title>
+                    </head>
+                <body>
+                    <ul>
+                        <li><b>Логин:</b> {$login}</li>
+                        <li><b>Пароль:</b> {$password}</li>
+                    </ul>
+                </body>
+                </html>
+                ",
+                'MIME-Version: 1.0' . "\r\n"
+                    . 'Content-type: text/html; charset=utf-8' . "\r\n"
+                    . 'From: ais@promo-link.ru' . "\r\n"
+
+            );
+        } catch (Throwable) {
+        }
+
         return redirect()->route('platform.subdepartaments.users.edit', [$user->id]);
     }
 
