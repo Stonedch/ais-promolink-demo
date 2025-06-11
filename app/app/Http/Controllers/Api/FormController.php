@@ -409,6 +409,7 @@ class FormController extends Controller
     {
         try {
             $user = $request->user();
+            throw_if(empty($user), new Exception('Вы не авторизованы'));
             $attachment = Attachment::find($request->input('attachment', null));
             throw_if($user->id != $attachment->user_id, new Exception('Удалять изображения может только пользователь, который их добавил'));
             $attachment->delete();
