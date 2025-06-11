@@ -39,3 +39,48 @@
 .btn.-unfolding:hover::after {
     content: none;
 }
+
+#loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8) url(/img/loading.svg?1) no-repeat center center/ 150px auto;
+    z-index: 9999999;
+}
+
+.cell-images {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    flex-wrap: wrap;
+}
+
+.cell-images>* {
+    flex: 0 1 calc(100% / 2 - 10px / 2);
+    max-width: calc(100% / 2 - 10px / 2);
+}
+
+.cell-images img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: lightgray url(/img/loading.svg?1) no-repeat center center/ 75px auto;
+}
+
+.cell-images>* {
+    position: relative;
+}
+
+.cell-images>* [data-action="_remove-image"] {
+    z-index: 999;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
+    cursor: pointer;
+}

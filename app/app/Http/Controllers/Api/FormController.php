@@ -18,6 +18,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Orchid\Attachment\Models\Attachment;
 use Throwable;
 
 class FormController extends Controller
@@ -401,6 +402,19 @@ class FormController extends Controller
             return Responser::returnError([$e->getMessage()]);
         } catch (Throwable) {
             return Responser::returnError(['100, Ошибка сервера!']);
+        }
+    }
+
+    public function removeAttachment(Request $request): JsonResponse
+    {
+        try {
+            $user = $request->user();
+            $attachment = Attachment::find($request->input('attachment', null));
+            throw_if($user->id != $attachment->user_id, new Exception('Удалять изображения может только пользователь, который их добавил'));
+            $attachment->delete();
+            return Responser::returnSuccess();
+        } catch (Throwable $e) {
+            return Responser::returnError([$e->getMessage()]);
         }
     }
 }

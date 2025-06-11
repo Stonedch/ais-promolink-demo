@@ -97,6 +97,7 @@ Route::middleware([ServiceUnavailable::class, LogRoute::class, UserUnActive::cla
         Route::get('/form-field-blockeds', 'formFieldBlockeds')->name('form-field-blockeds');
         Route::get('/archive', 'archive')->name('archive');
         Route::post('/by-initiative', 'byInitiative')->name('by-initiative');
+        Route::get('/remove-attachment', 'removeAttachment')->name('removeAttachment');
     });
 
     // api.event-store

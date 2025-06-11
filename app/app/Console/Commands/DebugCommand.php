@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Orchid\Attachment\Models\Attachment;
 
 class DebugCommand extends Command
 {
@@ -15,5 +16,8 @@ class DebugCommand extends Command
     // Please clear me after debug
     public function handle(): void
     {
+        dd(
+            Attachment::first()
+        );
     }
 }

@@ -11,13 +11,19 @@ function showPreloader() {
 function hidePreloader() {
     $("#loading").remove();
 }
-function showAlert(header, text) {
+function showAlert(header, text, onClose = () => {}) {
     header = header || '';
     if (header != '') header = '<h2 style="margin-bottom:0;">' + header + '</h2>';
     new Fancybox([{
         src: '<div style="max-width: 500px; padding: 25px;">' + header + '<p>' + text + '</p></div>',
         type: "html",
-    }]);
+    }], {
+        on: {
+            close: () => {
+                onClose();
+            },
+        },
+    });
 }
 function form2obj(link) {
     var form = $(link).serializeArray();
