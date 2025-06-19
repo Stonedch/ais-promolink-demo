@@ -79,7 +79,7 @@ class TelegramBotHelper
         $notification = (new DashboardMessage())
             ->title($title)
             ->message($body)
-            ->type($type);
+            ->type(Color::BASIC);
 
         $botUserNotification = new BotUserNotification();
 

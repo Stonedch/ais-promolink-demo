@@ -9,6 +9,7 @@ use App\Exceptions\HumanException;
 use App\Helpers\BotHelpers\TelegramBotHelper;
 use App\Helpers\FormExporter;
 use App\Helpers\FormHelper;
+use App\Helpers\PhoneNormalizer;
 use App\Models\BotUser;
 use App\Models\BotUserNotification;
 use App\Models\Departament;
@@ -151,8 +152,7 @@ class BotNotificationScreen extends Screen
                             $botUser = $this->botUsers->where('id', $notification->bot_user_id)->first();
                             throw_if(empty($botUser));
                             $user = $this->users->where('id', $botUser->user_id)->first();
-                            throw_if(empty($user));
-                            return $user->getFullname();
+                            return empty($user) ? PhoneNormalizer::humanizePhone($botUser->phone) : $user->getFullname();
                         } catch (Throwable | Exception) {
                             return '-';
                         }
@@ -268,7 +268,7 @@ class BotNotificationScreen extends Screen
             throw_if(empty($botUsers->count()), new HumanException('Поле "Пользователь" обязательно к заполнению!'));
             throw_if(empty($message), new HumanException('Поле "Сообщение" обязательно к заполнению!'));
 
-            foreach ($users as $user) {
+            foreach ($botUsers as $user) {
                 try {
                     TelegramBotHelper::notifyBot($user, 'Уведомление', $message);
                 } catch (Exception) {
