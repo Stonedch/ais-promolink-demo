@@ -21,6 +21,10 @@ use Illuminate\Support\Collection;
 use Orchid\Attachment\Models\Attachment;
 use Throwable;
 
+ini_set('memory_limit', '-1');
+ini_set('upload_max_filesize ', '1024M');
+ini_set('post_max_size', '1024M');
+
 class FormController extends Controller
 {
     public function index(Request $request): JsonResponse
