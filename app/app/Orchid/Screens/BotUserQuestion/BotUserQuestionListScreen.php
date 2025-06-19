@@ -58,9 +58,7 @@ class BotUserQuestionListScreen extends Screen
     {
         return [
             Layout::table('questions', [
-                TD::make('', 'Действия')
-                    ->filter(TD::FILTER_NUMERIC)
-                    ->sort()
+                TD::make('_actions', 'Действия')
                     ->width(100)
                     ->render(fn(BotUserQuestion $question) => DropDown::make()
                         ->icon('bs.three-dots-vertical')
@@ -71,8 +69,11 @@ class BotUserQuestionListScreen extends Screen
                                 ->method('remove', ['id' => $question->id]),
                             Link::make('Ответить')
                                 ->icon('bs.link')
-                                ->href(route("platform.bot-notifications", ['tab' => 'Персонализированная', 'uid' => $question->getUserIdentifier()]))
-                                ->canSee(empty($question->getUserIdentifier()) == false)
+                                ->href(route("platform.bot-notifications", [
+                                    'tab' => empty($question->getUserIdentifier()) ? 'Песонализированная по бот-пользователю' : 'Персонализированная',
+                                    'uid' => $question->getUserIdentifier(),
+                                    'buid' => $question->bot_user_id
+                                ])),
                         ])),
 
                 TD::make('id', '#')

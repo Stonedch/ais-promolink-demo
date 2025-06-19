@@ -111,6 +111,30 @@ class BotNotificationScreen extends Screen
                         ->icon('bs.check-circle')
                         ->method('notifyByUser')
                 ]),
+                'Песонализированная по бот-пользователю' => Layout::rows([
+                    Select::make('notification.bybotuser.id')
+                        ->empty('-')
+                        ->value([request()->input('buid', null)])
+                        ->options(function () {
+                            $options = [];
+
+                            BotUser::all()->map(function (BotUser $user) use (&$options) {
+                                $options[$user->id] = "#{$user->id}, {$user->phone}";
+                            });
+
+                            return $options;
+                        })
+                        ->multiple()
+                        ->title('Пользователь'),
+
+                    TextArea::make('notification.bybotuser.message')
+                        ->title('Сообщение')
+                        ->rows(32),
+
+                    Button::make('Создать')
+                        ->icon('bs.check-circle')
+                        ->method('notifyByBotUser')
+                ])
             ])->activeTab(request()->input('tab', 'По учреждениям')),
 
             Layout::table('notifications', [
@@ -222,6 +246,31 @@ class BotNotificationScreen extends Screen
             foreach ($users as $user) {
                 try {
                     TelegramBotHelper::notify($user, 'Уведомление', $message);
+                } catch (Exception) {
+                    continue;
+                }
+            }
+
+            Toast::success('Успешно');
+        } catch (HumanException $e) {
+            Toast::error($e->getMessage());
+        } catch (Throwable $e) {
+            Toast::error("Внутренняя ошибка: {$e->getMessage()}");
+        }
+    }
+
+    public function notifyByBotUser(Request $request)
+    {
+        try {
+            $botUsers = BotUser::whereIn('id', $request->input('notification.bybotuser.id', []))->get();
+            $message = $request->input('notification.bybotuser.message', null);
+
+            throw_if(empty($botUsers->count()), new HumanException('Поле "Пользователь" обязательно к заполнению!'));
+            throw_if(empty($message), new HumanException('Поле "Сообщение" обязательно к заполнению!'));
+
+            foreach ($users as $user) {
+                try {
+                    TelegramBotHelper::notifyBot($user, 'Уведомление', $message);
                 } catch (Exception) {
                     continue;
                 }

@@ -71,6 +71,26 @@ class TelegramBotHelper
         return $botUserNotification;
     }
 
+    public static function notifyBot(
+        BotUser $botUser,
+        string $title,
+        string $body
+    ): BotUserNotification {
+        $notification = (new DashboardMessage())
+            ->title($title)
+            ->message($body)
+            ->type($type);
+
+        $botUserNotification = new BotUserNotification();
+
+        $botUserNotification->fill([
+            'bot_user_id' => $botUser->id,
+            'data' => json_encode($notification->data, JSON_UNESCAPED_UNICODE),
+        ])->save();
+
+        return $botUserNotification;
+    }
+
     public static function pop(): Collection
     {
         $notifications = BotUserNotification::all();
