@@ -70,7 +70,7 @@ class BotUserQuestionListScreen extends Screen
                             Link::make('Ответить')
                                 ->icon('bs.link')
                                 ->href(route("platform.bot-notifications", [
-                                    'tab' => empty($question->getUserIdentifier()) ? 'Песонализированная по бот-пользователю' : 'Персонализированная',
+                                    'tab' => empty($question->getUserIdentifier()) ? 'Персонализированная по бот-пользователю' : 'Персонализированная',
                                     'uid' => $question->getUserIdentifier(),
                                     'buid' => $question->bot_user_id
                                 ])),

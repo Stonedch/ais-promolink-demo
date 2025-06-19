@@ -111,7 +111,7 @@ class BotNotificationScreen extends Screen
                         ->icon('bs.check-circle')
                         ->method('notifyByUser')
                 ]),
-                'Песонализированная по бот-пользователю' => Layout::rows([
+                'Персонализированная по бот-пользователю' => Layout::rows([
                     Select::make('notification.bybotuser.id')
                         ->empty('-')
                         ->value([request()->input('buid', null)])
