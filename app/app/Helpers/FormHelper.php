@@ -352,9 +352,20 @@ class FormHelper
         return $arrayReturn ? $response : collect($response);
     }
 
-    public static function reinitResults(Event $event, array $requestedFields, User $user, string $savedStructure = ''): void
-    {
-        self::writeResults($event, $requestedFields, $user, $savedStructure);
+    public static function reinitResults(
+        Event $event,
+        array $requestedFields,
+        User $user,
+        string $savedStructure = '',
+        array $files = []
+    ): void {
+        self::writeResults(
+            $event,
+            $requestedFields,
+            $user,
+            $savedStructure,
+            $files
+        );
 
         $event->filled_at = $event->filled_at ?: now();
         $event->refilled_at = now();
@@ -372,8 +383,7 @@ class FormHelper
         array $requestedFields,
         User $user,
         string $savedStructure = '',
-        array $files = [],
-
+        array $files = []
     ): void {
         FormResult::query()->whereNot('value', '{files}')->where('event_id', $event->id)->delete();
 

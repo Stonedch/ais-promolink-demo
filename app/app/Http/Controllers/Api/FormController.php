@@ -58,7 +58,23 @@ class FormController extends Controller
             throw_if($event->departament_id != $user->departament_id, new HumanException('603, Ошибка проверки пользователя!'));
             throw_if(empty($event->filled_at) == false, new HumanException('604, Ошибка проверки формы!'));
 
-            FormHelper::reinitResults($event, $request->input('fields', []), $user, $request->input('structure', ''));
+            if ($request->input('json', false)) {
+                $fields = $request->input('fields', []);
+
+                foreach ($fields as $key => $value) {
+                    $fields[$key] = json_decode($value[0], true);
+                }
+
+                $request->merge(['fields' => $fields]);
+            }
+
+            FormHelper::reinitResults(
+                $event,
+                $request->input('fields', []),
+                $user,
+                $request->input('structure', ''),
+                files: $request->file()
+            );
 
             return Responser::returnSuccess($response);
         } catch (HumanException $e) {
@@ -86,7 +102,22 @@ class FormController extends Controller
             throw_if(empty($event), new HumanException('Ошибка проверки формы!'));
             throw_if($event->departament_id != $user->departament_id, new HumanException('Ошибка проверки пользователя!'));
 
-            FormHelper::reinitResults($event, $request->input('fields', []), $user);
+            if ($request->input('json', false)) {
+                $fields = $request->input('fields', []);
+
+                foreach ($fields as $key => $value) {
+                    $fields[$key] = json_decode($value[0], true);
+                }
+
+                $request->merge(['fields' => $fields]);
+            }
+
+            FormHelper::reinitResults(
+                $event,
+                $request->input('fields', []),
+                $user,
+                files: $request->file()
+            );
 
             return Responser::returnSuccess($response);
         } catch (HumanException $e) {
