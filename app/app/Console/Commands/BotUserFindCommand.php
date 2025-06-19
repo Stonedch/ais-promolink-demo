@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Models\BotUser;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Throwable;
 
 class BotUserFindCommand extends Command
 {
@@ -17,12 +18,14 @@ class BotUserFindCommand extends Command
     public function handle(): void
     {
         BotUser::whereNull('user_id')->get()->map(function (BotUser $botUser) {
-            $user = User::where('phone', $botUser->phone)->first();
-
-            if (empty($user)) return;
-
-            $botUser->user_id = $user->id;
-            $botUser->save();
+            try {
+                $user = User::where('phone', $botUser->phone)->first();
+                throw_if(empty($user), "User by phone \"{$botUser->phone}\" not found");
+                $botUser->user_id = $user->id;
+                $botUser->save();
+            } catch (Throwable $e) {
+                $this->error($e->getMessage());
+            }
         });
     }
 }

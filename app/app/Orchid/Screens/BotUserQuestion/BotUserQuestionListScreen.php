@@ -58,7 +58,7 @@ class BotUserQuestionListScreen extends Screen
     {
         return [
             Layout::table('questions', [
-                TD::make('id', '#')
+                TD::make('', 'Действия')
                     ->filter(TD::FILTER_NUMERIC)
                     ->sort()
                     ->width(100)
@@ -74,6 +74,11 @@ class BotUserQuestionListScreen extends Screen
                                 ->href(route("platform.bot-notifications", ['tab' => 'Персонализированная', 'uid' => $question->getUserIdentifier()]))
                                 ->canSee(empty($question->getUserIdentifier()) == false)
                         ])),
+
+                TD::make('id', '#')
+                    ->width('100')
+                    ->filter(TD::FILTER_NUMERIC)
+                    ->sort(),
 
                 TD::make('_status', 'Статус')
                     ->width(100)
