@@ -1,0 +1,6 @@
+*.php linguist-detectable=true
+*.rtf linguist-detectable=false
+*.io linguist-detectable=false
+*.docx linguist-detectable=false
+*.sql linguist-detectable=false
+* linguist-language=PHP
