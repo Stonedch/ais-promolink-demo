@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
+use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Ilike;
-use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
 
+#[ObservedBy([EntityLoggerObserver::class])]
 class Departament extends Model
 {
     use AsSource, Filterable;
@@ -33,6 +36,11 @@ class Departament extends Model
         'okpo',
         'show_in_dashboard',
         'federation',
+        'parent_id',
+        'phone',
+        'contact_fullname',
+        'email',
+        'email_fullname',
     ];
 
     protected $allowedFilters = [
@@ -50,6 +58,11 @@ class Departament extends Model
         'show_in_dashboard' => Where::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
+        'parent_id' => Where::class,
+        'phone' => Ilike::class,
+        'contact_fullname' => Ilike::class,
+        'email' => Ilike::class,
+        'email_fullname' => Ilike::class,
     ];
 
     protected $allowedSorts = [
@@ -67,6 +80,11 @@ class Departament extends Model
         'show_in_dashboard',
         'updated_at',
         'created_at',
+        'parent_id',
+        'phone',
+        'contact_fullname',
+        'email',
+        'email_fullname',
     ];
 
     public function getUsers(): Collection
@@ -84,5 +102,33 @@ class Departament extends Model
             'id',
             'id'
         );
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Departament::class, 'parent_id');
+    }
+
+    public function getAllSubordinateIds(): Collection
+    {
+        $ids = [$this->id];
+        $this->getChildIdsRecursive($this->id, $ids);
+        return collect($ids);
+    }
+
+
+    protected function getChildIdsRecursive(int $parentId, array &$ids): void
+    {
+        $childIds = Departament::where('parent_id', $parentId)
+            ->pluck('id')
+            ->toArray();
+
+        if (!empty($childIds)) {
+            $ids = array_merge($ids, $childIds);
+
+            foreach ($childIds as $childId) {
+                $this->getChildIdsRecursive($childId, $ids);
+            }
+        }
     }
 }

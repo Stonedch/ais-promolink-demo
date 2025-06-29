@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
@@ -13,6 +14,7 @@ use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
 use Throwable;
 
+#[ObservedBy([EntityLoggerObserver::class])]
 class Form extends Model
 {
     use AsSource, Filterable;
@@ -30,6 +32,7 @@ class Form extends Model
         'form_category_id',
         'sort',
         'by_initiative',
+        'requires_approval',
     ];
 
     protected $allowedFilters = [
@@ -44,6 +47,7 @@ class Form extends Model
         'is_editable' => Where::class,
         'form_category_id' => Where::class,
         'by_initiative' => Where::class,
+        'requires_approval' => Where::class,
 
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
@@ -61,6 +65,7 @@ class Form extends Model
         'is_editable',
         'form_category_id',
         'by_initiative',
+        'requires_approval',
 
         'updated_at',
         'created_at',
@@ -123,6 +128,7 @@ class Form extends Model
             $lastEvent = Event::lastByDepartament($this->id, $departament->id);
 
             throw_if(empty(@$lastEvent->filled_at) == false);
+            throw_if(empty($lastEvent->approval_departament_id) == false);
 
             return true;
         } catch (Throwable) {

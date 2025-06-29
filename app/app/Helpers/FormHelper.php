@@ -367,8 +367,16 @@ class FormHelper
             $files
         );
 
-        $event->filled_at = $event->filled_at ?: now();
-        $event->refilled_at = now();
+        $departament = Departament::find($event->departament_id);
+        $parentDepartament = Departament::find($departament->parent_id);
+
+        if (empty($parentDepartament)) {
+            $event->filled_at = $event->filled_at ?: now();
+            $event->refilled_at = now();
+            $event->approval_departament_id = null;
+        } else {
+            $event->approval_departament_id = $parentDepartament->id;
+        }
 
         if (empty($event->changing_filled_at) == false) {
             $event->filled_at = $event->changing_filled_at;

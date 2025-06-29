@@ -19,7 +19,7 @@ class PlatformProvider extends OrchidServiceProvider
 
     public function menu(): array
     {
-        return [
+        $menu = [
             Menu::make('Главная')
                 ->icon('bs.house')
                 ->route(config('platform.index')),
@@ -115,7 +115,20 @@ class PlatformProvider extends OrchidServiceProvider
                 ->route('platform.systems.roles')
                 ->permission('platform.systems.roles')
                 ->divider(),
+
+            Menu::make('Подведомства')
+                ->icon('bs.bank')
+                ->route('platform.subdepartaments.departaments')
+                ->permission('platform.subdepartaments.base')
+                ->title('Управление подведомствами')
+                ->divider(),
         ];
+
+        PluginServiceSupport::getActiveServices()->map(function (string $plugin) use (&$menu) {
+            $menu = array_merge($menu, $plugin::getMenu());
+        });
+
+        return $menu;
     }
 
     public function permissions(): array
@@ -181,6 +194,8 @@ class PlatformProvider extends OrchidServiceProvider
             ItemPermission::group('Бот-рассылка')
                 ->addPermission('platform.bot_users.base', 'Основные'),
 
+            ItemPermission::group('Подведомства')
+                ->addPermission('platform.subdepartaments.base', 'Основные'),
         ];
 
         PluginServiceSupport::getActiveServices()->map(function (string $plugin) use (&$permissions) {

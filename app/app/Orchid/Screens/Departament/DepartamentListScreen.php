@@ -24,13 +24,17 @@ class DepartamentListScreen extends Screen
 {
     public $departamentTypes;
     public $districts;
+    public $departamentOptions;
 
     public function query(): iterable
     {
-        $departaments = Departament::filters()->defaultSort('id', 'desc')->paginate(50);
+        $departaments = Departament::with(['parent'])->filters()->defaultSort('id', 'desc')->paginate(50);
+
+        $this->departamentOptions = Departament::pluck('name', 'id');
 
         return [
             'departaments' => $departaments,
+            'departamentOptions' => $this->departamentOptions,
             'departamentTypes' => $departaments->isNotEmpty()
                 ? DepartamentType::whereIn('id', $departaments->pluck('departament_type_id') ?: [])->get()
                 : new Collection(),
@@ -94,7 +98,11 @@ class DepartamentListScreen extends Screen
                 TD::make('name', 'Название')
                     ->filter(TD::FILTER_TEXT)
                     ->sort()
-                    ->width(200),
+                    ->width(200)
+                    ->render(
+                        fn(Departament $departament) => Link::make($departament->name)
+                            ->route('platform.departaments', ['filter' => ['parent_id' => [$departament->id]]])
+                    ),
 
                 TD::make('inn', 'ИНН')
                     ->filter(TD::FILTER_TEXT)
@@ -115,6 +123,18 @@ class DepartamentListScreen extends Screen
                     ->render(function (Departament $departament) {
                         try {
                             return $this->departamentTypes->find($departament->departament_type_id)->name;
+                        } catch (Throwable) {
+                            return '-';
+                        }
+                    }),
+
+                TD::make('parent_id', 'Родительское учреждение')
+                    ->filter(TD::FILTER_SELECT, $this->departamentOptions)
+                    ->sort()
+                    ->width(200)
+                    ->render(function (Departament $departament) {
+                        try {
+                            return $departament->parent->name;
                         } catch (Throwable) {
                             return '-';
                         }

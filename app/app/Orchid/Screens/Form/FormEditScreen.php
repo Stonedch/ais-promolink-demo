@@ -30,6 +30,12 @@ use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 use Throwable;
 
+// =~~~~~~~~~~~~~~~~~~~~=
+// | ~  ~  <>[ ~~ ~ <>[ |
+// | `` <>< ~`` <>[ ``~ |
+// |  ```~   <>[ ~`` ~  |
+// ======================
+
 class FormEditScreen extends Screen
 {
     public ?Form $form = null;
@@ -206,9 +212,14 @@ class FormEditScreen extends Screen
                         ->title('Возможность редактировать'),
                 ]),
 
-                CheckBox::make('form.by_initiative')
-                    ->sendTrueOrFalse()
-                    ->title('По инициативе'),
+                Group::make([
+                    CheckBox::make('form.by_initiative')
+                        ->sendTrueOrFalse()
+                        ->title('По инициативе'),
+                    CheckBox::make('form.requires_approval')
+                        ->sendTrueOrFalse()
+                        ->title('Требует согласования'),
+                ]),
             ]))
                 ->title('Базовые настройки')
                 ->vertical(true)
@@ -232,6 +243,7 @@ class FormEditScreen extends Screen
                         'Проверяющий поля' => 'field_checker_user_id',
                         'Множественная группа' => 'group_is_multiple',
                         'Слаг' => 'general_slug',
+                        'Ключ рассылки' => 'event_key',
                     ])
                     ->withHiddenColumns()
                     ->hiddenColumns([
@@ -241,6 +253,7 @@ class FormEditScreen extends Screen
                         'field_checker_user_id',
                         'group_is_multiple',
                         'general_slug',
+                        'event_key',
                     ])
                     ->fields([
                         'general_id' => Input::make()->hidden()->class('form-control --modal-hidden'),
@@ -251,9 +264,9 @@ class FormEditScreen extends Screen
                         'field_type' => Select::make()->empty('-')->options(Field::$TYPES)->hidden()->class('form-control --select-field-type'),
                         'field_collection_id' => Select::make()->options(fn() => Collection::pluck('name', 'id'))->empty('-')->hidden()->class('form-control --select-field-type'),
                         'field_checker_user_id' => Select::make()->options($this->checkers)->empty('-')->hidden()->class('form-control --select-field-type'),
-                        // 'group_is_multiple' => CheckBox::make()->sendTrueOrFalse()->hidden()->class('form-check-input --select-group-type'),
                         'group_is_multiple' => Select::make()->options([1 => 'Да'])->empty('Нет')->hidden()->class('form-control --select-group-type'),
                         'general_slug' => Input::make()->class("form-control _sluggable --modal-hidden")->hidden(),
+                        'event_key' => Input::make()->hidden()->placeholder('{ключ}'),
                     ]),
             ]))
                 ->title('Структура')
@@ -326,6 +339,7 @@ class FormEditScreen extends Screen
                     'type' => @$requestedField['field_type'] ?: null,
                     'collection_id' => @$requestedField['field_collection_id'],
                     'checker_user_id' => @$requestedField['field_checker_user_id'],
+                    'event_key' => @$requestedField['event_key'],
                 ])->save();
 
                 $requestedFields[$field->id] = $requestedField;

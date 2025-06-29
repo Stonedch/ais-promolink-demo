@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
 use Illuminate\Database\Eloquent\Model;
 use Orchid\Filters\Filterable;
+use Orchid\Filters\Types\Ilike;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
 
+#[ObservedBy([EntityLoggerObserver::class])]
 class Field extends Model
 {
     use AsSource, Filterable;
@@ -22,6 +25,7 @@ class Field extends Model
         'sort',
         'collection_id',
         'checker_user_id',
+        'event_key',
     ];
 
     protected $allowedFilters = [
@@ -34,6 +38,7 @@ class Field extends Model
         'sort' => Where::class,
         'collection_id' => Where::class,
         'checker_user_id' => Where::class,
+        'event_key' => Ilike::class,
 
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
@@ -42,6 +47,7 @@ class Field extends Model
     protected $allowedSorts = [
         'id',
         'name',
+        'event_key',
         'updated_at',
         'created_at',
     ];

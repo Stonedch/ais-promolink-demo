@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
 use Illuminate\Database\Eloquent\Model;
 use Orchid\Attachment\Attachable;
 use Orchid\Filters\Filterable;
@@ -10,6 +11,7 @@ use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
 
+#[ObservedBy([EntityLoggerObserver::class])]
 class FormResult extends Model
 {
     use AsSource, Filterable, Attachable;

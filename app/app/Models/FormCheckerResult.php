@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
 use Illuminate\Database\Eloquent\Model;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Where;
@@ -15,6 +16,7 @@ enum FormCheckerResultStatuses: int
     case REJECTED = 300;
 }
 
+#[ObservedBy([EntityLoggerObserver::class])]
 class FormCheckerResult extends Model
 {
     use AsSource, Filterable;

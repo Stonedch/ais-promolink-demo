@@ -11,6 +11,7 @@
         "laravel/tinker": "^2.9",
         "orchid/platform": "^14.23",
         "phpoffice/phpspreadsheet": "^3.3",
+        "symfony/dom-crawler": "^7.3",
         "telegram-bot/api": "^2.5"
     },
     "require-dev": {

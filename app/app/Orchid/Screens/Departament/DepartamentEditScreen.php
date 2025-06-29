@@ -11,6 +11,7 @@ use App\Models\District;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\CheckBox;
+use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
@@ -78,6 +79,12 @@ class DepartamentEditScreen extends Screen
                     ->required()
                     ->title('Тип'),
 
+
+                Select::make('departament.parent_id')
+                    ->empty('-')
+                    ->options(fn() => Departament::pluck('name', 'id'))
+                    ->title('Родительское учреждение'),
+
                 Select::make('departament.district_id')
                     ->empty('-')
                     ->options(function () {
@@ -97,6 +104,17 @@ class DepartamentEditScreen extends Screen
                     ->empty('-')
                     ->options(CollectionValue::where('collection_id', 19)->pluck('value', 'value'))
                     ->title('Федерация')
+            ]),
+
+            Layout::rows([
+                Group::make([
+                    Input::make('departament.phone')->title('Телефон'),
+                    Input::make('departament.contact_fullname')->title('Контактное лицо'),
+                ]),
+                Group::make([
+                    Input::make('departament.email')->title('E-mail для рассылки'),
+                    Input::make('departament.email_fullname')->title('ФИО получателя рассылки'),
+                ]),
             ]),
         ];
     }

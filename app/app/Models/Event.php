@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\EventStatus;
 use App\Notifications\BaseNotification;
+use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -16,6 +17,7 @@ use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
 use Orchid\Support\Color;
 
+#[ObservedBy([EntityLoggerObserver::class])]
 class Event extends Model
 {
     use AsSource, Filterable;
@@ -30,6 +32,7 @@ class Event extends Model
         'refilled_at',
         'saved_structure',
         'changing_filled_at',
+        'approval_departament_id',
     ];
 
     protected $allowedFilters = [
@@ -42,6 +45,7 @@ class Event extends Model
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
         'changing_filled_at' => WhereDateStartEnd::class,
+        'approval_departament_id' => Where::class,
     ];
 
     protected $allowedSorts = [
@@ -54,6 +58,7 @@ class Event extends Model
         'updated_at',
         'created_at',
         'changing_filled_at',
+        'approval_departament_id',
     ];
 
     public function getCurrentStatus()
@@ -69,28 +74,34 @@ class Event extends Model
             return EventStatus::from(300);
         } elseif (empty($deadline) == false && $diff < 0) {
             return EventStatus::from(200);
+        } elseif (empty($this->approval_departament_id) == false) {
+            return EventStatus::from(250);
         } else {
             return EventStatus::from(100);
         }
     }
 
     // TODO: rename me pls
-    public static function createBy(Form $form, DepartamentType $departamentType)
+    public static function createBy(Form $form, DepartamentType $departamentType): Collection
     {
         $formStructure = $form->getStructure();
+
+        $events = [];
 
         Departament::query()
             ->where('departament_type_id', $departamentType->id)
             ->get()
-            ->map(function (Departament $departament) use ($formStructure, $form) {
-                self::createByDistrict($form, $departament, $formStructure);
+            ->map(function (Departament $departament) use ($formStructure, $form, &$events) {
+                $events[] = self::createByDistrict($form, $departament, $formStructure);
             });
+
+        return collect($events);
     }
 
     public static function createByDistrict(Form $form, Departament $departament, string $formStructure = null): Event
     {
         $event = new Event();
-        
+
         $event->fill([
             'form_id' => $form->id,
             'form_structure' => $formStructure ?: $form->getStructure(),
@@ -153,5 +164,15 @@ class Event extends Model
             ->where('form_id', $formIdentifier)
             ->where('departament_id', $departamentIdentifier)
             ->first();
+    }
+
+    public function form()
+    {
+        return $this->belongsTo(Form::class, 'form_id');
+    }
+
+    public function departament()
+    {
+        return $this->belongsTo(Departament::class, 'departament_id');
     }
 }

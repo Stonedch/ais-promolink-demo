@@ -175,14 +175,6 @@ class FormController extends Controller
         try {
             $user = $request->user();
 
-            throw_if(empty($user), new HumanException('Ошибка авторизации! Номер ошибки: #1003.'));
-
-            if ($user->hasAnyAccess(['platform.supervisor.base', 'platform.min.base']) == false) {
-                throw_if($user->departament_id != $departament->id, new HumanException('Ошибка авторизации! Номер ошибки: #1004.'));
-            }
-
-            throw_if($form->is_active == false, new HumanException('Ошибка обработки формы! Номер ошибки: #1000.'));
-
             $event = Event::query()
                 ->where('form_id', $form->id)
                 ->where('departament_id', $departament->id);
@@ -192,6 +184,38 @@ class FormController extends Controller
             } else {
                 $event = $event->whereNotNull('filled_at')->orderBy('id', 'desc')->first();
             }
+
+            throw_if(empty($user), new HumanException('Ошибка авторизации! Номер ошибки: #1003.'));
+
+            if ($event->approval_departament_id == request()->user()->departament_id) {
+                if ($request->has('approved')) {
+                    if ($request->input('approved', null) == 1) {
+                        $departament = Departament::find($event->approval_departament_id);
+                        $parentDepartament = Departament::find($departament->parent_id);
+
+                        if (empty($parentDepartament)) {
+                            $event->filled_at = $event->filled_at ?: now();
+                            $event->refilled_at = now();
+                            $event->approval_departament_id = null;
+                        } else {
+                            $event->approval_departament_id = $parentDepartament->id;
+                        }
+
+                        $event->save();
+                        return redirect()->route('web.index.index');
+                    } elseif ($request->input('approved', null) == 0) {
+                        $event->approval_departament_id = null;
+                        $event->save();
+                        return redirect()->route('web.index.index');
+                    }
+                }
+            } else {
+                if ($user->hasAnyAccess(['platform.supervisor.base', 'platform.min.base']) == false) {
+                    throw_if($user->departament_id != $departament->id, new HumanException('Ошибка авторизации! Номер ошибки: #1004.'));
+                }
+            }
+
+            throw_if($form->is_active == false, new HumanException('Ошибка обработки формы! Номер ошибки: #1000.'));
 
             $allEvents = Event::where('id', $event->id)->get()->map(function (Event $event) {
                 $event->form_structure = json_decode($event->form_structure, true);
@@ -311,12 +335,10 @@ class FormController extends Controller
 
             return view($this->views['preview'], $response);
         } catch (HumanException $e) {
-            dd($e);
             return redirect()
                 ->route('web.index.index')
                 ->withErrors([$e->getMessage()]);
         } catch (Throwable $e) {
-            dd($e);
             return redirect()
                 ->route('web.index.index')
                 ->withErrors(['Внутренняя ошибка']);

@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
 use Illuminate\Database\Eloquent\Model;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 
+#[ObservedBy([EntityLoggerObserver::class])]
 class CollectionValue extends Model
 {
     protected $table = 'collection_values';
