@@ -901,3 +901,52 @@ async function saveRenderedForm() {
         }
     });
 }
+
+async function renderFromDataset(path, struct, groups, collections = [], collectionValues = []) {
+    var html = "";
+
+    html += `
+        <form id="renderedForm">
+    `;
+
+    try {
+        groups = d.formGroups[id];
+    } catch { }
+
+    window._app = {};
+
+    if (struct.form.type == 300) {
+        window._app.edit_blockeds = true;
+    }
+
+    window._app.form = {};
+    window._app.form.forms = {};
+    window._app.form.forms[struct.form.id] = struct.form;
+    window._app.form.collectionValues = collectionValues;
+    window._app.current_form_id = struct.form.id;
+
+    if (struct.form.type == 100) {
+        html += renderLineForm(struct, groups);
+    } else if (struct.form.type == 200) {
+        html += renderTabForm(struct, groups);
+    } else if (struct.form.type == 300) {
+        html += renderTabForm(struct, groups);
+    }
+
+    $(path).html(html + "</form>");
+
+    initMultipleGroupButton();
+
+    showPreloader();
+    await renderSavedValues();
+    hidePreloader();
+
+    $.each($("td textarea"), function () {
+        this.style.height = "";
+        this.style.height = this.scrollHeight + "px";
+    });
+
+    if (struct.form.type == 200 || struct.form.type == 300) {
+        addStickyTableHeader($("#renderedForm table"));
+    }
+}
