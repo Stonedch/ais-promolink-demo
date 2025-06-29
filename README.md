@@ -12,6 +12,7 @@
 - [Основная информация](#основная-информация)
 - [Требования к системе](#требования)
 - [Установка и настройка](#установка)
+  - [Установка демонстрационной версии](#установка-демонстрационной-версии)
   - [Совмещенная установка с DataLens](#совмещенный-с-datalens)
   - [Раздельная установка с DataLens и Zitadel](#раздельный-с-datalens-и-zitadel)
 - [Настройка cron-задач](#настройка-cron-задач)
@@ -44,6 +45,25 @@
   - curl
 
 ## Установка
+
+### Установка демонстрационной версии
+
+1. Настройка окружения:
+```bash
+cp .env.datalens.example .env  # (обязательно ввести USER, UID, GUID)
+cp ./app/.env.example ./app/.env
+cp ./docker/nginx/nginx.without.ssl.conf.example ./docker/nginx/nginx.conf
+```
+2. Запуск и инициализация:
+```bash
+docker-compose -f docker-compose.datalens.yml up -d --build
+docker-compose -f docker-compose.datalens.yml exec laravel composer install
+docker-compose -f docker-compose.datalens.yml exec laravel php artisan key:generate --ansi
+docker-compose -f docker-compose.datalens.yml exec laravel php artisan storage:link
+docker-compose -f docker-compose.datalens.yml exec laravel php artisan migrate
+docker-compose exec -T db psql -U username database < demo-dump.sql
+```
+3. Логин и пароль: +7 (999) 999-99-99 / password
 
 ### Совмещенный с DataLens
 
