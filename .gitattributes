@@ -3,4 +3,8 @@
 *.io linguist-detectable=false
 *.docx linguist-detectable=false
 *.sql linguist-detectable=false
+*.tf linguist-detectable=false
+*.j2 linguist-detectable=false
+*.json linguist-detectable=false
+*.md linguist-detectable=false
 * linguist-language=PHP
