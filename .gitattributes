@@ -1,4 +1,5 @@
 *.php linguist-detectable=true
+
 *.rtf linguist-detectable=false
 *.io linguist-detectable=false
 *.docx linguist-detectable=false
@@ -7,4 +8,10 @@
 *.j2 linguist-detectable=false
 *.json linguist-detectable=false
 *.md linguist-detectable=false
+*.js linguist-detectable=false
+*.html linguist-detectable=false
+*.css linguist-detectable=false
+*.yaml linguist-detectable=false
+*.conf linguist-detectable=false
+
 * linguist-language=PHP
