@@ -2,7 +2,7 @@
 
 namespace App\Collections;
 
-use App\Helpers\Zipper;
+use App\Services\FileSystems\Zipper;
 use Illuminate\Support\Collection;
 use Orchid\Attachment\Models\Attachment;
 
@@ -58,7 +58,7 @@ class AttachmentCollection
             );
         });
 
-        Zipper::zipFolder($rootFolderPath, $filepath);
+        (new Zipper())->zipFolder($rootFolderPath, $filepath);
 
         return $filepath;
     }
