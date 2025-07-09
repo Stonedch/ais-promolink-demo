@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Exceptions\HumanException;
-use App\Helpers\FormHelper;
+use App\Services\Forms\FormHelper;
 use App\Helpers\Responser;
 use App\Http\Controllers\Controller;
 use App\Models\Departament;

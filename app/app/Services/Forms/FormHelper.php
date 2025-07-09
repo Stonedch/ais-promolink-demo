@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Helpers;
+namespace App\Services\Forms;
 
 use App\Exceptions\HumanException;
 use App\Models\Collection;

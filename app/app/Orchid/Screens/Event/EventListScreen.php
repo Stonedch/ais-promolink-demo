@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Event;
 
 use App\Exceptions\HumanException;
-use App\Helpers\FormHelper;
+use App\Services\Forms\FormHelper;
 use App\Models\Departament;
 use App\Models\DepartamentType;
 use App\Models\District;
