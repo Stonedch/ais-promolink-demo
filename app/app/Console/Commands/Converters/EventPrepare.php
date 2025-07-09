@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Converters;
 
-use App\Helpers\EventPrepare\ChunkEventPreparedHelper;
+use App\Services\Events\ChunkEventPreparedHelper;
 use Illuminate\Console\Command;
 
 class EventPrepare extends Command

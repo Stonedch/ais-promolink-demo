@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers\EventPrepare;
+namespace App\Services\Events;
 
 use App\Exceptions\EventPrepareException;
 use App\Models\CollectionValue;
