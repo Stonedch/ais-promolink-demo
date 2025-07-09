@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Helpers\CustomReport\CustomReportImporter;
+use App\Services\CustomReport\CustomReportImporter;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
