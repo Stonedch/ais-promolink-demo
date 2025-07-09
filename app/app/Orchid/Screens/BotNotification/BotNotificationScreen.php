@@ -6,7 +6,7 @@ namespace App\Orchid\Screens\BotNotification;
 
 use App\Enums\BotUserNotificationStatus;
 use App\Exceptions\HumanException;
-use App\Helpers\BotHelpers\TelegramBotHelper;
+use App\Services\Bot\TelegramBot;
 use App\Helpers\FormExporter;
 use App\Helpers\FormHelper;
 use App\Services\Normalizers\PhoneNormalizer;
@@ -219,7 +219,7 @@ class BotNotificationScreen extends Screen
 
                 foreach ($users as $user) {
                     try {
-                        TelegramBotHelper::notify($user, 'Уведомление', $message);
+                        TelegramBot::notify($user, 'Уведомление', $message);
                     } catch (Exception) {
                         continue;
                     }
@@ -245,7 +245,7 @@ class BotNotificationScreen extends Screen
 
             foreach ($users as $user) {
                 try {
-                    TelegramBotHelper::notify($user, 'Уведомление', $message);
+                    TelegramBot::notify($user, 'Уведомление', $message);
                 } catch (Exception) {
                     continue;
                 }
@@ -270,7 +270,7 @@ class BotNotificationScreen extends Screen
 
             foreach ($botUsers as $user) {
                 try {
-                    TelegramBotHelper::notifyBot($user, 'Уведомление', $message);
+                    TelegramBot::notifyBot($user, 'Уведомление', $message);
                 } catch (Exception) {
                     continue;
                 }

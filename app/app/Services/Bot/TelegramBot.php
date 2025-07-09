@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Helpers\BotHelpers;
+// namespace App\Services\Bot;
+namespace App\Services\Bot;
 
 use App\Models\BotUser;
 use App\Models\BotUserNotification;
@@ -12,7 +13,7 @@ use Illuminate\Support\Collection;
 use Orchid\Platform\Notifications\DashboardMessage;
 use Orchid\Support\Color;
 
-class TelegramBotHelper
+class TelegramBot
 {
     public static function getUser(string $phone): ?BotUser
     {

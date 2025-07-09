@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\BotUserEvent;
-use App\Helpers\BotHelpers\TelegramBotHelper;
+use App\Services\Bot\TelegramBot;
 use App\Services\Normalizers\PhoneNormalizer;
 use App\Http\Controllers\Controller;
 use App\Models\BotUserQuestion;
@@ -25,7 +25,7 @@ class TelegramController extends Controller
 
 
             try {
-                $botUser = TelegramBotHelper::getUserByUserId($id);
+                $botUser = TelegramBot::getUserByUserId($id);
                 $user_start_question = $botUser->event == BotUserEvent::ADD_QUERY->value;
                 if ($user_start_question === true) {
                     // сохранить вопрос
@@ -38,7 +38,7 @@ class TelegramController extends Controller
                         'question' => $message->getText(),
                     ])->save();
 
-                    $botUser = TelegramBotHelper::getUserByUserId($id);
+                    $botUser = TelegramBot::getUserByUserId($id);
                     $botUser->event = null;
                     $botUser->save();
 
@@ -52,10 +52,10 @@ class TelegramController extends Controller
             if ($message->getText() == "Задать вопрос") {
                 // надо сделать пометку, что от пользователя ожидается вопрос
                 $bot->sendMessage($message->getChat()->getId(), 'Направьте текст Вашего вопроса одним сообщением');
-                $botUser = TelegramBotHelper::getUserByUserId($id);
+                $botUser = TelegramBot::getUserByUserId($id);
                 $botUser->event = BotUserEvent::ADD_QUERY->value;
                 $botUser->save();
-            } elseif (!is_null(TelegramBotHelper::getUserByUserId($id))) {
+            } elseif (!is_null(TelegramBot::getUserByUserId($id))) {
                 $buttons = [[
                     ['text' => 'Задать вопрос']
                 ]];
@@ -64,7 +64,7 @@ class TelegramController extends Controller
             } elseif ($message->getContact() != null) {
                 try {
                     $phone = PhoneNormalizer::normalizePhone($message->getContact()->getPhoneNumber());
-                    TelegramBotHelper::store($phone, $id);
+                    TelegramBot::store($phone, $id);
                     // $bot->sendMessage($message->getChat()->getId(), 'Вы успешно зарегистрировались: уведомления будут дублироваться в этот чат-бот');
 
                     $buttons = [[

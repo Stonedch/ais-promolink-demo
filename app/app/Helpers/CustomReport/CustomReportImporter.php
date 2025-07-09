@@ -4,7 +4,7 @@ namespace App\Helpers\CustomReport;
 
 use App\Enums\CustomReportLogType;
 use App\Exceptions\UnStoringException;
-use App\Helpers\BotHelpers\TelegramBotHelper;
+use App\Services\Bot\TelegramBot;
 use App\Models\CustomReport;
 use App\Models\CustomReportType;
 use App\Models\User;
@@ -295,7 +295,7 @@ class CustomReportImporter extends Command
         );
 
         try {
-            TelegramBotHelper::notify($user, $title, $body);
+            TelegramBot::notify($user, $title, $body);
         } catch (Throwable | Exception) {
             $this->log(
                 message: 'Telegram пользователь не найден',
@@ -592,7 +592,7 @@ class CustomReportImporter extends Command
 
             if (empty($telegramMessage) == false) {
                 try {
-                    TelegramBotHelper::notify($user, 'Загрузка отчета', $telegramMessage);
+                    TelegramBot::notify($user, 'Загрузка отчета', $telegramMessage);
                 } catch (Throwable | Exception) {
                     $this->log('ТГ пользователь не найден', CustomReportLogType::DEBUG, false);
                 }
