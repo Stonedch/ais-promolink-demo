@@ -61,9 +61,18 @@ docker-compose -f docker-compose.datalens.yml exec laravel composer install
 docker-compose -f docker-compose.datalens.yml exec laravel php artisan key:generate --ansi
 docker-compose -f docker-compose.datalens.yml exec laravel php artisan storage:link
 docker-compose -f docker-compose.datalens.yml exec laravel php artisan migrate
+```
+3. Импорт демо-данных
+- Способ 1 (через docker cp - рекомендуется для Windows):
+```bash
+docker cp demo-dump.sql <container-name>:/tmp/demo-dump.sql
+docker-compose -f docker-compose.datalens.yml exec db psql -U <database-username> -d <database-name> -f /tmp/demo-dump.sql
+```
+- Способ 2 (через перенаправление ввода):
+```bash
 docker-compose exec -T db psql -U username database < demo-dump.sql
 ```
-3. Логин и пароль: +7 (999) 999-99-99 / password
+4. Логин и пароль: +7 (999) 999-99-99 / password
 
 ### Совмещенный с DataLens
 
