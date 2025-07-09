@@ -10,12 +10,12 @@ class Zipper
 {
     protected ZipArchive $zip;
 
-    public function __construct()
+    public function __construct(?ZipArchive $zip = null)
     {
-        $this->zip = new ZipArchive();
+        $this->zip = $zip ?? new ZipArchive();
     }
 
-    public function zipFolder(string $source, string $destination): string
+    public function zipFolder(string $source, string $destination): bool
     {
         if (!extension_loaded('zip') || !file_exists($source)) {
             return false;
