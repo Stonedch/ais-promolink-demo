@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Bot;
+namespace App\Services\Bots;
 
 use App\Models\BotUser;
 use App\Models\BotUserNotification;

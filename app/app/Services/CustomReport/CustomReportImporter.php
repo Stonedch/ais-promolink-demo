@@ -4,7 +4,7 @@ namespace App\Services\CustomReport;
 
 use App\Enums\CustomReportLogType;
 use App\Exceptions\UnStoringException;
-use App\Services\Bot\TelegramBot;
+use App\Services\Bots\TelegramBot;
 use App\Models\CustomReport;
 use App\Models\CustomReportType;
 use App\Models\User;

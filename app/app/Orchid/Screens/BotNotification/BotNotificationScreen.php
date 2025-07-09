@@ -6,7 +6,7 @@ namespace App\Orchid\Screens\BotNotification;
 
 use App\Enums\BotUserNotificationStatus;
 use App\Exceptions\HumanException;
-use App\Services\Bot\TelegramBot;
+use App\Services\Bots\TelegramBot;
 use App\Helpers\FormExporter;
 use App\Services\Forms\FormHelper;
 use App\Services\Normalizers\PhoneNormalizer;

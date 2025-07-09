@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\BotUserEvent;
-use App\Services\Bot\TelegramBot;
+use App\Services\Bots\TelegramBot;
 use App\Services\Normalizers\PhoneNormalizer;
 use App\Http\Controllers\Controller;
 use App\Models\BotUserQuestion;

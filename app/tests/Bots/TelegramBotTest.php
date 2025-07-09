@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Unit\Services\Bot;
+namespace Tests\Unit\Services\Bots;
 
 use App\Models\BotUser;
 use App\Models\BotUserNotification;
 use App\Models\User;
-use App\Services\Bot\TelegramBot;
+use App\Services\Bots\TelegramBot;
 use App\Services\Normalizers\PhoneNormalizer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
