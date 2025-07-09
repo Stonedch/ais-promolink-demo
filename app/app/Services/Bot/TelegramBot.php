@@ -1,6 +1,5 @@
 <?php
 
-// namespace App\Services\Bot;
 namespace App\Services\Bot;
 
 use App\Models\BotUser;
