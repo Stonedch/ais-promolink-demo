@@ -3,7 +3,7 @@
 namespace App\Plugins\Esia\Controllers;
 
 use App\Exceptions\HumanException;
-use App\Helpers\Responser;
+use App\Services\Api\Responser;
 use App\Http\Controllers\Controller;
 use App\Plugins\Esia\Services\CryptoPro;
 use App\Plugins\Esia\Services\EsiaService;

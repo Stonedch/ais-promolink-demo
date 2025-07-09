@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Helpers;
+namespace App\Services\Api;
 
 use Illuminate\Http\JsonResponse;
 
 class Responser
 {
-
     public static function returnJson(
         ?array $data = null,
         ?array $errors = null,

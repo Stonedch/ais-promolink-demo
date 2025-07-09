@@ -3,7 +3,7 @@
 namespace App\View\Components\CustomReport;
 
 use App\Services\Normalizers\PhoneNormalizer;
-use App\Helpers\Responser;
+use App\Services\Api\Responser;
 use App\Models\CustomReportType;
 use Closure;
 use Illuminate\Contracts\View\View;
