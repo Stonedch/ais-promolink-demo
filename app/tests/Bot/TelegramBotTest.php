@@ -23,12 +23,10 @@ class TelegramBotTest extends TestCase
     {
         parent::setUp();
 
-        // Создаем тестового пользователя
         $this->user = User::factory()->create([
             'phone' => '79261234567'
         ]);
 
-        // Создаем тестового бот-пользователя
         $this->botUser = BotUser::factory()->create([
             'phone' => PhoneNormalizer::normalizePhone('79261234567'),
             'telegram_id' => '123456789'
@@ -38,15 +36,12 @@ class TelegramBotTest extends TestCase
     /** @test */
     public function it_can_get_user_by_phone()
     {
-        // Тестируем с нормализованным номером
         $result = TelegramBot::getUser('79261234567');
         $this->assertEquals($this->botUser->id, $result->id);
 
-        // Тестируем с номером в другом формате
         $result = TelegramBot::getUser('+7 (926) 123-45-67');
         $this->assertEquals($this->botUser->id, $result->id);
 
-        // Тестируем с несуществующим номером
         $result = TelegramBot::getUser('79161234567');
         $this->assertNull($result);
     }
@@ -113,7 +108,7 @@ class TelegramBotTest extends TestCase
     public function it_throws_exception_when_notifying_non_existent_user()
     {
         $user = User::factory()->create([
-            'phone' => '79161234567' // Нет связанного BotUser
+            'phone' => '79161234567'
         ]);
 
         $this->expectException(\Exception::class);
@@ -157,7 +152,6 @@ class TelegramBotTest extends TestCase
         BotUserNotification::factory()->create(['bot_user_id' => $this->botUser->id]);
         BotUserNotification::factory()->create(['bot_user_id' => $this->botUser->id]);
 
-        // Создаем уведомления для другого пользователя
         BotUserNotification::factory()->create();
 
         $notifications = TelegramBot::popByPhone($phone);
@@ -173,7 +167,6 @@ class TelegramBotTest extends TestCase
         BotUserNotification::factory()->create(['bot_user_id' => $this->botUser->id]);
         BotUserNotification::factory()->create(['bot_user_id' => $this->botUser->id]);
 
-        // Создаем уведомления для другого пользователя
         BotUserNotification::factory()->create();
 
         $notifications = TelegramBot::popByTelegramId($telegramId);
