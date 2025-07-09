@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\CustomReport;
+namespace App\Services\CustomReports;
 
 use App\Enums\CustomReportLogType;
 use App\Exceptions\UnStoringException;
