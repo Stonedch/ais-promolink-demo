@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Services\Geo;
 
 class PolygonInsider
 {
