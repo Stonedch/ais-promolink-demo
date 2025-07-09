@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\BotUserQuestion;
 
-use App\Helpers\PhoneNormalizer;
+use App\Services\Normalizers\PhoneNormalizer;
 use App\Models\BotUser;
 use App\Models\BotUserNotification;
 use App\Models\BotUserQuestion;

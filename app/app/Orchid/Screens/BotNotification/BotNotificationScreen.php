@@ -9,7 +9,7 @@ use App\Exceptions\HumanException;
 use App\Helpers\BotHelpers\TelegramBotHelper;
 use App\Helpers\FormExporter;
 use App\Helpers\FormHelper;
-use App\Helpers\PhoneNormalizer;
+use App\Services\Normalizers\PhoneNormalizer;
 use App\Models\BotUser;
 use App\Models\BotUserNotification;
 use App\Models\Departament;

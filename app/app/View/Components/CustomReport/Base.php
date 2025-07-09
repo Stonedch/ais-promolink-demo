@@ -2,7 +2,7 @@
 
 namespace App\View\Components\CustomReport;
 
-use App\Helpers\PhoneNormalizer;
+use App\Services\Normalizers\PhoneNormalizer;
 use App\Helpers\Responser;
 use App\Models\CustomReportType;
 use Closure;

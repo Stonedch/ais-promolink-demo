@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Helpers\PhoneNormalizer;
 use App\Models\User;
+use App\Services\Normalizers\PhoneNormalizer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Orchid\Platform\Models\Role;

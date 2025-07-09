@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Exceptions\HumanException;
-use App\Helpers\PhoneNormalizer;
 use App\Helpers\Responser;
 use App\Http\Controllers\Controller;
+use App\Services\Normalizers\PhoneNormalizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

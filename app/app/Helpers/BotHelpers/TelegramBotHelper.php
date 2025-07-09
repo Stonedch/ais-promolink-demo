@@ -2,14 +2,13 @@
 
 namespace App\Helpers\BotHelpers;
 
-use App\Helpers\PhoneNormalizer;
 use App\Models\BotUser;
 use App\Models\BotUserNotification;
 use App\Models\User;
 use App\Notifications\DashboardMessageNotification;
+use App\Services\Normalizers\PhoneNormalizer;
 use Exception;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Orchid\Platform\Notifications\DashboardMessage;
 use Orchid\Support\Color;
 

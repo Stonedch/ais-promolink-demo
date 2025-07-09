@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Form;
 
 use App\Enums\FormStructureType;
-use App\Helpers\PhoneNormalizer;
+use App\Services\Normalizers\PhoneNormalizer;
 use App\Models\Collection;
 use App\Models\DepartamentType;
 use App\Models\Field;

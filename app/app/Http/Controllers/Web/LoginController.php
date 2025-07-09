@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Helpers\PhoneNormalizer;
+use App\Services\Normalizers\PhoneNormalizer;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;

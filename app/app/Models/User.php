@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Helpers\PhoneNormalizer;
+use App\Services\Normalizers\PhoneNormalizer;
 use App\Plugins\EntityLogger\Observers\EntityLoggerObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Support\Facades\Cache;

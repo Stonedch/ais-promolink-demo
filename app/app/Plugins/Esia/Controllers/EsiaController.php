@@ -3,7 +3,7 @@
 namespace App\Plugins\Esia\Controllers;
 
 use App\Exceptions\HumanException;
-use App\Helpers\PhoneNormalizer;
+use App\Services\Normalizers\PhoneNormalizer;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Plugins\Esia\Services\EsiaService;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Subdepartament;
 
-use App\Helpers\PhoneNormalizer;
+use App\Services\Normalizers\PhoneNormalizer;
 use App\Models\Departament;
 use App\Models\User;
 use App\Orchid\Layouts\Role\RolePermissionLayout;

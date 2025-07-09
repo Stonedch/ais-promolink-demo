@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\BotUserEvent;
 use App\Helpers\BotHelpers\TelegramBotHelper;
-use App\Helpers\PhoneNormalizer;
+use App\Services\Normalizers\PhoneNormalizer;
 use App\Http\Controllers\Controller;
 use App\Models\BotUserQuestion;
 use Exception;

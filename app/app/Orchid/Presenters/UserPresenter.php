@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Presenters;
 
-use App\Helpers\PhoneNormalizer;
+use App\Services\Normalizers\PhoneNormalizer;
 use Illuminate\Support\Str;
 use Laravel\Scout\Builder;
 use Orchid\Screen\Contracts\Personable;

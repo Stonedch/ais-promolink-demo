@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Helpers\PhoneNormalizer;
+use App\Services\Normalizers\PhoneNormalizer;
 use App\Http\Middleware\UserUnActive;
 use App\Orchid\Screens\BotNotification\BotNotificationScreen;
 use App\Orchid\Screens\BotUserQuestion\BotUserQuestionListScreen;
